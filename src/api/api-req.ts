@@ -5,36 +5,36 @@ import { getItem } from '../utils/localStorage'
 export const POST = async <T>(url: string, body: unknown) => {
 	const config = getRequestConfiguration()
 	return await (
-		await axios.post<T>(url, body, config)
-	).data
+		await axios.post<T>(`${baseUrl}/${url}`, body, config)
+	)//.data
 }
 
 export const PUT = async <T>(url: string, body?: unknown) => {
 	const config = getRequestConfiguration()
 	return await (
-		await axios.put<T>(url, body, config)
-	).data
+		await axios.put<T>(`${baseUrl}/${url}`, body, config)
+	)//.data
 }
 
 export const GET = async <T>(url: string) => {
 	const config = getRequestConfiguration()
 	return await (
-		await axios.get<T>(url, config)
-	).data
+		await axios.get<T>(`${baseUrl}/${url}`, config)
+	)//.data
 }
 
 export const PATCH = async <T>(url: string, body?: unknown) => {
 	const config = getRequestConfiguration()
 	return await (
-		await axios.patch<T>(url, body, config)
-	).data
+		await axios.patch<T>(`${baseUrl}/${url}`, body, config)
+	)//.data
 }
 
 export const DELETE = async <T>(url: string) => {
 	const config = getRequestConfiguration()
 	return await (
-		await axios.delete<T>(url, config)
-	).data
+		await axios.delete<T>(`${baseUrl}/${url}`, config)
+	)//.data
 }
 
 const getRequestConfiguration = () => {
@@ -42,8 +42,8 @@ const getRequestConfiguration = () => {
 	const tokenAccess = getItem('token')
 	const token = tokenAccess ? 'Bearer tokenAccess' : null
 	const { token: cancelToken } = axios.CancelToken.source()
-	const headers = token ? { Authorization: token } : { Authorization: null }
-
+	const headers = token ? { Authorization: token, 'Content-Type': 'application/json' } : { Authorization: null, 'Content-Type': 'application/json' }
+	
 	return {
 		headers,
 		timeout,
