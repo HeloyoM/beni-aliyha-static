@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { Typography } from '@mui/material';
 import Home from './pages/Home';
 import Header from './components/Header';
@@ -18,26 +18,39 @@ const App: React.FC = () => {
   const updateServerMsgContext = (msg: any) => { setServerMsg(msg) }
 
   return (
-  <AppServerMsgContext.Provider value={{ updateServerMsgContext, serverMsg }}>
-  <AppUserContext.Provider value={{ updateUserContext, user: crrUser }}>
-      <Router>
-
-         <ScreenWrapper><Header /></ScreenWrapper>
-
-        <Routes>
-          <Route path="/" element={<WelcomeScreen />} />
-          <Route path="/home" element={<Home />} />
-          <Route path="/profile" element={<UserSelfArea />} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-
-      </Router>
+    <AppServerMsgContext.Provider value={{ updateServerMsgContext, serverMsg }}>
+      <AppUserContext.Provider value={{ updateUserContext, user: crrUser }}>
+        <Router>
+          <AppContent />
+        </Router>
       </AppUserContext.Provider>
-  </AppServerMsgContext.Provider>
+    </AppServerMsgContext.Provider>
   )
 }
 
 export default App;
+
+const AppContent = () => {
+  const location = useLocation(); // Use useLocation to get the current route
+  // Determine whether to show the Header and ScreenWrapper
+  const shouldShowWrapper = location.pathname !== '/';
+  return (
+    <>
+      {shouldShowWrapper && (
+        <ScreenWrapper>
+          <Header />
+        </ScreenWrapper>
+      )}
+
+      <Routes>
+        <Route path="/" element={<WelcomeScreen />} />
+        <Route path="/home" element={<Home />} />
+        <Route path="/profile" element={<UserSelfArea />} />
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+    </>
+  )
+}
 
 export const NotFound: React.FC = () => {
   return (

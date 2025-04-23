@@ -1,12 +1,12 @@
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { Button, Typography } from "@mui/material";
 import '../App.css';
 import Menu from './Menu';
 import MenuIcon from '@mui/icons-material/Menu';
-// import { Login as ConnectIcon } from '@mui/icons-material';
 import PersonIcon from '@mui/icons-material/Person';
 import { useNavigate } from 'react-router-dom';
-import { profile } from '../api/auth';
+import { logout } from '../api/auth';
+import LogoutIcon from '@mui/icons-material/Logout';
 
 const Header = () => {
     const [openMenu, setOpenMenu] = React.useState(false);
@@ -30,21 +30,31 @@ const Header = () => {
                 },
             },]}>section</Button>
     ]), [])
-    const getProfile = async () => {
+
+    const handleLogout = async () => {
         try {
-            const res = await profile();
-            console.log({ res })
+            const response = await logout()
+
+            const data = response.data as any;
+
+            if (data) {
+                localStorage.removeItem('token')
+                localStorage.removeItem('refreshToken')
+
+                navigate('/')
+            }
 
         } catch (error) {
-            console.log({ error })
+
         }
     }
+
     return (
         <Typography className={'sticky title'}>
 
             <PersonIcon sx={{ height: 55, width: 55 }} onClick={showProfile} />
 
-            <Button onClick={getProfile} >Get profile</Button>
+            <LogoutIcon onClick={handleLogout} />
 
             <Typography
                 style={{

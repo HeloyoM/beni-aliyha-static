@@ -69,10 +69,9 @@ const WelcomeScreen = () => {
             <AppNameText variant="h2" sx={{ position: 'relative' }}>
                 Beni-Aliyah
             </AppNameText>
-            
+
             <AuthForm />
 
-            {/* You could add a button here to transition to the main app */}
         </Box>
     );
 };

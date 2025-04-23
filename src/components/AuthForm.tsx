@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Alert, TextField, Button, Grid, Paper, Typography, Link, Box } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { useFormik } from 'formik';
@@ -27,6 +27,14 @@ const AuthForm = () => {
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
 
+    useEffect(() => {
+        const token = localStorage.getItem('token')
+
+        if (token) {
+            navigate('/home')
+        }
+
+    }, [])
     // Function to handle form submission (Login and Register)
     const handleSubmit = async (values: any) => {
         setLoading(true);
