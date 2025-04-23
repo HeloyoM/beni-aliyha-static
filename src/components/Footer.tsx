@@ -18,7 +18,7 @@ const Footer = () => {
             }}
         >
             <Grid2 container spacing={2}>
-                <Typography variant="body2" align="center" sx={{ mt: 2 }}>
+                <Typography variant="body2" sx={{ position: 'absolute', bottom: 0, alignItems: 'center', display: 'flex' }}>
                     © {new Date().getFullYear()} 0587769313 | All Rights Reserved Meir Juli
                 </Typography>
             </Grid2>

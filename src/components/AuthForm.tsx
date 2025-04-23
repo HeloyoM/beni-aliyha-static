@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { Alert, TextField, Button, Grid, Paper, Typography, Link, Box } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
 import { login, register } from '../api/auth';
+import AppUserContext from '../context/AppUserContext';
 
 // Validation schema using yup
 const validationSchema = yup.object({
@@ -27,6 +28,8 @@ const AuthForm = () => {
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
 
+    const { updateUserContext } = useContext(AppUserContext)
+
     useEffect(() => {
         const token = localStorage.getItem('token')
 
@@ -35,6 +38,7 @@ const AuthForm = () => {
         }
 
     }, [])
+
     // Function to handle form submission (Login and Register)
     const handleSubmit = async (values: any) => {
         setLoading(true);
@@ -53,6 +57,9 @@ const AuthForm = () => {
                     // Store token and refresh token
                     localStorage.setItem('token', data.token);
                     localStorage.setItem('refreshToken', data.refreshToken);
+
+                    updateUserContext(data.user);
+                    
                     navigate('/home'); // Redirect to profile page
                 } else {
                     setIsLogin(true); // Switch to login after successful registration

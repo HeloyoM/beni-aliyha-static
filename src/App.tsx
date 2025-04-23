@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { Typography } from '@mui/material';
 import Home from './pages/Home';
@@ -7,7 +7,7 @@ import ScreenWrapper from './components/ScreenWrapper';
 import AppUserContext from './context/AppUserContext';
 import AppServerMsgContext from "./context/AppServerMsg";
 import './App.css';
-import UserSelfArea from './components/UserSelfArea';
+import UserProfile from './components/UserProfile';
 import WelcomeScreen from './components/WelcomScreen';
 
 const App: React.FC = () => {
@@ -34,6 +34,10 @@ const AppContent = () => {
   const location = useLocation(); // Use useLocation to get the current route
   // Determine whether to show the Header and ScreenWrapper
   const shouldShowWrapper = location.pathname !== '/';
+
+  useEffect(() => {
+  }, [location.pathname])
+
   return (
     <>
       {shouldShowWrapper && (
@@ -45,7 +49,7 @@ const AppContent = () => {
       <Routes>
         <Route path="/" element={<WelcomeScreen />} />
         <Route path="/home" element={<Home />} />
-        <Route path="/profile" element={<UserSelfArea />} />
+        <Route path="/profile" element={<UserProfile />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </>

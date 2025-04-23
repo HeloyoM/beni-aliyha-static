@@ -1,6 +1,6 @@
 import { createContext } from 'react'
 
 export default createContext({
-    user: {},
+    user: {} as any,
     updateUserContext: (user: any) => { },
 })

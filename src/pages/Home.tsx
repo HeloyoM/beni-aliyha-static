@@ -1,20 +1,19 @@
 import React from 'react';
 import '../App.css';
-import { Box, Divider, Paper, Typography } from '@mui/material';
+import { Box } from '@mui/material';
 import Footer from '../components/Footer';
-import AuthForm from '../components/AuthForm';
+import Campaign from '../components/Campaign';
 
 const Home: React.FC = () => {
   return (
     <React.Fragment>
-      <Box>
+      <Box sx={{
+        position: 'fixed',
+        height: '100vh',
+        width: '100vw',
+      }}>
 
-        <Paper elevation={3} sx={{ width: "55%", height: 'fit-content', margin: '5% auto', backgroundColor: 'inherit', fontFamily: 'Sora, sens-serif' }}>
-          <Typography sx={{ color: "#244545", fontSize: '22px', textAlign: 'center', fontWeight: 'bold' }}>Home page</Typography>
-
-          <Divider orientation="horizontal" sx={{ margin: '2% 2%' }} />
-
-        </Paper>
+        <Campaign />
 
       </Box>
 

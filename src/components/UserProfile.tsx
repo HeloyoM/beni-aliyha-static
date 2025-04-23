@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { TextField, Button, Grid, Paper, Typography, Box } from '@mui/material';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
@@ -6,6 +6,7 @@ import { Alert } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { profile, updatePassword } from '../api/auth';
 import { updateProfile } from '../api/user';
+import AppUserContext from '../context/AppUserContext';
 
 // Validation schema for updating phone and address
 const updateProfileSchema = yup.object({
@@ -19,7 +20,7 @@ const resetPasswordSchema = yup.object({
     confirmPassword: yup.string().oneOf([yup.ref('newPassword')], 'Passwords must match').required('Confirm password is required'),
 });
 
-const UserSelfArea = () => {
+const UserProfile = () => {
     const [userData, setUserData] = useState<{ email: string; phone: string; address: string; first_name: string; last_name: string } | null>(null);
     const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState(true);
@@ -27,6 +28,8 @@ const UserSelfArea = () => {
     const [resetLoading, setResetLoading] = useState(false);
     const [resetSuccess, setResetSuccess] = useState(false);
     const navigate = useNavigate();
+
+    const { user } = useContext(AppUserContext)
 
     const token = localStorage.getItem('token');
 
@@ -40,8 +43,13 @@ const UserSelfArea = () => {
             setLoading(true);
             setError(null);
             try {
-                const response: any= await profile();
-                setUserData(response.data.user);
+                if(user === null){
+                    const response = await profile()
+                    const data = response.data as any
+                    setUserData(data.user);
+                    return
+                }
+                setUserData(user);
             } catch (error: any) {
                 setError(error.response?.data?.message || 'Failed to fetch user data');
                 if (error.response?.status === 401) {
@@ -55,7 +63,7 @@ const UserSelfArea = () => {
         };
 
         fetchUserData();
-    }, [navigate, token]);
+    }, [navigate, token, user]);
 
     // Formik for updating profile (phone, address)
     const updateProfileFormik = useFormik({
@@ -70,7 +78,7 @@ const UserSelfArea = () => {
             setError(null);
             try {
                 const response = await updateProfile(values);
-                
+
                 console.log(response.data);
                 // Update the displayed data
                 setUserData({ ...userData!, phone: values.phone, address: values.address });
@@ -226,4 +234,4 @@ const UserSelfArea = () => {
     );
 };
 
-export default UserSelfArea;
+export default UserProfile;
