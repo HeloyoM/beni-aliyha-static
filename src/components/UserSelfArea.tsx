@@ -3,7 +3,6 @@ import { TextField, Button, Grid, Paper, Typography, Box } from '@mui/material';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
 import { Alert } from '@mui/material';
-import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { profile, updatePassword } from '../api/auth';
 import { updateProfile } from '../api/user';
@@ -96,7 +95,7 @@ const UserSelfArea = () => {
             setError(null);
             try {
                 const response = await updatePassword(values)
-                
+
                 console.log(response.data);
                 setResetSuccess(true);
                 resetPasswordFormik.resetForm();
@@ -180,7 +179,7 @@ const UserSelfArea = () => {
                     </Box>
 
                     <Box mt={4}>
-                        <Typography variant="h6" style={{ color: '#1a5235' }}>Reset Password:</Typography>
+                        <Typography variant="h6" style={{ color: '#1a5235' }}>Update Password:</Typography>
                         <form onSubmit={resetPasswordFormik.handleSubmit}>
                             <TextField
                                 fullWidth
@@ -216,7 +215,7 @@ const UserSelfArea = () => {
                                 disabled={resetLoading}
                                 style={{ marginTop: 20, backgroundColor: '#4caf50', color: '#fff', borderRadius: 8 }}
                             >
-                                {resetLoading ? 'Resetting...' : 'Reset Password'}
+                                {resetLoading ? 'Resetting...' : 'Update Password'}
                             </Button>
                             {resetSuccess && <p style={{ color: 'green' }}>Password reset successfully!</p>}
                         </form>

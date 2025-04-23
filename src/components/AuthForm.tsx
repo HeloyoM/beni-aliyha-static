@@ -45,7 +45,7 @@ const AuthForm = () => {
                     // Store token and refresh token
                     localStorage.setItem('token', data.token);
                     localStorage.setItem('refreshToken', data.refreshToken);
-                    //navigate('/profile'); // Redirect to profile page
+                    navigate('/home'); // Redirect to profile page
                 } else {
                     setIsLogin(true); // Switch to login after successful registration
                     formik.resetForm();
@@ -78,7 +78,7 @@ const AuthForm = () => {
     });
 
     return (
-        <Grid container justifyContent="center" alignItems="center" style={{ minHeight: '100vh', backgroundColor: 'inherit' }}>
+        <Grid container justifyContent="center" alignItems="center" style={{ minHeight: '50vh', backgroundColor: 'inherit' }}>
             <Grid /*item xs={12} sm={8} md={6} lg={4} */>
                 <Paper elevation={3} style={{ padding: 20, borderRadius: 16 }}>
                     <Typography variant="h4" align="center" style={{ marginBottom: 20, color: '#1a5235' }}>
