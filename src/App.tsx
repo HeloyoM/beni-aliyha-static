@@ -7,6 +7,7 @@ import ScreenWrapper from './components/ScreenWrapper';
 import AppUserContext from './context/AppUserContext';
 import AppServerMsgContext from "./context/AppServerMsg";
 import './App.css';
+import UserSelfArea from './components/UserSelfArea';
 
 const App: React.FC = () => {
   const [crrUser, setUser] = React.useState<any>(null);
@@ -24,6 +25,7 @@ const App: React.FC = () => {
 
         <Routes>
           <Route path="/" element={<Home />} />
+          <Route path="/profile" element={<UserSelfArea />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
 

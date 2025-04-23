@@ -3,13 +3,20 @@ import { Button, Typography } from "@mui/material";
 import '../App.css';
 import Menu from './Menu';
 import MenuIcon from '@mui/icons-material/Menu';
-import { Login as ConnectIcon } from '@mui/icons-material';
+// import { Login as ConnectIcon } from '@mui/icons-material';
+import PersonIcon from '@mui/icons-material/Person';
+import { useNavigate } from 'react-router-dom';
+import { profile } from '../api/auth';
 
 const Header = () => {
     const [openMenu, setOpenMenu] = React.useState(false);
 
+    const navigate = useNavigate();
+
     const openMenuModal = () => { setOpenMenu(true) }
     const closeMenuModal = () => { setOpenMenu(false) }
+
+    const showProfile = () => navigate('/profile')
 
     const optionsListItems = useMemo(() => ([
         <Button sx={[
@@ -23,24 +30,34 @@ const Header = () => {
                 },
             },]}>section</Button>
     ]), [])
+    const getProfile = async () => {
+        try {
+            const res = await profile();
+            console.log({ res })
 
+        } catch (error) {
+            console.log({ error })
+        }
+    }
     return (
-            <Typography className={'sticky title'}>
+        <Typography className={'sticky title'}>
 
-                <ConnectIcon />
+            <PersonIcon sx={{ height: 55, width: 55 }} onClick={showProfile} />
 
-                    <Typography
-                        style={{
-                            margin: 'auto auto',
-                            fontSize: '22px'
-                        }}>Website name
-                    </Typography>
+            <Button onClick={getProfile} >Get profile</Button>
 
-                {!openMenu && <MenuIcon onClick={openMenuModal} className="menu-btn" />}
-
-                <Menu menuBody={optionsListItems} close={closeMenuModal} openMenu={openMenu} />
-
+            <Typography
+                style={{
+                    margin: 'auto auto',
+                    fontSize: '22px'
+                }}>Website name
             </Typography>
+
+            {!openMenu && <MenuIcon onClick={openMenuModal} className="menu-btn" />}
+
+            <Menu menuBody={optionsListItems} close={closeMenuModal} openMenu={openMenu} />
+
+        </Typography>
     )
 }
 
