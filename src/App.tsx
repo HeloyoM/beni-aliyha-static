@@ -9,6 +9,7 @@ import AppServerMsgContext from "./context/AppServerMsg";
 import './App.css';
 import UserProfile from './components/UserProfile';
 import WelcomeScreen from './components/WelcomScreen';
+import CampaignList from './components/CampaignList';
 
 const App: React.FC = () => {
   const [crrUser, setUser] = React.useState<any>(null);
@@ -49,6 +50,7 @@ const AppContent = () => {
       <Routes>
         <Route path="/" element={<WelcomeScreen />} />
         <Route path="/home" element={<Home />} />
+        <Route path="/campaings" element={<CampaignList />} />
         <Route path="/profile" element={<UserProfile />} />
         <Route path="*" element={<NotFound />} />
       </Routes>

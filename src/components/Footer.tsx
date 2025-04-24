@@ -11,10 +11,10 @@ const Footer = () => {
         <Box
             component="footer"
             sx={{
-                height: 600,
-                color: 'black',
-                p: 3,
-                mt: 'auto'
+                // height: 600,
+                // color: 'black',
+                // p: 3,
+                // mt: 'auto'
             }}
         >
             <Grid2 container spacing={2}>

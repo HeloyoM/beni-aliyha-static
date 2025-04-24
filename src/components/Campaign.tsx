@@ -1,42 +1,77 @@
-import React, { useState } from 'react';
-import { TextField, Button, Grid, Alert, Paper, Typography, Select, MenuItem, FormControl, InputLabel, FormHelperText } from '@mui/material';
+import React, { useEffect, useState } from 'react';
+import { TextField, Button, Grid, Alert, Paper, Typography, Select, MenuItem, FormControl, InputLabel, FormHelperText, Divider } from '@mui/material';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
 import dayjs, { Dayjs } from 'dayjs';
 import { DayPicker } from "react-day-picker";
 import { styled } from '@mui/material/styles';
 import 'react-day-picker/dist/style.css';
+import { createCampaign, getCampaignTypes } from '../api/campaign';
+import { useNavigate } from 'react-router-dom';
 
 // Validation schema using yup
 const newCampaignSchema = yup.object({
     name: yup.string().required('Campaign Name is required'),
     type: yup.string().required('Campaign Type is required'),
     dueDate: yup.date().required('Due Date is required').min(new Date(), 'Due Date cannot be in the past'),
-    details: yup.string().required('Details are required'),
+    description: yup.string().required('Description is required'),
 });
 
 // Campaign types
 const campaignTypes = [
-    { value: 'call', label: 'Call' },
-    { value: 'sms', label: 'SMS' },
-    { value: 'email', label: 'Email' },
-    { value: 'whatsapp', label: 'WhatsApp' },
-    { value: 'other', label: 'Other' },
+    { id: 'call', name: 'Call' },
 ];
 
+interface campaignTypes {
+    id: string
+    name: string
+}
 const Campaign = () => {
+    const [campaignTypes, setCampaignTypes] = useState<campaignTypes[]>([]);
     const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
     const [success, setSuccess] = useState(false); // Add state for success message
     const [selectedDate, setSelectedDate] = useState(dayjs());
 
+    const navigate = useNavigate();
+
+    const token = localStorage.getItem('token');
+
+    useEffect(() => {
+        const fetchTypes = async () => {
+            if (!token) {
+                navigate('/'); // Redirect to login if no token
+                return;
+            }
+            if (!campaignTypes.length) {
+                setLoading(true);
+                setError(null);
+                try {
+                    const response = await getCampaignTypes()
+
+                    const data = response.data as any
+
+                    setCampaignTypes(data.types)
+
+                } catch (error: any) {
+                    setError(error.response?.data?.message || 'Failed to fetch campaign types');
+                } finally {
+                    setLoading(false);
+                }
+
+            }
+
+        }
+        fetchTypes()
+    }, [campaignTypes])
+
     // Formik hook for form management
     const formik = useFormik({
         initialValues: {
             name: '',
-            type: '',
+            type: 0,
             dueDate: dayjs(), // Initialize with current date
-            details: '',
+            description: '',
         },
         validationSchema: newCampaignSchema,
         onSubmit: async (values) => {
@@ -44,17 +79,11 @@ const Campaign = () => {
             setError(null);
             try {
                 // Simulate API call (replace with your actual API endpoint)
-                const response = await fetch('/api/campaigns', { //  Change this to your API endpoint
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(values),
-                });
+                const response = await createCampaign(values);
 
-                const data = await response.json();
+                const data = response.data as any;
 
-                if (response.ok) {
+                if (response.status > 200) {
                     // Handle successful campaign creation
                     console.log(data); // Log the response
                     setSuccess(true); // Set success state
@@ -72,20 +101,29 @@ const Campaign = () => {
         },
     });
 
-    const handleDayClick = (day: any) => {
-        console.log({ day })
-    }
+    console.log(formik.values)
 
     return (
-        <Grid container justifyContent="center" alignItems="center" style={{ minHeight: '100vh', backgroundColor: '#f0f4c3' }}>
+        <Grid container justifyContent="center" alignItems="center" style={{ marginTop: 10, minHeight: '100vh', backgroundColor: '#f0f4c3' }}>
             <Grid>
-                <Paper elevation={3} style={{ padding: 20, borderRadius: 16 }}>
-
-                    <Typography variant="h4" align="center" style={{ marginBottom: 20, color: '#1a5235' }}>
-                        New Campaign
-                    </Typography>
+                <Paper elevation={3} style={{ display: 'grid', gridTemplateColumns: 'auto auto', flexDirection: 'row', minWidth: '100vh', padding: 20, borderRadius: 16 }}>
 
                     <form onSubmit={formik.handleSubmit}>
+
+                        <Typography variant="h4" align="center" style={{ marginBottom: 20, color: '#1a5235' }}>
+                            New Campaign
+                        </Typography>
+
+                        {error && (
+                            <Alert severity="error" style={{ marginBottom: 10 }}>
+                                {error}
+                            </Alert>
+                        )}
+                        {success && (
+                            <Alert severity="success" style={{ marginBottom: 10 }}>
+                                Campaign created successfully!
+                            </Alert>
+                        )}
 
                         <TextField
                             fullWidth
@@ -123,11 +161,16 @@ const Campaign = () => {
 
                             >
                                 {campaignTypes.map((option) => (
-                                    <MenuItem key={option.value} value={option.value}>
-                                        {option.label}
+                                    <MenuItem key={option.id} value={option.id}>
+                                        {option.name}
                                     </MenuItem>
                                 ))}
                             </Select>
+                            {formik.touched.type && formik.errors.type && (
+                                <FormHelperText error style={{ color: '#d32f2f' }}>
+                                    {formik.errors.type}
+                                </FormHelperText>
+                            )}
                         </FormControl>
 
                         <MyDatePicker
@@ -137,7 +180,6 @@ const Campaign = () => {
                                     formik.setFieldValue('dueDate', date);
                                 }
                             }} />
-
                         <Button
                             type="submit"
                             fullWidth
@@ -149,6 +191,21 @@ const Campaign = () => {
                             {loading ? 'Creating...' : 'Create Campaign'}
                         </Button>
                     </form>
+
+                    <TextField
+                        fullWidth
+                        id="description"
+                        name="description"
+                        label="Description"
+                        multiline
+                        rows={4}
+                        value={formik.values.description}
+                        onChange={formik.handleChange}
+                        error={formik.touched.description && Boolean(formik.errors.description)}
+                        helperText={formik.touched.description && formik.errors.description}
+                        style={{ marginLeft: '5%', marginBottom: 15, backgroundColor: '#fff' }}
+                        InputProps={{ style: { borderRadius: 8, borderColor: '#81c784' } }}
+                    />
                 </Paper>
             </Grid>
         </Grid>

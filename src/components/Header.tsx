@@ -7,6 +7,8 @@ import PersonIcon from '@mui/icons-material/Person';
 import { useNavigate } from 'react-router-dom';
 import { logout } from '../api/auth';
 import LogoutIcon from '@mui/icons-material/Logout';
+import CampaignIcon from '@mui/icons-material/Campaign';
+import HomeIcon from '@mui/icons-material/Home';
 
 type Props = {
     name: string
@@ -77,6 +79,12 @@ const Header = () => {
             },]}>section</Button>
     ]), [])
 
+    const showCampaigns = () => {
+        navigate('/campaings')
+    }
+    const navigateHome = () => {
+        navigate('/home')
+    }
     const handleLogout = async () => {
         try {
             const response = await logout()
@@ -98,9 +106,13 @@ const Header = () => {
     return (
         <Box className={'sticky title'}>
 
+            <NatbarButton name='home' icon={<HomeIcon sx={{ height: 35, width: 35 }} />} onClick={navigateHome} />
             <NatbarButton name='profile' icon={<PersonIcon sx={{ height: 35, width: 35 }}/>} onClick={showProfile}/>
             
             <NatbarButton name='logout' icon={<LogoutIcon sx={{ height: 35, width: 35 }} />} onClick={handleLogout} />
+            
+            <NatbarButton name='campaigns' icon={<CampaignIcon sx={{ height: 35, width: 35 }} />} onClick={showCampaigns} />
+            
 
             <Typography
                 style={{
@@ -109,9 +121,9 @@ const Header = () => {
                 }}>Website name
             </Typography>
 
-            {!openMenu && <MenuIcon onClick={openMenuModal} className="menu-btn" />}
+            {/* {!openMenu && <MenuIcon onClick={openMenuModal} className="menu-btn" />}
 
-            <Menu menuBody={optionsListItems} close={closeMenuModal} openMenu={openMenu} />
+            <Menu menuBody={optionsListItems} close={closeMenuModal} openMenu={openMenu} /> */}
 
         </Box>
     )

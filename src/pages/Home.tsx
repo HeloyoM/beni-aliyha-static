@@ -7,11 +7,7 @@ import Campaign from '../components/Campaign';
 const Home: React.FC = () => {
   return (
     <React.Fragment>
-      <Box sx={{
-        position: 'fixed',
-        height: '100vh',
-        width: '100vw',
-      }}>
+      <Box>
 
         <Campaign />
 

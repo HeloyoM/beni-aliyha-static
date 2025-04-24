@@ -15,9 +15,8 @@ export const PUT = async <T>(url: string, body?: unknown) => {
 }
 
 export const GET = async <T>(url: string) => {
-	console.log(`${baseUrl}/${url}`)
 	const config = getRequestConfiguration();
-console.log({config})
+
 	return await axios.get<T>(`${baseUrl}/${url}`, config)
 }
 
