@@ -10,6 +10,7 @@ import './App.css';
 import UserProfile from './components/UserProfile';
 import WelcomeScreen from './components/WelcomScreen';
 import CampaignList from './components/CampaignList';
+import Messages from './components/Messages';
 
 const App: React.FC = () => {
   const [crrUser, setUser] = React.useState<any>(null);
@@ -51,6 +52,7 @@ const AppContent = () => {
         <Route path="/" element={<WelcomeScreen />} />
         <Route path="/home" element={<Home />} />
         <Route path="/campaings" element={<CampaignList />} />
+        <Route path="/messages" element={<Messages />} />
         <Route path="/profile" element={<UserProfile />} />
         <Route path="*" element={<NotFound />} />
       </Routes>

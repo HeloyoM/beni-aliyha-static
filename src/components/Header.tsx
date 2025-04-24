@@ -9,6 +9,7 @@ import { logout } from '../api/auth';
 import LogoutIcon from '@mui/icons-material/Logout';
 import CampaignIcon from '@mui/icons-material/Campaign';
 import HomeIcon from '@mui/icons-material/Home';
+import MailOutlineIcon from '@mui/icons-material/MailOutline';
 
 type Props = {
     name: string
@@ -85,6 +86,10 @@ const Header = () => {
     const navigateHome = () => {
         navigate('/home')
     }
+
+    const showMessages = () => {
+        navigate('/messages')
+    }
     const handleLogout = async () => {
         try {
             const response = await logout()
@@ -107,7 +112,10 @@ const Header = () => {
         <Box className={'sticky title'}>
 
             <NatbarButton name='home' icon={<HomeIcon sx={{ height: 35, width: 35 }} />} onClick={navigateHome} />
+            
             <NatbarButton name='profile' icon={<PersonIcon sx={{ height: 35, width: 35 }}/>} onClick={showProfile}/>
+            
+            <NatbarButton name='messages' icon={<MailOutlineIcon sx={{ height: 35, width: 35 }}/>} onClick={showMessages}/>
             
             <NatbarButton name='logout' icon={<LogoutIcon sx={{ height: 35, width: 35 }} />} onClick={handleLogout} />
             
