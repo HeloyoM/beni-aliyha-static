@@ -23,6 +23,16 @@ export const getCampaigns = async () => {
     }
 }
 
+export const getCampaignMembers = async (campaignId: string) => {
+    try {
+        const response = await GET(`${API}/${campaignId}`)
+
+        return response
+    } catch (error) {
+        throw new Error(`Failed to get campaign's members list`)
+    }
+}
+
 export const getCampaignTypes = async () => {
     try {
         const response = await GET(`${API}/types`)
