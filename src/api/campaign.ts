@@ -1,5 +1,6 @@
 import { POST, GET } from './api-req'
 import { CampaignDto } from './dto/Campaign.dto'
+import { JoinCampaignDto } from './dto/JoinCampaign.dto'
 
 const API = 'campaign'
 
@@ -43,9 +44,9 @@ export const getCampaignTypes = async () => {
     }
 }
 
-export const joinCampaign = async (campaignId: string) => {
+export const joinCampaign = async (payload: JoinCampaignDto) => {
     try {
-        const response = await POST(`${API}/${campaignId}/members`, {})
+        const response = await POST(`${API}/${payload.campaignId}/members`, payload)
 
         return response
     } catch (error) {

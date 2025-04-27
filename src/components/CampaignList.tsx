@@ -1,22 +1,27 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { Table, TableBody, TableHead, TableRow, TableCell, Paper, Typography, CircularProgress, Alert, Button, Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material';
+import { Table, TableBody, TableHead, TableRow, TableCell, Paper, Typography, CircularProgress, Alert, Tooltip, IconButton, Button, Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material';
 import { TextField, Grid, Select, MenuItem, FormControl, InputLabel, FormHelperText, Divider } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { format } from 'date-fns';
 import { useNavigate } from 'react-router-dom';
 import { getCampaignMembers, getCampaigns, joinCampaign } from '../api/campaign';
 import AppUserContext from '../context/AppUserContext';
+import { MessageCircle } from 'lucide-react';
 
 // Styled components for enhanced UI
 const StyledPaper = styled(Paper)(({ theme }) => ({
-    padding: theme.spacing(3),
+    padding: theme.spacing(2), // Reduced padding for mobile
     borderRadius: '12px',
     boxShadow: theme.shadows[3],
-    marginTop: theme.spacing(4),
+    marginTop: theme.spacing(2), // Reduced margin for mobile
     transition: 'transform 0.2s, box-shadow 0.2s',
     '&:hover': {
         transform: 'translateY(-4px)',
         boxShadow: theme.shadows[5],
+    },
+    [theme.breakpoints.up('sm')]: {  // Apply larger padding and margin for larger screens
+        padding: theme.spacing(3),
+        marginTop: theme.spacing(4),
     },
 }));
 
@@ -25,6 +30,7 @@ const StyledTableHeadCell = styled(TableCell)(({ theme }) => ({
     color: theme.palette.text.secondary,
     backgroundColor: theme.palette.background.default,
     borderBottom: `1px solid ${theme.palette.divider}`,
+
 }));
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
@@ -42,6 +48,8 @@ const CampaignList = () => {
     const [joinCampaignSuccess, setJoinCampaignSuccess] = useState(false); // Track join campaign success
     const [participationType, setParticipationType] = useState('');  // State for participation type
     const [openJoinDialog, setOpenJoinDialog] = useState(false); // State to open Join Campaign Dialog.
+    const [joinComment, setJoinComment] = useState('');
+    const [openCommentDialog, setOpenCommentDialog] = useState<{ open: boolean; comment: string }>({ open: false, comment: '' }); // State for comment dialog
 
     const navigate = useNavigate();
     const token = localStorage.getItem('token'); // Get token from localStorage
@@ -122,7 +130,11 @@ const CampaignList = () => {
             // Replace 'someCampaignId' with the actual campaign ID.  In a real app,
             // you'd get this from the route, a selected campaign, or wherever
             // the user is indicating which campaign they want to join.
-            const response = await joinCampaign(selectedCampaign.id);
+            const payload = {
+                campaignId: selectedCampaign.id,
+                joinComment
+            }
+            const response = await joinCampaign(payload);
 
             const data = response.data as any;
 
@@ -131,6 +143,13 @@ const CampaignList = () => {
             }
             setJoinCampaignSuccess(true);
             setOpenJoinDialog(false); // Close dialog on success
+            setJoinComment(''); // Clear the comment
+
+            // Refresh the members list to show the updated information
+            const membersResponse = await getCampaignMembers(selectedCampaign.id);
+            const membersData = membersResponse.data as any;
+
+            setMembers(membersData);
         } catch (err: any) {
             setError(err.message || 'An error occurred while joining the campaign.');
         } finally {
@@ -214,18 +233,41 @@ const CampaignList = () => {
                                     <StyledTableHeadCell>name</StyledTableHeadCell>
                                     <StyledTableHeadCell>phone number</StyledTableHeadCell>
                                     <StyledTableHeadCell>email</StyledTableHeadCell>
+                                    <StyledTableHeadCell>Comment</StyledTableHeadCell>
                                 </TableRow>
                             </TableHead>
                             <TableBody>
-                                {members.map((member: any) => (
-                                    <TableRow key={member.member_id}>
-                                        <StyledTableCell>{format(new Date(member.joined_date), 'PPPpp')}</StyledTableCell>
-                                        <StyledTableCell>{member.status}</StyledTableCell>
-                                        <StyledTableCell>{`${member.first_name + ' ' + member.last_name}`}</StyledTableCell>
-                                        <StyledTableCell>{member.phone}</StyledTableCell>
-                                        <StyledTableCell>{member.email}</StyledTableCell>
-                                    </TableRow>
-                                ))}
+                                {members.map((member: any) => {
+                                    const hasComment = member.comment && member.comment.length > 0;
+                                    return (
+
+                                        <TableRow key={member.member_id}>
+                                            <StyledTableCell>{format(new Date(member.joined_date), 'PPPpp')}</StyledTableCell>
+                                            <StyledTableCell>{member.status}</StyledTableCell>
+                                            <StyledTableCell>{`${member.first_name + ' ' + member.last_name}`}</StyledTableCell>
+                                            <StyledTableCell>{member.phone}</StyledTableCell>
+                                            <StyledTableCell>{member.email}</StyledTableCell>
+                                            <StyledTableCell>
+                                                {hasComment ? (
+                                                    <>
+                                                        <Tooltip title={member.comment}>
+                                                            <IconButton size="small" onClick={() => {
+                                                                setOpenCommentDialog({ open: true, comment: member.comment });
+                                                            }}>
+                                                                <MessageCircle size={16} color="#4caf50" /> {/* Use a message icon */}
+                                                            </IconButton>
+                                                        </Tooltip>
+
+                                                    </>
+                                                ) : (
+                                                    <Typography variant="caption" color="textSecondary">
+                                                        No comment
+                                                    </Typography>
+                                                )}
+                                            </StyledTableCell>
+                                        </TableRow>
+                                    )
+                                })}
 
                             </TableBody>
                             {members.find(m => m.member_id === user.id) ? null : <Button
@@ -274,6 +316,16 @@ const CampaignList = () => {
                             <MenuItem value="volunteer">Volunteer</MenuItem>
                         </Select>
                     </FormControl>
+                    <TextField
+                        fullWidth
+                        id="join-comment"
+                        label="Additional Information (Optional)"
+                        multiline
+                        rows={3}
+                        value={joinComment}
+                        onChange={(e) => setJoinComment(e.target.value)}
+                        margin="normal"
+                    />
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={() => setOpenJoinDialog(false)}>Cancel</Button>
