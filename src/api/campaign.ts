@@ -43,3 +43,13 @@ export const getCampaignTypes = async () => {
     }
 }
 
+export const joinCampaign = async (campaignId: string) => {
+    try {
+        const response = await POST(`${API}/${campaignId}/members`, {})
+
+        return response
+    } catch (error) {
+        throw new Error('Failed to join to campaign')
+    }
+}
+

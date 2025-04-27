@@ -11,6 +11,7 @@ import UserProfile from './components/UserProfile';
 import WelcomeScreen from './components/WelcomScreen';
 import CampaignList from './components/CampaignList';
 import Messages from './components/Messages';
+import { profile } from './api/auth';
 
 const App: React.FC = () => {
   const [crrUser, setUser] = React.useState<any>(null);
@@ -19,6 +20,20 @@ const App: React.FC = () => {
   const updateUserContext = (user: any) => { setUser(user) }
   const updateServerMsgContext = (msg: any) => { setServerMsg(msg) }
 
+  const token = localStorage.getItem('token')
+
+  useEffect(() => {
+    if (token) {
+      const fetchUserProfile = async() => {
+        const response = await profile();
+
+        const data = response.data as any;
+        updateUserContext(data.user)
+      }
+      
+      fetchUserProfile()
+    }
+  }, [])
   return (
     <AppServerMsgContext.Provider value={{ updateServerMsgContext, serverMsg }}>
       <AppUserContext.Provider value={{ updateUserContext, user: crrUser }}>
@@ -36,9 +51,6 @@ const AppContent = () => {
   const location = useLocation(); // Use useLocation to get the current route
   // Determine whether to show the Header and ScreenWrapper
   const shouldShowWrapper = location.pathname !== '/';
-
-  useEffect(() => {
-  }, [location.pathname])
 
   return (
     <>

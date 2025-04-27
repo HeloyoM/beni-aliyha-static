@@ -1,9 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { Table, TableBody, TableHead, TableRow, TableCell, Paper, Typography, CircularProgress, Alert, Button, Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material';
+import { TextField, Grid, Select, MenuItem, FormControl, InputLabel, FormHelperText, Divider } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { format } from 'date-fns';
 import { useNavigate } from 'react-router-dom';
-import { getCampaignMembers, getCampaigns } from '../api/campaign';
+import { getCampaignMembers, getCampaigns, joinCampaign } from '../api/campaign';
+import AppUserContext from '../context/AppUserContext';
 
 // Styled components for enhanced UI
 const StyledPaper = styled(Paper)(({ theme }) => ({
@@ -36,9 +38,15 @@ const CampaignList = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [members, setMembers] = useState<any[]>([]); // State to store members
+    const [joinCampaignLoading, setJoinCampaignLoading] = useState(false); // Track join campaign loading
+    const [joinCampaignSuccess, setJoinCampaignSuccess] = useState(false); // Track join campaign success
+    const [participationType, setParticipationType] = useState('');  // State for participation type
+    const [openJoinDialog, setOpenJoinDialog] = useState(false); // State to open Join Campaign Dialog.
 
     const navigate = useNavigate();
     const token = localStorage.getItem('token'); // Get token from localStorage
+
+    const { user } = useContext(AppUserContext);
 
     useEffect(() => {
         const fetchCampaigns = async () => {
@@ -101,6 +109,34 @@ const CampaignList = () => {
         }
     }, [openModal, selectedCampaign]);
 
+
+    const handleJoinCampaign = async () => {
+        if (!participationType) {
+            setError('Please select a participation type.');
+            return;
+        }
+
+        setJoinCampaignLoading(true);
+        setError(null);
+        try {
+            // Replace 'someCampaignId' with the actual campaign ID.  In a real app,
+            // you'd get this from the route, a selected campaign, or wherever
+            // the user is indicating which campaign they want to join.
+            const response = await joinCampaign(selectedCampaign.id);
+
+            const data = response.data as any;
+
+            if (response.status < 200 || response.status >= 300) {
+                throw new Error(data?.message || 'Failed to join campaign');
+            }
+            setJoinCampaignSuccess(true);
+            setOpenJoinDialog(false); // Close dialog on success
+        } catch (err: any) {
+            setError(err.message || 'An error occurred while joining the campaign.');
+        } finally {
+            setJoinCampaignLoading(false);
+        }
+    };
     if (loading) {
         return (
             <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '200px' }}>
@@ -175,27 +211,80 @@ const CampaignList = () => {
                                 <TableRow>
                                     <StyledTableHeadCell>Joined At</StyledTableHeadCell>
                                     <StyledTableHeadCell>Status</StyledTableHeadCell>
+                                    <StyledTableHeadCell>name</StyledTableHeadCell>
+                                    <StyledTableHeadCell>phone number</StyledTableHeadCell>
+                                    <StyledTableHeadCell>email</StyledTableHeadCell>
                                 </TableRow>
                             </TableHead>
                             <TableBody>
                                 {members.map((member: any) => (
-                                    <TableRow key={member.id}>
-                                        {/* <StyledTableCell>{member.user_id}</StyledTableCell> */}
-                                        {/* <StyledTableCell>{member.participation_type}</StyledTableCell> */}
+                                    <TableRow key={member.member_id}>
                                         <StyledTableCell>{format(new Date(member.joined_date), 'PPPpp')}</StyledTableCell>
                                         <StyledTableCell>{member.status}</StyledTableCell>
+                                        <StyledTableCell>{`${member.first_name + ' ' + member.last_name}`}</StyledTableCell>
+                                        <StyledTableCell>{member.phone}</StyledTableCell>
+                                        <StyledTableCell>{member.email}</StyledTableCell>
                                     </TableRow>
                                 ))}
+
                             </TableBody>
+                            {members.find(m => m.member_id === user.id) ? null : <Button
+                                variant="contained"
+                                color="primary"
+                                onClick={() => setOpenJoinDialog(true)} // Open Join Campaign Dialog
+                                style={{ marginTop: 20, backgroundColor: '#4caf50', color: '#fff', borderRadius: 8 }}
+                            >
+                                Join a Campaign
+                            </Button>}
                         </Table>
                     ) : (
                         <Typography variant="body1" color="text.secondary" align="center">
-                            No members found for this campaign.
+                            <Typography>No members found for this campaign.</Typography>
+                            <Button
+                                variant="contained"
+                                color="primary"
+                                onClick={() => setOpenJoinDialog(true)} // Open Join Campaign Dialog
+                                style={{ marginTop: 20, backgroundColor: '#4caf50', color: '#fff', borderRadius: 8 }}
+                            >
+                                Join a Campaign
+                            </Button>
                         </Typography>
                     )}
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={handleCloseModal}>Close</Button>
+                </DialogActions>
+            </Dialog>
+            {/* Join Campaign Dialog */}
+            <Dialog open={openJoinDialog} onClose={() => setOpenJoinDialog(false)}>
+                <DialogTitle>Join a Campaign</DialogTitle>
+                <DialogContent>
+                    {error && <Alert severity="error">{error}</Alert>}
+                    {joinCampaignSuccess && <Alert severity="success">Successfully joined the campaign!</Alert>}
+                    <FormControl fullWidth margin="normal">
+                        <InputLabel id="participation-type-label">Participation Type</InputLabel>
+                        <Select
+                            labelId="participation-type-label"
+                            id="participation-type"
+                            value={participationType}
+                            onChange={(e) => setParticipationType(e.target.value as string)}
+                            label="Participation Type"
+                        >
+                            <MenuItem value="participant">Participant</MenuItem>
+                            <MenuItem value="volunteer">Volunteer</MenuItem>
+                        </Select>
+                    </FormControl>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={() => setOpenJoinDialog(false)}>Cancel</Button>
+                    <Button
+                        onClick={handleJoinCampaign}
+                        disabled={joinCampaignLoading || !participationType}
+                        variant="contained"
+                        color="primary"
+                    >
+                        {joinCampaignLoading ? <CircularProgress size={20} /> : 'Join'}
+                    </Button>
                 </DialogActions>
             </Dialog>
         </>
