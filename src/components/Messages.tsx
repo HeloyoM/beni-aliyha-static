@@ -3,9 +3,10 @@ import React, { useState, useEffect, useContext } from 'react';
 import { Avatar, Box, Typography, CircularProgress, Alert, TextField, Button } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { format, formatDistanceToNow } from 'date-fns';
-import { getMessages, replyToMessage } from '../api/message';
+import { getMessages, postMessage, replyToMessage } from '../api/message';
 import AppUserContext from '../context/AppUserContext';
 import { MessageCircle, Send } from 'lucide-react';
+import { io, Socket } from 'socket.io-client';
 
 // Styled components for enhanced UI
 const MessageContainer = styled(Box)(({ theme }) => ({
@@ -83,14 +84,34 @@ const ReplyForm = styled(Box)(({ theme }) => ({
     alignItems: 'flex-start', // Align items to the start (top in this case)
 }));
 
+const NewMessageForm = styled(Box)(({ theme }) => ({
+    marginTop: theme.spacing(4),
+    padding: theme.spacing(2),
+    border: `1px solid ${theme.palette.divider}`,
+    borderRadius: '12px',
+    backgroundColor: theme.palette.background.paper,
+    boxShadow: theme.shadows[1]
+}))
 const Messages = () => {
     const [messages, setMessages] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [replyText, setReplyText] = useState<{ [messageId: string]: string }>({}); // Store reply text for each message
-    // const [userEmail, setUserEmail] = useState<string>('');
+    const [newMessageDescription, setNewMessageDescription] = useState('');
+    const [socket, setSocket] = useState<Socket | null>(null);
 
     const { user } = useContext(AppUserContext)
+
+    useEffect(() => {
+        // Initialize Socket.IO connection
+        const newSocket = io(); // Connect to the server at the same origin
+        setSocket(newSocket);
+
+        // Clean up the socket connection when the component unmounts
+        return () => {
+            newSocket.disconnect();
+        };
+    }, []);
 
     const fetchMessages = async () => {
         try {
@@ -110,17 +131,6 @@ const Messages = () => {
             setMessages(data);
             setLoading(false);
 
-            // Fetch user email
-            // const userResponse = await fetch('/user', {  //  Endpoint to get user data
-            //     headers: {
-            //         Authorization: `Bearer ${token}`,
-            //     },
-            // });
-            // if (userResponse.ok) {
-            //     const userData = await userResponse.json();
-            //     setUserEmail(userData.email)
-            // }
-
         } catch (err: any) {
             setError(err.message || 'An error occurred while fetching messages.');
             setLoading(false);
@@ -130,6 +140,28 @@ const Messages = () => {
     useEffect(() => {
         fetchMessages();
     }, []);
+
+    useEffect(() => {
+        if (!socket) return;
+        socket.on('newMessage', (newMessage: any) => {
+            setMessages(prevMessages => [newMessage, ...prevMessages]);
+        });
+
+        // Listen for new replies
+        socket.on('newReply', (payload: any) => {
+            const { messageId, reply } = payload;
+            setMessages(prevMessages =>
+                prevMessages.map(msg =>
+                    msg.message_id === messageId ? { ...msg, replies: [...(msg.replies || []), reply] } : msg
+                )
+            );
+        });
+
+        return () => {
+            socket.off('newMessage');
+            socket.off('newReply');
+        };
+    }, [socket]);
 
     const handleReplyChange = (messageId: string, text: string) => {
         setReplyText(prev => ({
@@ -151,17 +183,50 @@ const Messages = () => {
             }
             const response = await replyToMessage(payload)
 
-            const data = response.data as any
             if (response.status < 200) {
                 throw new Error(`Failed to send reply: ${response.status}`);
             }
 
-            // Refresh messages after sending a reply - move it later into server code! 
-            await fetchMessages();
-            setReplyText(prev => ({ ...prev, [messageId]: '' }));
+            // Emit the reply to the server using Socket.IO
+            if (socket) {
+                socket.emit('sendReply', { messageId, reply: response.data });
+            }
 
+            setMessages(prevMessages =>
+                prevMessages.map(msg =>
+                    msg.message_id === messageId ? { ...msg, replies: [...(msg.replies || []), response.data] } : msg
+                )
+            );
+            setReplyText(prev => ({ ...prev, [messageId]: '' }));
         } catch (err: any) {
             setError(err.message || 'An error occurred while sending the reply.');
+        }
+    };
+
+    const handleSendMessage = async () => {
+        try {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                // Redirect
+                return;
+            }
+
+            const response = await postMessage({ description: newMessageDescription })
+
+            const data = response.data as any;
+            if (response.status < 200) {
+                throw new Error(`Failed to send message: ${response.status}`);
+            }
+
+            // Emit the new message to the server using Socket.IO
+            if (socket) {
+                socket.emit('sendMessage', data.newMessage);
+            }
+
+            setMessages(prevMessages => [data.newMessage, ...prevMessages ]);
+            setNewMessageDescription('');
+        } catch (err: any) {
+            setError(err.message || 'An error occurred while sending the message.');
         }
     };
 
@@ -192,14 +257,37 @@ const Messages = () => {
     }
 
     return (
-        <Box sx={{marginTop: '2%'}}>
+        <Box sx={{ marginTop: '2%' }}>
             <Typography variant="h4" component="h2" gutterBottom style={{ color: '#1a5235' }}>
                 Messages
             </Typography>
+
+            <NewMessageForm>
+                <Typography variant="subtitle1" style={{ fontWeight: 'bold', marginBottom: '0.5rem' }}>Send New Message</Typography>
+                <TextField
+                    fullWidth
+                    placeholder="Your Message"
+                    value={newMessageDescription}
+                    onChange={(e) => setNewMessageDescription(e.target.value)}
+                    variant="outlined"
+                    size="small"
+                    multiline
+                />
+                <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={handleSendMessage}
+                    disabled={!newMessageDescription.trim()}
+                    style={{ marginTop: '1rem' }}
+                >
+                    <Send size={16} /> Send Message
+                </Button>
+            </NewMessageForm>
+
             {messages.map((message: any) => (
                 <MessageContainer key={message.message_id}>
                     <MessageHeader>
-                        <SenderAvatar>{message.sender_email[0]}</SenderAvatar>
+                        <SenderAvatar>{message.sender_email}</SenderAvatar>
                         <Typography variant="subtitle1" style={{ fontWeight: 'bold' }}>
                             {message.sender_email}
                         </Typography>

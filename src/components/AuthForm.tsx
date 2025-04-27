@@ -91,7 +91,7 @@ const AuthForm = () => {
         validationSchema: isLogin ? loginValidationSchema : validationSchema,
         onSubmit: handleSubmit,
     });
-
+console.log({isLogin})
     return (
         <Grid container justifyContent="center" alignItems="center" style={{ minHeight: '50vh', backgroundColor: 'inherit' }}>
             <Grid /*item xs={12} sm={8} md={6} lg={4} */>
