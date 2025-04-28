@@ -158,7 +158,6 @@ const Campaign = () => {
                                 onChange={formik.handleChange}
                                 onBlur={formik.handleBlur}
                                 style={{ borderRadius: 8, borderColor: formik.touched.type && formik.errors.type ? '#d32f2f' : '#81c784' }}
-
                             >
                                 {campaignTypes.map((option) => (
                                     <MenuItem key={option.id} value={option.id}>
