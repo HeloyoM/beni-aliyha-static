@@ -1,8 +1,9 @@
-import React, { useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
+import React, { useCallback, useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route, useLocation, useNavigate } from 'react-router-dom';
 import { Typography } from '@mui/material';
 import Home from './pages/Home';
 import Header from './components/Header';
+import { jwtDecode } from 'jwt-decode'; // Import jwt-decode
 import ScreenWrapper from './components/ScreenWrapper';
 import AppUserContext from './context/AppUserContext';
 import AppServerMsgContext from "./context/AppServerMsg";
@@ -13,6 +14,21 @@ import CampaignList from './components/CampaignList';
 import Messages from './components/Messages';
 import { profile } from './api/auth';
 
+// Helper function to check token expiration
+const isTokenExpired = (token: string | null) => {
+  if (!token) return true;
+  try {
+    const decoded: any = jwtDecode(token);
+    console.log({ decoded })
+    if (!decoded.exp) return true;
+    const currentTime = Date.now() / 1000;
+    return decoded.exp < currentTime;
+  } catch (error) {
+    console.error("Error decoding token:", error);
+    return true;
+  }
+};
+
 const App: React.FC = () => {
   const [crrUser, setUser] = React.useState<any>(null);
   const [serverMsg, setServerMsg] = React.useState('');
@@ -20,25 +36,11 @@ const App: React.FC = () => {
   const updateUserContext = (user: any) => { setUser(user) }
   const updateServerMsgContext = (msg: any) => { setServerMsg(msg) }
 
-  const token = localStorage.getItem('token')
-
-  useEffect(() => {
-    if (token) {
-      const fetchUserProfile = async() => {
-        const response = await profile();
-
-        const data = response.data as any;
-        updateUserContext(data.user)
-      }
-      
-      fetchUserProfile()
-    }
-  }, [])
   return (
     <AppServerMsgContext.Provider value={{ updateServerMsgContext, serverMsg }}>
       <AppUserContext.Provider value={{ updateUserContext, user: crrUser }}>
         <Router>
-          <AppContent />
+          <AppContent setUser={setUser} />
         </Router>
       </AppUserContext.Provider>
     </AppServerMsgContext.Provider>
@@ -47,10 +49,48 @@ const App: React.FC = () => {
 
 export default App;
 
-const AppContent = () => {
+type Props = {
+  setUser: React.Dispatch<any>
+}
+const AppContent = ({ setUser }: Props) => {
+  const navigate = useNavigate();
   const location = useLocation(); // Use useLocation to get the current route
   // Determine whether to show the Header and ScreenWrapper
   const shouldShowWrapper = location.pathname !== '/';
+
+  const token = localStorage.getItem('token')
+
+  // Function to handle logout
+  const handleLogout = useCallback(() => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('refreshToken');
+    setUser(null);
+    navigate('/');
+  }, [navigate]);
+
+  useEffect(() => {
+    if (token && !isTokenExpired(token)) {
+      console.log(token, isTokenExpired(token))
+      try {
+        const fetchUserProfile = async () => {
+          const response = await profile();
+
+          const data = response.data as any;
+          setUser(data.user)
+        }
+
+        fetchUserProfile();
+
+      } catch (error) {
+        console.error("Error decoding token on initial load:", error);
+        handleLogout();
+        return;
+      }
+    } else {
+      handleLogout();
+    }
+
+  }, [handleLogout]);
 
   return (
     <>

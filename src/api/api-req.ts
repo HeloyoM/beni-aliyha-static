@@ -36,7 +36,6 @@ export const DELETE = async <T>(url: string) => {
 const getRequestConfiguration = () => {
 	// const timeout = 60_000; // equal to 1 minute
 	const token = localStorage.getItem('token');
-	console.log({ token })
 	// const token = tokenAccess ? 'Bearer tokenAccess' : null
 	// const { token: cancelToken } = axios.CancelToken.source()
 	const headers = token ? { Authorization: `Bearer ${token}` } : { Authorization: null }
