@@ -187,11 +187,11 @@ const Home: React.FC = () => {
   return (
     <div style={{ padding: '20px' }}>
 
-      <Typography variant="h4" gutterBottom style={{ marginTop: '20px' }}>
+      {/* <Typography variant="h4" gutterBottom style={{ marginTop: '20px' }}>
         Home
-      </Typography>
+      </Typography> */}
 
-      <Grid container spacing={3}>
+      <Grid container spacing={3} sx={{mt: 15}}>
 
         <Grid size={6}>
           <DashboardSection >
