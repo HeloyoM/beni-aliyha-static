@@ -17,3 +17,13 @@ export const insertSchedule = async (schedule: CreateScheduleDto) => {
         throw new Error('Failed to create new schedule')
     }
 }
+
+export const getSchedules = async () => {
+    try {
+        const response = await GET(API)
+
+        return response
+    } catch (error) {
+        throw new Error('Failed to fetch shule schedules')
+    }
+}

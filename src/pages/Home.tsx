@@ -7,7 +7,7 @@ import { CardContent, Typography, Grid, Paper, styled } from '@mui/material';
 import { Cake, Clock, Tv, Calendar as CalendarIcon, List } from 'lucide-react';
 import { HDate, HebrewCalendar, Location } from '@hebcal/core';
 import AppUserContext from '../context/AppUserContext';
-import { insertSchedule } from '../api/schedule';
+import { getSchedules, insertSchedule } from '../api/schedule';
 
 const now = new HDate();
 const year = now.getFullYear();
@@ -74,9 +74,109 @@ const Home: React.FC = () => {
   const shacharisRef = useRef<HTMLInputElement | any>(null);
   const maarivRef = useRef<HTMLInputElement | any>(null);
 
+  // // Fetch initial data and set states
+  // useEffect(() => {
+  //   const year = new HDate().getFullYear();
+  //   const events = HebrewCalendar.calendar({
+  //     year: year,
+  //     isHebrewYear: true,
+  //     il: true,
+  //     sedrot: true,
+  //     candlelighting: true,
+  //     location: Location.lookup('Jerusalem')
+  //   });
+
+  //   const candles = events
+  //     .filter(ev => ev.getCategories().includes('candles') && ev.getDate().greg() >= today)
+  //     .map(ev => {
+  //       const hdate = ev.getDate();
+  //       return {
+  //         date: hdate.greg().toLocaleDateString(),
+  //         hebrewDate: hdate.renderGematriya(),
+  //         event: ev.render('he'),
+  //         emoji: ev.getEmoji()
+  //       };
+  //     });
+  //   setCandlelighting(candles);
+
+  //   const parashot: ParashaType[] = events
+  //     .filter(ev => ev.getCategories().includes('parashat') && ev.getDate().greg() >= today)
+  //     .map(ev => {
+  //       const hdate = ev.getDate();
+  //       return {
+  //         date: hdate.greg().toLocaleDateString(),
+  //         hebrewDate: hdate.renderGematriya(),
+  //         event: ev.render('he'),
+  //         emoji: ev.getEmoji()
+  //       };
+  //     });
+
+  //   setSedarot(parashot);
+
+  //   setSelectedParasha(parashot[0] || { date: undefined, event: '', hebrewDate: '' });
+
+  //   // Fetch schedule data from the database
+  //   const fetchScheduleData = async () => {
+  //     try {
+  //       const response = await getSchedules();
+
+  //       const data = response.data as ScheduleEntry[];
+
+  //       // Merge fetched data with initial data, prioritizing fetched data
+  //       const mergedData = parashot.map((parasha) => {
+  //         const dbEntry = data.find((item) => item.greg_date === parasha.date);
+  //         return dbEntry
+  //           ? {
+  //             id: dbEntry.id,
+  //             greg_date: dbEntry.greg_date,
+  //             hebrew_date: dbEntry.hebrew_date,
+  //             mincha_time: dbEntry.mincha_time || '19:30', // Default if null
+  //             shacharis_time: dbEntry.shacharis_time || '07:00', // Default if null
+  //             maariv_time: dbEntry.maariv_time || '21:00',   // Default if null
+  //           }
+  //           : { // Keep the initial data if not found in db
+  //             id: 0, // Set a default ID for non-db entries
+  //             greg_date: parasha.date!,
+  //             hebrew_date: parasha.hebrewDate!,
+  //             mincha_time: '19:30', // Or whatever your default is
+  //             shacharis_time: '07:00',
+  //             maariv_time: '21:00',
+  //           };
+  //       });
+  //       setScheduleData(mergedData);
+
+  //     } catch (error: any) {
+  //       console.error("Error fetching schedule data:", error);
+  //       // Handle error (e.g., show a message to the user)
+  //       setScheduleData(parashot.map((parasha) => ({
+  //         id: 0, // Set default ID
+  //         greg_date: parasha.date!,
+  //         hebrew_date: parasha.hebrewDate!,
+  //         mincha_time: '19:30',
+  //         shacharis_time: '07:00',
+  //         maariv_time: '21:00'
+  //       })))
+  //     }
+  //   };
+
+  //   fetchScheduleData()
+  //   // // Initialize schedule data (replace with your actual data fetching)
+  //   // const initialScheduleData: ScheduleEntry[] = [{
+  //   //   id: 1,
+  //   //   greg_date: parashot[0].date!,
+  //   //   hebrew_date: parashot[0].hebrewDate!,
+  //   //   mincha_time: '19:30',
+  //   //   shacharis_time: '07:00',
+  //   //   maariv_time: '21:00'
+  //   // }];
+
+  //   // setScheduleData(initialScheduleData);
+  // }, [today]);
+
+
   // Fetch initial data and set states
   useEffect(() => {
-    const year = new HDate().getFullYear();
+
     const events = HebrewCalendar.calendar({
       year: year,
       isHebrewYear: true,
@@ -88,44 +188,38 @@ const Home: React.FC = () => {
 
     const candles = events
       .filter(ev => ev.getCategories().includes('candles') && ev.getDate().greg() >= today)
-      .map(ev => {
-        const hdate = ev.getDate();
-        return {
-          date: hdate.greg().toLocaleDateString(),
-          hebrewDate: hdate.renderGematriya(),
-          event: ev.render('he'),
-          emoji: ev.getEmoji()
-        };
-      });
+      .map(ev => ({
+        date: ev.getDate().greg().toLocaleDateString(),
+        hebrewDate: ev.getDate().renderGematriya(),
+        event: ev.render('he'),
+        emoji: ev.getEmoji()
+      }));
     setCandlelighting(candles);
 
     const parashot: ParashaType[] = events
       .filter(ev => ev.getCategories().includes('parashat') && ev.getDate().greg() >= today)
-      .map(ev => {
-        const hdate = ev.getDate();
-        return {
-          date: hdate.greg().toLocaleDateString(),
-          hebrewDate: hdate.renderGematriya(),
-          event: ev.render('he'),
-          emoji: ev.getEmoji()
-        };
-      });
+      .map(ev => ({
+        date: ev.getDate().greg().toLocaleDateString(),
+        hebrewDate: ev.getDate().renderGematriya(),
+        event: ev.render('he'),
+        emoji: ev.getEmoji()
+      }));
 
     setSedarot(parashot);
-
     setSelectedParasha(parashot[0] || { date: undefined, event: '', hebrewDate: '' });
 
-    // Initialize schedule data (replace with your actual data fetching)
-    const initialScheduleData: ScheduleEntry[] = [{
-      id: 1,
-      greg_date: parashot[0].date!,
-      hebrew_date: parashot[0].hebrewDate!,
-      mincha_time: '19:30',
-      shacharis_time: '07:00',
-      maariv_time: '21:00'
-    }];
+    const fetchScheduleData = async () => {
+      try {
+        const response = await getSchedules();
+        const data = response.data as any;
+        setScheduleData(data);
+      } catch (error: any) {
+        console.error("Error fetching schedule data:", error);
+        setScheduleData([]);
+      }
+    };
+    fetchScheduleData();
 
-    setScheduleData(initialScheduleData);
   }, [today]);
 
   console.log({ sedarot })
@@ -189,6 +283,20 @@ const Home: React.FC = () => {
 
   const canEdit = user && (user.level === 100 || user.level === 101);
 
+  // Function to get the schedule for a given date
+  const getScheduleForDate = (date: string) => {
+    return scheduleData.find(item => item.greg_date === date) || {
+      id: 0,
+      greg_date: date,
+      hebrew_date: '',
+      mincha_time: null,
+      shacharis_time: null,
+      maariv_time: null
+    };
+  };
+
+  const selectedSchedule = selectedParasha ? getScheduleForDate(selectedParasha.date || '') : null;
+
   return (
     <div style={{ padding: '20px' }}>
 
@@ -209,7 +317,7 @@ const Home: React.FC = () => {
         </Grid>
 
 
-        <Grid size={6}>
+        {/* <Grid size={6}>
           <DashboardSection style={{ backgroundColor: '#e0f7fa' }}>
             {candlelighting.length &&
               <Typography sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
@@ -313,6 +421,126 @@ const Home: React.FC = () => {
               </div>
             </CardContent>
           </DashboardSection>
+        </Grid> */}
+
+        <Grid size={6}>
+          <DashboardSection style={{ backgroundColor: '#e0f7fa' }}>
+            {candlelighting.length && (
+              <Typography sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
+                Candle Lighting:
+                <Typography fontWeight="bold"> {candlelighting[0].event}</Typography>
+                {candlelighting[0].emoji}
+              </Typography>
+            )}
+            {sedarot.length && (
+              <Typography sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
+                Parashat:
+                <Typography fontWeight="bold"> {sedarot[0].event}</Typography>
+              </Typography>
+            )}
+            {user && user.level === 100 && selectedParasha && (
+              <FormControl fullWidth>
+                <InputLabel id="parasha-select-label">Parasha</InputLabel>
+                <Select
+                  labelId="parasha-select-label"
+                  id="parasha-select"
+                  name="parasha"
+                  defaultValue={sedarot[0].event}
+                  value={selectedParasha.event}
+                  onChange={(e) => handleSelectedParash(e.target.value)}
+                >
+                  {sedarot.map((option) => (
+                    <MenuItem key={option.event} value={option.event}>
+                      {option.event}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            )}
+            <SectionTitle fontWeight="bold"><CalendarIcon size={20} />זמני התפילות</SectionTitle>
+            <CardContent sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
+              {selectedSchedule && (
+                <div>
+                  <Typography variant="body2">
+                    Mincha:
+                    {canEdit ? (
+                      <input
+                        type="text"
+                        style={{
+                          width: '50px',
+                          marginLeft: '8px',
+                          textAlign: 'center',
+                          border: 'none',
+                          borderBottom: '1px solid #000',
+                          outline: 'none',
+                        }}
+                        name="mincha_time"
+                        value={editedData.mincha_time || selectedSchedule.mincha_time || ''}
+                        onChange={handleInputChange}
+
+                      />
+                    ) : (
+                      <span style={{ marginLeft: '8px' }}>{selectedSchedule.mincha_time || 'N/A'}</span>
+                    )}
+                  </Typography>
+                  <Typography variant="body2">
+                    Shacharis:
+                    {canEdit ? (
+                      <input
+                        type="text"
+                        style={{
+                          width: '50px',
+                          marginLeft: '8px',
+                          textAlign: 'center',
+                          border: 'none',
+                          borderBottom: '1px solid #000',
+                          outline: 'none',
+                        }}
+                        name="shacharis_time"
+                        value={editedData.shacharis_time || selectedSchedule.shacharis_time || ''}
+                        onChange={handleInputChange}
+
+                      />
+                    ) : (
+                      <span style={{ marginLeft: '8px' }}>{selectedSchedule.shacharis_time || 'N/A'}</span>
+                    )}
+                  </Typography>
+                  <Typography variant="body2">
+                    Maariv:
+                    {canEdit ? (
+                      <input
+                        type="text"
+                        style={{
+                          width: '50px',
+                          marginLeft: '8px',
+                          textAlign: 'center',
+                          border: 'none',
+                          borderBottom: '1px solid #000',
+                          outline: 'none',
+                        }}
+                        name="maariv_time"
+                        value={editedData.maariv_time || selectedSchedule.maariv_time || ''}
+                        onChange={handleInputChange}
+                      />
+                    ) : (
+                      <span style={{ marginLeft: '8px' }}>{selectedSchedule.maariv_time || 'N/A'}</span>
+                    )}
+                  </Typography>
+                  {canEdit && (
+                    <Typography variant="body2" style={{ marginTop: 16, cursor: 'pointer' }} onClick={() => {
+                      handleEdit(selectedSchedule);
+                      setIsEditDialogOpen(true);
+                    }}>
+                      Click to edit
+                    </Typography>
+                  )}
+                  {!canEdit && (<Typography variant="body2" style={{ marginTop: 16 }}>
+                    Display upcoming events, appointments, etc.
+                  </Typography>)}
+                </div>
+              )}
+            </CardContent>
+          </DashboardSection>
         </Grid>
 
         <Grid size={6}>
@@ -353,20 +581,11 @@ const Home: React.FC = () => {
           </DashboardSection>
         </Grid>
 
-        {/* Edit Dialog */}
         <Dialog open={isEditDialogOpen} onClose={handleCloseEdit}>
           <DialogTitle>Edit Schedule Item</DialogTitle>
           <DialogContent>
             <Grid container spacing={2}>
               <Grid>
-                {/* <TextField
-                  fullWidth
-                  label="Gregorian Date"
-                  name="gregorian_date"
-                  value={editedData.greg_date || ''}
-                  onChange={handleInputChange}
-                  type="date"
-                /> */}
               </Grid>
               <Grid>
                 <TextField
