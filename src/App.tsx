@@ -13,6 +13,7 @@ import WelcomeScreen from './components/WelcomScreen';
 import CampaignList from './components/CampaignList';
 import Messages from './components/Messages';
 import { profile } from './api/auth';
+import GuestPage from './components/GuestPage';
 
 // Helper function to check token expiration
 const isTokenExpired = (token: string | null) => {
@@ -54,11 +55,12 @@ type Props = {
 }
 const AppContent = ({ setUser }: Props) => {
   const navigate = useNavigate();
-  const location = useLocation(); // Use useLocation to get the current route
-  // Determine whether to show the Header and ScreenWrapper
-  const shouldShowWrapper = location.pathname !== '/';
+  const location = useLocation();
 
-  const token = localStorage.getItem('token')
+  // Determine whether to show the Header and ScreenWrapper
+  const shouldShowWrapper = location.pathname !== '/' && location.pathname !== '/guest';
+
+  const token = localStorage.getItem('token');
 
   // Function to handle logout
   const handleLogout = useCallback(() => {
@@ -70,7 +72,7 @@ const AppContent = ({ setUser }: Props) => {
 
   useEffect(() => {
     if (token && !isTokenExpired(token)) {
-      console.log(token, isTokenExpired(token))
+
       try {
         const fetchUserProfile = async () => {
           const response = await profile();
@@ -87,7 +89,7 @@ const AppContent = ({ setUser }: Props) => {
         return;
       }
     } else {
-      handleLogout();
+      // handleLogout();
     }
 
   }, [handleLogout]);
@@ -106,6 +108,7 @@ const AppContent = ({ setUser }: Props) => {
         <Route path="/campaings" element={<CampaignList />} />
         <Route path="/messages" element={<Messages />} />
         <Route path="/profile" element={<UserProfile />} />
+        <Route path="/guest" element={<GuestPage />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </>

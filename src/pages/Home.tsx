@@ -13,15 +13,6 @@ const now = new HDate();
 const year = now.getFullYear();
 const today = new Date();
 
-const events = HebrewCalendar.calendar({
-  year: year,
-  isHebrewYear: true,
-  il: true,     // אם אתה בארץ, תשנה ל-false
-  sedrot: true,
-  candlelighting: true,
-  location: Location.lookup('Tel Aviv')
-});
-
 // Styled components for consistent styling
 const DashboardSection = styled(Paper)(({ theme }) => ({
   padding: theme.spacing(2),
@@ -68,111 +59,6 @@ const Home: React.FC = () => {
   const [editedData, setEditedData] = useState<Partial<ScheduleEntry>>({});
 
   const { user } = useContext(AppUserContext);
-
-  // Refs for time inputs
-  const minchaRef = useRef<HTMLInputElement | any>(null);
-  const shacharisRef = useRef<HTMLInputElement | any>(null);
-  const maarivRef = useRef<HTMLInputElement | any>(null);
-
-  // // Fetch initial data and set states
-  // useEffect(() => {
-  //   const year = new HDate().getFullYear();
-  //   const events = HebrewCalendar.calendar({
-  //     year: year,
-  //     isHebrewYear: true,
-  //     il: true,
-  //     sedrot: true,
-  //     candlelighting: true,
-  //     location: Location.lookup('Jerusalem')
-  //   });
-
-  //   const candles = events
-  //     .filter(ev => ev.getCategories().includes('candles') && ev.getDate().greg() >= today)
-  //     .map(ev => {
-  //       const hdate = ev.getDate();
-  //       return {
-  //         date: hdate.greg().toLocaleDateString(),
-  //         hebrewDate: hdate.renderGematriya(),
-  //         event: ev.render('he'),
-  //         emoji: ev.getEmoji()
-  //       };
-  //     });
-  //   setCandlelighting(candles);
-
-  //   const parashot: ParashaType[] = events
-  //     .filter(ev => ev.getCategories().includes('parashat') && ev.getDate().greg() >= today)
-  //     .map(ev => {
-  //       const hdate = ev.getDate();
-  //       return {
-  //         date: hdate.greg().toLocaleDateString(),
-  //         hebrewDate: hdate.renderGematriya(),
-  //         event: ev.render('he'),
-  //         emoji: ev.getEmoji()
-  //       };
-  //     });
-
-  //   setSedarot(parashot);
-
-  //   setSelectedParasha(parashot[0] || { date: undefined, event: '', hebrewDate: '' });
-
-  //   // Fetch schedule data from the database
-  //   const fetchScheduleData = async () => {
-  //     try {
-  //       const response = await getSchedules();
-
-  //       const data = response.data as ScheduleEntry[];
-
-  //       // Merge fetched data with initial data, prioritizing fetched data
-  //       const mergedData = parashot.map((parasha) => {
-  //         const dbEntry = data.find((item) => item.greg_date === parasha.date);
-  //         return dbEntry
-  //           ? {
-  //             id: dbEntry.id,
-  //             greg_date: dbEntry.greg_date,
-  //             hebrew_date: dbEntry.hebrew_date,
-  //             mincha_time: dbEntry.mincha_time || '19:30', // Default if null
-  //             shacharis_time: dbEntry.shacharis_time || '07:00', // Default if null
-  //             maariv_time: dbEntry.maariv_time || '21:00',   // Default if null
-  //           }
-  //           : { // Keep the initial data if not found in db
-  //             id: 0, // Set a default ID for non-db entries
-  //             greg_date: parasha.date!,
-  //             hebrew_date: parasha.hebrewDate!,
-  //             mincha_time: '19:30', // Or whatever your default is
-  //             shacharis_time: '07:00',
-  //             maariv_time: '21:00',
-  //           };
-  //       });
-  //       setScheduleData(mergedData);
-
-  //     } catch (error: any) {
-  //       console.error("Error fetching schedule data:", error);
-  //       // Handle error (e.g., show a message to the user)
-  //       setScheduleData(parashot.map((parasha) => ({
-  //         id: 0, // Set default ID
-  //         greg_date: parasha.date!,
-  //         hebrew_date: parasha.hebrewDate!,
-  //         mincha_time: '19:30',
-  //         shacharis_time: '07:00',
-  //         maariv_time: '21:00'
-  //       })))
-  //     }
-  //   };
-
-  //   fetchScheduleData()
-  //   // // Initialize schedule data (replace with your actual data fetching)
-  //   // const initialScheduleData: ScheduleEntry[] = [{
-  //   //   id: 1,
-  //   //   greg_date: parashot[0].date!,
-  //   //   hebrew_date: parashot[0].hebrewDate!,
-  //   //   mincha_time: '19:30',
-  //   //   shacharis_time: '07:00',
-  //   //   maariv_time: '21:00'
-  //   // }];
-
-  //   // setScheduleData(initialScheduleData);
-  // }, [today]);
-
 
   // Fetch initial data and set states
   useEffect(() => {
@@ -250,7 +136,7 @@ const Home: React.FC = () => {
       const response = await insertSchedule(payload)
 
       const data = response.data as any;
-      console.log({ data })
+
       // Update the data in the state
       setScheduleData(scheduleData.map(item =>
         item.id === editingItem?.id ? { ...item, ...editedData, hebrew_date: hebrewDateString } : item

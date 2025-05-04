@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Typography, styled } from '@mui/material';
+import { Box, Button, Typography, styled } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import AuthForm from './AuthForm';
 
@@ -28,8 +28,26 @@ const AppNameText = styled(Typography)(({ theme }) => ({
     }
 }));
 
+// Styled component for the guest button
+const GuestButton = styled(Button)(({ theme }) => ({
+    marginTop: theme.spacing(3),
+    padding: theme.spacing(2, 4),
+    fontSize: '1.1rem',
+    fontWeight: 'bold',
+    backgroundColor: theme.palette.secondary.main,
+    color: theme.palette.secondary.contrastText,
+    '&:hover': {
+        backgroundColor: theme.palette.secondary.dark,
+    },
+    position: 'relative', // For stacking above the blur
+}));
+
 const WelcomeScreen = () => {
-    const navigate = useNavigate()
+    const navigate = useNavigate();
+
+    const handleGuestButtonClick = () => {
+        navigate('/guest');
+    };
     return (
         <Box
             sx={{
@@ -71,6 +89,10 @@ const WelcomeScreen = () => {
             </AppNameText>
 
             <AuthForm />
+
+            <GuestButton variant="contained" onClick={handleGuestButtonClick}>
+                Enter as Guest
+            </GuestButton>
 
         </Box>
     );

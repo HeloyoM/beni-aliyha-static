@@ -78,6 +78,42 @@ body {
   animation-duration: 0.5s;
 }
 
+/* GuestPage.css */
+.guest-page-container {
+  overflow-y: auto;
+  height: 100vh;
+  scroll-snap-type: y mandatory; /* Revert to mandatory for consistent full-section snapping */
+  scroll-behavior: smooth; /* Enable smooth scrolling for the container */
+}
+
+.guest-section {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  scroll-snap-align: start;
+}
+
+/* Nicer background colors */
+#pictures {
+  background-color: #a7d1eb; /* Light blue */
+}
+
+#videos {
+  background-color: #d4a373; /* Sandy brown */
+}
+
+#text-content {
+  background-color: #f5cb5c; /* Mustard yellow */
+}
+
+#contact-us {
+  background-color: #ad8bfa; /* Lavender */
+}
+
+/* You can add more specific styling for text, images, etc., within each section */
+
 @keyframes slideIn {
   from {
     transform: translateY(-100%);
