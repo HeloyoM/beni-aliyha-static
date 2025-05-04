@@ -98,6 +98,7 @@ const Home: React.FC = () => {
       try {
         const response = await getSchedules();
         const data = response.data as any;
+        console.log({ data })
         setScheduleData(data);
       } catch (error: any) {
         console.error("Error fetching schedule data:", error);
@@ -136,7 +137,7 @@ const Home: React.FC = () => {
       const response = await insertSchedule(payload)
 
       const data = response.data as any;
-
+      console.log({ data })
       // Update the data in the state
       setScheduleData(scheduleData.map(item =>
         item.id === editingItem?.id ? { ...item, ...editedData, hebrew_date: hebrewDateString } : item
@@ -166,7 +167,7 @@ const Home: React.FC = () => {
     })
     setIsEditDialogOpen(true);
   };
-
+  console.log({ user })
   const canEdit = user && (user.level === 100 || user.level === 101);
 
   // Function to get the schedule for a given date
@@ -180,8 +181,8 @@ const Home: React.FC = () => {
       maariv_time: null
     };
   };
-
-  const selectedSchedule = selectedParasha ? getScheduleForDate(selectedParasha.date || '') : null;
+  const selectedSchedule = selectedParasha ? getScheduleForDate(selectedParasha.date || sedarot[0].date!) : null;
+  console.log({ selectedSchedule })
 
   return (
     <div style={{ padding: '20px' }}>
@@ -201,113 +202,6 @@ const Home: React.FC = () => {
             </CardContent>
           </DashboardSection>
         </Grid>
-
-
-        {/* <Grid size={6}>
-          <DashboardSection style={{ backgroundColor: '#e0f7fa' }}>
-            {candlelighting.length &&
-              <Typography sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
-                Candle Lighting:
-                <Typography fontWeight="bold"> {candlelighting[0].event}</Typography>
-                {candlelighting[0].emoji}
-              </Typography>}
-            {sedarot.length &&
-              <Typography sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
-                Parashat:
-                <Typography fontWeight="bold"> {sedarot[0].event}</Typography>
-              </Typography>}
-            {user && user.level === 100 && selectedParasha &&
-              <FormControl fullWidth>
-                <InputLabel id="parasha-select-label">Parasha</InputLabel>
-                <Select
-                  labelId="parasha-select-label"
-                  id="parasha-select"
-                  name="parasha"
-                  defaultValue={sedarot[0].event}
-                  value={selectedParasha.event}
-                  onChange={(e) => handleSelectedParash(e.target.value)}
-                >
-                  {sedarot.map((option) => (
-                    <MenuItem key={option.event} value={option.event}>
-                      {option.event}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-            }
-            <SectionTitle fontWeight="bold"><CalendarIcon size={20} />זמני התפילות</SectionTitle>
-
-            <CardContent sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
-              <div onClick={() => {
-                if (canEdit) {
-                  handleEdit(scheduleData.find(item => item.greg_date === editedData.greg_date) || scheduleData[0]);
-                  setIsEditDialogOpen(true)
-                }
-              }}
-                style={{ cursor: canEdit ? 'pointer' : 'default' }}
-              >
-                <Typography variant="body2">
-                  Mincha:
-                  <input
-                    type="text"
-                    style={{
-                      width: '50px',
-                      marginLeft: '8px',
-                      cursor: canEdit ? 'pointer' : 'default',
-                      textAlign: 'center',
-                      border: 'none',
-                      borderBottom: canEdit ? '1px solid #000' : 'none',
-                      outline: 'none',
-                    }}
-                    ref={minchaRef}
-                    value={editedData.mincha_time || ''}
-                    readOnly={!canEdit}
-                  />
-                </Typography>
-
-                <Typography variant="body2">
-                  Shacharis:
-                  <input
-                    type="text"
-                    style={{
-                      width: '50px',
-                      marginLeft: '8px',
-                      cursor: canEdit ? 'pointer' : 'default',
-                      textAlign: 'center',
-                      border: 'none',
-                      borderBottom: canEdit ? '1px solid #000' : 'none',
-                      outline: 'none',
-                    }}
-                    ref={shacharisRef}
-                    value={editedData.shacharis_time || ''}
-                    readOnly={!canEdit}
-                  />
-                </Typography>
-                <Typography variant="body2">
-                  Maariv:
-                  <input
-                    type="text"
-                    style={{
-                      width: '50px',
-                      marginLeft: '8px',
-                      cursor: canEdit ? 'pointer' : 'default',
-                      textAlign: 'center',
-                      border: 'none',
-                      borderBottom: canEdit ? '1px solid #000' : 'none',
-                      outline: 'none',
-                    }}
-                    ref={maarivRef}
-                    value={editedData.maariv_time || ''}
-                    readOnly={!canEdit}
-                  />
-                </Typography>
-                <Typography variant="body2" style={{ marginTop: 16 }}>
-                  Display upcoming events, appointments, etc.
-                </Typography>
-              </div>
-            </CardContent>
-          </DashboardSection>
-        </Grid> */}
 
         <Grid size={6}>
           <DashboardSection style={{ backgroundColor: '#e0f7fa' }}>
@@ -413,12 +307,12 @@ const Home: React.FC = () => {
                     )}
                   </Typography>
                   {canEdit && (
-                    <Typography variant="body2" style={{ marginTop: 16, cursor: 'pointer' }} onClick={() => {
+                    <Button style={{ marginTop: 16, cursor: 'pointer' }} onClick={() => {
                       handleEdit(selectedSchedule);
                       setIsEditDialogOpen(true);
                     }}>
                       Click to edit
-                    </Typography>
+                    </Button>
                   )}
                   {!canEdit && (<Typography variant="body2" style={{ marginTop: 16 }}>
                     Display upcoming events, appointments, etc.
