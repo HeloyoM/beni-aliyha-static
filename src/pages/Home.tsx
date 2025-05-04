@@ -8,6 +8,8 @@ import { Cake, Clock, Tv, Calendar as CalendarIcon, List } from 'lucide-react';
 import { HDate, HebrewCalendar, Location } from '@hebcal/core';
 import AppUserContext from '../context/AppUserContext';
 import { getSchedules, insertSchedule } from '../api/schedule';
+import { getLessons } from '../api/lesson';
+import { motion } from 'framer-motion';
 
 const now = new HDate();
 const year = now.getFullYear();
@@ -47,17 +49,26 @@ interface ScheduleEntry {
   maariv_time: string | null;
 }
 
+interface Lesson {
+  id: string;
+  greg_date: string;
+  start_time: string;
+  hebrew_date: string
+  end_time: string;
+  topic: string;
+  description?: string;
+  teacher?: string;
+}
 
 const Home: React.FC = () => {
   const [sedarot, setSedarot] = useState<ParashaType[]>([]);
   const [candlelighting, setCandlelighting] = useState<ParashaType[]>([])
   const [selectedParasha, setSelectedParasha] = React.useState<ParashaType>();
-
   const [scheduleData, setScheduleData] = useState<ScheduleEntry[]>([]);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<ScheduleEntry | null>(null);
   const [editedData, setEditedData] = useState<Partial<ScheduleEntry>>({});
-
+  const [lessons, setLessons] = useState<Lesson[]>([]);
   const { user } = useContext(AppUserContext);
 
   // Fetch initial data and set states
@@ -105,6 +116,18 @@ const Home: React.FC = () => {
         setScheduleData([]);
       }
     };
+
+    const fetchLessonsData = async () => {
+      try {
+        const response = await getLessons();
+        const data = response.data as any;
+        setLessons(data);
+      } catch (error: any) {
+        console.error("Error fetching lessons:", error);
+        setLessons([]);
+      }
+    };
+    fetchLessonsData();
     fetchScheduleData();
 
   }, [today]);
@@ -182,23 +205,110 @@ const Home: React.FC = () => {
     };
   };
   const selectedSchedule = selectedParasha ? getScheduleForDate(selectedParasha.date || sedarot[0].date!) : null;
-  console.log({ selectedSchedule })
+
+  // Helper function to calculate duration
+  const getDuration = (startTime: string, endTime: string) => {
+    if (!startTime || !endTime) return 'N/A';
+    const start = new Date(`1970-01-01T${startTime}`);
+    const end = new Date(`1970-01-01T${endTime}`);
+    const diff = end.getTime() - start.getTime();
+    const minutes = Math.floor(diff / 60000);
+    const hours = Math.floor(minutes / 60);
+    const remainingMinutes = minutes % 60;
+    return `${hours}h ${remainingMinutes}m`;
+  };
+
+  const getNextLesson = (lessons: Lesson[]) => {
+    const now = new Date();
+    const upcomingLessons = lessons.filter(lesson => new Date(lesson.greg_date) >= now);
+    if (upcomingLessons.length > 0) {
+      upcomingLessons.sort((a, b) => new Date(a.greg_date).getTime() - new Date(b.greg_date).getTime());
+      return upcomingLessons[0];
+    }
+    return null;
+  };
+
+  const nextLesson = getNextLesson(lessons);
 
   return (
     <div style={{ padding: '20px' }}>
 
-      {/* <Typography variant="h4" gutterBottom style={{ marginTop: '20px' }}>
-        Home
-      </Typography> */}
-
-      <Grid container spacing={3} sx={{mt: 15}}>
+      <Grid container spacing={3} sx={{ mt: 15 }}>
 
         <Grid size={6}>
           <DashboardSection >
             <SectionTitle><Clock size={20} /> Time of Lessons</SectionTitle>
-            <CardContent>
-              <Typography variant="body1">Display the most important information prominently.</Typography>
-              <Typography variant="body2"> Perhaps show the full week schedule here.</Typography>
+            <CardContent style={{ maxHeight: '300px', overflowY: 'auto', padding: '15px' }}>
+              {lessons.length > 0 ? (
+                lessons.map((lesson) => {
+                  const isNextLesson = nextLesson?.id === lesson.id;
+                  return (
+                    <motion.div
+                      key={lesson.id}
+                      style={{
+                        marginBottom: '15px',
+                        padding: '12px',
+                        borderRadius: '8px',
+                        backgroundColor: '#f5f5f5',
+                        border: '1px solid #ddd',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'flex-start',
+                        gap: '8px',
+                        boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+                        transition: 'background-color 0.3s ease, transform 0.2s ease',
+                        fontWeight: isNextLesson ? 'bold' : 'normal', // Bold the next lesson
+                      }}
+                      whileHover={{ backgroundColor: '#f0f0f0' }}
+                    >
+                      <Typography
+                        variant="body1"
+                        style={{
+                          fontWeight: isNextLesson ? 'bold' : 'normal',
+                          color: '#2c3e50',
+                        }}
+                      >
+                        {lesson.topic}
+                      </Typography>
+                      <div style={{ display: 'flex', gap: '15px', alignItems: 'center' }}>
+                        <Typography variant="body2" style={{ color: '#7f8c8d' }}>
+                          Date: {lesson.greg_date}
+                        </Typography>
+                        <Typography variant="body2" style={{ color: '#7f8c8d' }}>
+                          Time: {lesson.start_time} - {lesson.end_time}
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          style={{
+                            fontWeight: isNextLesson ? 'bold' : 'normal',
+                            color: '#34495e',
+                          }}
+                        >
+                          ({getDuration(lesson.start_time, lesson.end_time)})
+                        </Typography>
+                      </div>
+                      {lesson.description && (
+                        <Typography variant="body2" style={{ fontStyle: 'italic', color: '#95a5a6' }}>
+                          {lesson.description}
+                        </Typography>
+                      )}
+                      {lesson.teacher && (
+                        <Typography
+                          variant="body2"
+                          style={{
+                            fontWeight: isNextLesson ? 'bold' : 'normal',
+                            color: '#2c3e50',
+                          }}
+                        >
+                          Teacher: {lesson.teacher}
+                        </Typography>
+                      )}
+                    </motion.div>
+                  );
+                })
+              ) : (
+                <Typography variant="body2">No lessons scheduled.</Typography>
+              )}
             </CardContent>
           </DashboardSection>
         </Grid>
