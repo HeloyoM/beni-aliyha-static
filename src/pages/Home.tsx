@@ -4,12 +4,15 @@ import { Button, Dialog, DialogActions, DialogContent, DialogTitle, FormControl,
 import Footer from '../components/Footer';
 import Campaign from '../components/Campaign';
 import { CardContent, Typography, Grid, Paper, styled } from '@mui/material';
-import { Cake, Clock, Tv, Calendar as CalendarIcon, List } from 'lucide-react';
-import { HDate, HebrewCalendar, Location } from '@hebcal/core';
+import { Cake, Clock, Tv, Calendar as CalendarIcon, List, PlusCircle } from 'lucide-react';
+import { CalOptions, HDate, HebrewCalendar, HebrewDateEvent, Location, months } from '@hebcal/core';
 import AppUserContext from '../context/AppUserContext';
 import { getSchedules, insertSchedule } from '../api/schedule';
-import { getLessons } from '../api/lesson';
+import { createLesson, getLessons } from '../api/lesson';
 import { motion } from 'framer-motion';
+import dayjs, { Dayjs } from 'dayjs';
+import { DayPicker } from "react-day-picker";
+import 'react-day-picker/dist/style.css';
 
 const now = new HDate();
 const year = now.getFullYear();
@@ -69,6 +72,17 @@ const Home: React.FC = () => {
   const [editingItem, setEditingItem] = useState<ScheduleEntry | null>(null);
   const [editedData, setEditedData] = useState<Partial<ScheduleEntry>>({});
   const [lessons, setLessons] = useState<Lesson[]>([]);
+  const [newLesson, setNewLesson] = useState<Partial<Lesson>>({ // State for new lesson form
+    greg_date: '',
+    start_time: '',
+    end_time: '',
+    topic: '',
+    description: '',
+    teacher: '',
+  });
+  const [isInsertingLesson, setIsInsertingLesson] = useState(false);
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>();
+
   const { user } = useContext(AppUserContext);
 
   // Fetch initial data and set states
@@ -190,7 +204,7 @@ const Home: React.FC = () => {
     })
     setIsEditDialogOpen(true);
   };
-  console.log({ user })
+
   const canEdit = user && (user.level === 100 || user.level === 101);
 
   // Function to get the schedule for a given date
@@ -229,6 +243,68 @@ const Home: React.FC = () => {
   };
 
   const nextLesson = getNextLesson(lessons);
+
+
+  const handleNewLessonInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setNewLesson({ ...newLesson, [e.target.name]: e.target.value });
+  };
+
+  const handleInsertLesson = async () => {
+    try {
+      if (
+        !newLesson.greg_date ||
+        !newLesson.start_time ||
+        !newLesson.end_time ||
+        !newLesson.topic
+      ) {
+        alert('Please fill in all required fields.');
+        return;
+      }
+      
+      const gerg_date = new Date(newLesson.greg_date)
+      const now = new HDate(gerg_date);
+      const year = now.getFullYear();
+
+      const options: CalOptions = {
+        year: year,
+        isHebrewYear: false,
+        location: Location.lookup('Tel Aviv'),
+        month: now.getMonthName(),
+      };
+
+      const hd = new HDate(now.dd, options.month, options.year);
+
+      const ev = new HebrewDateEvent(hd);
+
+      newLesson.greg_date = gerg_date.toLocaleDateString('en-GB');
+      newLesson.hebrew_date = ev.render('he');
+
+      const response = await createLesson(newLesson);
+
+      const data = response.data as any;
+      setLessons([...lessons, data]); // Add the new lesson to the list
+      setNewLesson({  // Reset the form
+        greg_date: '',
+        start_time: '',
+        end_time: '',
+        topic: '',
+        description: '',
+        teacher: '',
+      });
+
+      setIsInsertingLesson(false);
+      setSelectedDate(undefined);
+    } catch (error: any) {
+      console.error('Error inserting lesson:', error);
+      alert('Failed to insert lesson: ' + error.message);
+    }
+  };
+
+  const handleDateChange = (date: any) => {
+    setSelectedDate(date);
+    setNewLesson({ ...newLesson, greg_date: date ? date : '' });
+  };
+
 
   return (
     <div style={{ padding: '20px' }}>
@@ -310,6 +386,88 @@ const Home: React.FC = () => {
                 <Typography variant="body2">No lessons scheduled.</Typography>
               )}
             </CardContent>
+            {canEdit && (
+              <>
+                <Button
+                  variant="outlined"
+                  onClick={() => setIsInsertingLesson(!isInsertingLesson)}
+                  style={{ marginTop: '10px' }}
+                >
+                  {isInsertingLesson ? 'Cancel' : 'Insert New Lesson'} <PlusCircle size={16} style={{ marginLeft: '5px' }} />
+                </Button>
+
+                {isInsertingLesson && (
+                  <Paper style={{ padding: '15px', marginTop: '10px', backgroundColor: '#f9f9f9' }}>
+                    <Typography variant="h6" style={{ marginBottom: '10px' }}>Insert New Lesson</Typography>
+                    <Grid container spacing={2}>
+                      <Grid size={12}>
+                        <MyDatePicker
+                          selected={selectedDate}
+                          onChange={handleDateChange}
+                        />
+                      </Grid>
+                      <Grid size={6}>
+                        <TextField
+                          fullWidth
+                          label="Start Time (HH:MM)"
+                          name="start_time"
+                          value={newLesson.start_time || ''}
+                          onChange={handleNewLessonInputChange}
+                          required
+                        />
+                      </Grid>
+                      <Grid size={6}>
+                        <TextField
+                          fullWidth
+                          label="End Time (HH:MM)"
+                          name="end_time"
+                          value={newLesson.end_time || ''}
+                          onChange={handleNewLessonInputChange}
+                          required
+                        />
+                      </Grid>
+                      <Grid size={12}>
+                        <TextField
+                          fullWidth
+                          label="Topic"
+                          name="topic"
+                          value={newLesson.topic || ''}
+                          onChange={handleNewLessonInputChange}
+                          required
+                        />
+                      </Grid>
+                      <Grid size={12}>
+                        <TextField
+                          fullWidth
+                          label="Description"
+                          name="description"
+                          value={newLesson.description || ''}
+                          onChange={handleNewLessonInputChange}
+                          multiline
+                          rows={3}
+                        />
+                      </Grid>
+                      <Grid size={6}>
+                        <TextField
+                          fullWidth
+                          label="Teacher"
+                          name="teacher"
+                          value={newLesson.teacher || ''}
+                          onChange={handleNewLessonInputChange}
+                        />
+                      </Grid>
+                    </Grid>
+                    <Button
+                      variant="contained"
+                      onClick={handleInsertLesson}
+                      style={{ marginTop: '15px' }}
+                    >
+                      Insert Lesson
+                    </Button>
+                  </Paper>
+                )}
+              </>
+            )}
           </DashboardSection>
         </Grid>
 
@@ -541,5 +699,102 @@ const Home: React.FC = () => {
     // </React.Fragment>
   )
 }
+
+
+const StyledDayPicker = styled(DayPicker)(({ theme }) => ({
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'center',
+  // border: `1.4px solid ${theme.palette.divider}`, // Use theme's divider
+  borderRadius: '8px',
+  padding: theme.spacing(2),
+  // boxShadow: theme.shadows[2],              // Add shadow for depth
+  backgroundColor: theme.palette.background.paper, // Use theme's background
+  height: 'auto',
+  width: 'auto',
+  maxWidth: '450px',
+
+  '.rdp-head': {
+    color: theme.palette.text.primary,
+    fontWeight: '600',
+    paddingBottom: theme.spacing(1),
+  },
+  '.rdp-nav': {
+    marginBottom: theme.spacing(1),
+  },
+  '.rdp-nav-button': {
+    color: theme.palette.action.active,
+    '&:hover': {
+      backgroundColor: theme.palette.action.hover,
+    },
+  },
+  '.rdp-month': {
+    padding: 0,
+    backgroundColor: theme.palette.background.paper,
+    borderRadius: '8px',
+  },
+  '.rdp-table': {
+    borderCollapse: 'collapse',
+    border: 'none',
+    margin: 0,
+  },
+
+  '.rdp-tbody': {
+    border: 'none'
+  },
+  '.rdp-day': {
+    padding: '8px',
+    borderRadius: '4px',
+    cursor: 'pointer',
+    transition: 'background-color 0.3s, color 0.3s',
+    color: theme.palette.text.primary,
+    '&:hover': {
+      backgroundColor: theme.palette.action.hover,
+      color: theme.palette.primary.main,
+    },
+    '&[aria-selected="true"]': {
+      backgroundColor: theme.palette.primary.main,
+      color: theme.palette.primary.contrastText,
+      fontWeight: 'bold',
+      boxShadow: '0 2px 5px rgba(0, 0, 0, 0.2)',
+    },
+    '&:disabled': {
+      color: theme.palette.text.disabled,
+      backgroundColor: 'transparent',
+      cursor: 'default',
+      '&:hover': {
+        backgroundColor: 'transparent',
+        color: theme.palette.text.disabled,
+      },
+    },
+  },
+  '.rdp-caption': {
+    paddingTop: theme.spacing(2),
+    color: theme.palette.text.secondary,
+    fontSize: '0.875rem',
+    textAlign: 'center',
+  },
+}));
+
+type Props = {
+  onChange: (day: any) => void
+  selected: any
+}
+function MyDatePicker({ selected, onChange }: Props) {
+
+  return (
+    <StyledDayPicker
+      mode="single"
+      selected={selected}
+      onSelect={day => onChange(day)}
+      footer={
+        <Typography variant="caption" color="textSecondary">
+          {selected ? `Selected: ${selected}` : "Pick a day."}
+        </Typography>
+      }
+    />
+  );
+}
+
 
 export default Home;
