@@ -205,40 +205,9 @@ const Home: React.FC = () => {
 
         <Grid size={6}>
           <DashboardSection style={{ backgroundColor: '#e0f7fa' }}>
+            <CardContent sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
 
             <CandlelightingTimes />
-
-            {/*
-            {sedarot.length && (
-              <Typography sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
-                Parashat:
-                <Typography fontWeight="bold"> {sedarot[0].event}</Typography>
-              </Typography>
-            )}
-
-            {user && user.level === 100 && selectedParasha && (
-              <FormControl fullWidth>
-                <InputLabel id="parasha-select-label">Parasha</InputLabel>
-                <Select
-                  labelId="parasha-select-label"
-                  id="parasha-select"
-                  name="parasha"
-                  defaultValue={sedarot[0].event}
-                  value={selectedParasha.event}
-                  onChange={(e) => handleSelectedParash(e.target.value)}
-                >
-                  {sedarot.map((option) => (
-                    <MenuItem key={option.event} value={option.event}>
-                      {option.event}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-            )} */}
-
-            <SectionTitle fontWeight="bold"><CalendarIcon size={20} />זמני התפילות</SectionTitle>
-
-            <CardContent sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
 
               <Scheduler />
 

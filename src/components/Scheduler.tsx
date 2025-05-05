@@ -1,8 +1,19 @@
-import { Button, Dialog, DialogActions, DialogContent, DialogTitle, Grid, TextField, Typography } from "@mui/material";
+import { Alert, Button, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, Grid, InputLabel, MenuItem, Select, styled, TextField, Typography } from "@mui/material";
 import { useContext, useEffect, useState } from "react";
 import AppUserContext from "../context/AppUserContext";
 import { getSchedules, insertSchedule } from "../api/schedule";
 import { HDate, HebrewCalendar, Location } from "@hebcal/core";
+import { CalendarIcon } from "lucide-react";
+
+const SectionTitle = styled(Typography)(({ theme }) => ({
+    fontSize: theme.typography.h6.fontSize,
+    fontWeight: theme.typography.fontWeightBold,
+    marginBottom: theme.spacing(1),
+    color: theme.palette.primary.main,
+    display: 'flex',
+    alignItems: 'center',
+    gap: theme.spacing(1),
+}));
 
 interface ScheduleEntry {
     id: number;
@@ -31,6 +42,9 @@ const Scheduler = () => {
     const [editedData, setEditedData] = useState<Partial<ScheduleEntry>>({});
     const [selectedParasha, setSelectedParasha] = useState<ParashaType>();
     const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+    const [loading, setLoading] = useState(false);
+    const [success, setSuccess] = useState(false);
 
     const { user } = useContext(AppUserContext);
 
@@ -97,29 +111,38 @@ const Scheduler = () => {
     }
 
     const handleSaveEdit = async () => {
+
+        if (!selectedParasha) return
+
+        const hDate = new HDate(new Date());
+        const hebrewDateString = hDate.toString();
+
+        const payload = {
+            mincha_time: editedData.mincha_time!,
+            maariv_time: editedData.maariv_time!,
+            shacharis_time: editedData.shacharis_time!,
+            greg_date: selectedParasha.date!,
+            hebrew_date: selectedParasha.hebrewDate!
+        }
+
+        setLoading(true);
+        setError(null);
+
         try {
-            if (!selectedParasha) return
-
-            const hDate = new HDate(new Date());
-            const hebrewDateString = hDate.toString();
-
-            const payload = {
-                mincha_time: editedData.mincha_time!,
-                maariv_time: editedData.maariv_time!,
-                shacharis_time: editedData.shacharis_time!,
-                greg_date: selectedParasha.date!,
-                hebrew_date: selectedParasha.hebrewDate!
-            }
-
             const response = await insertSchedule(payload)
 
             const data = response.data as any;
 
-            setScheduleData(scheduleData.map(item =>
-                item.id === editingItem?.id ? { ...item, ...editedData, hebrew_date: hebrewDateString } : item
-            ));
+            if (response.status > 200) {
+                setSuccess(true);
+                setScheduleData(scheduleData.map(item =>
+                    item.id === editingItem?.id ? { ...item, ...editedData, hebrew_date: hebrewDateString } : item
+                ));
 
-            handleCloseEdit();
+                handleCloseEdit();
+            } else {
+                setError(data.message || 'Failed to create scheduling');
+            }
 
         } catch (error: any) {
             console.error("Error saving edit:", error);
@@ -146,6 +169,35 @@ const Scheduler = () => {
 
     return (
         <>
+
+            {sedarot.length && (
+                <Typography sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
+                    Parashat:
+                    <Typography fontWeight="bold"> {sedarot[0].event}</Typography>
+                </Typography>
+            )}
+
+            {user && user.level === 100 && selectedParasha && (
+                <FormControl fullWidth>
+                    <InputLabel id="parasha-select-label">Parasha</InputLabel>
+                    <Select
+                        labelId="parasha-select-label"
+                        id="parasha-select"
+                        name="parasha"
+                        defaultValue={sedarot[0].event}
+                        value={selectedParasha.event}
+                        onChange={(e) => handleSelectedParash(e.target.value)}
+                    >
+                        {sedarot.map((option) => (
+                            <MenuItem key={option.event} value={option.event}>
+                                {option.event}
+                            </MenuItem>
+                        ))}
+                    </Select>
+                </FormControl>
+            )}
+
+            <SectionTitle fontWeight="bold"><CalendarIcon size={20} />זמני התפילות</SectionTitle>
             {selectedSchedule && (
                 <div>
                     <Typography variant="body2">
@@ -213,6 +265,19 @@ const Scheduler = () => {
                             <span style={{ marginLeft: '8px' }}>{selectedSchedule.maariv_time || 'N/A'}</span>
                         )}
                     </Typography>
+
+                    {error && (
+                        <Alert severity="error" style={{ marginBottom: 10 }}>
+                            {error}
+                        </Alert>
+                    )}
+                    {success && (
+                        <Alert severity="success" style={{ marginBottom: 10 }}>
+                            Schedule created successfully!
+                        </Alert>
+                    )}
+
+
                     {canEdit && (
                         <Button style={{ marginTop: 16, cursor: 'pointer' }} onClick={() => {
                             handleEdit(selectedSchedule);
@@ -221,11 +286,14 @@ const Scheduler = () => {
                             Click to edit
                         </Button>
                     )}
+
                     {!canEdit && (<Typography variant="body2" style={{ marginTop: 16 }}>
                         Display upcoming events, appointments, etc.
                     </Typography>)}
+
                 </div>
             )}
+
             <Dialog open={isEditDialogOpen} onClose={handleCloseEdit}>
                 <DialogTitle>Edit Schedule Item</DialogTitle>
                 <DialogContent>
