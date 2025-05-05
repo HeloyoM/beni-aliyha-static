@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
 import { login, register } from '../api/auth';
-import AppUserContext from '../context/AppUserContext';
+import { useAppUser } from '../context/AppUser.context';
 
 // Validation schema using yup
 const validationSchema = yup.object({
@@ -28,7 +28,7 @@ const AuthForm = () => {
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
 
-    const { updateUserContext } = useContext(AppUserContext)
+    const { updateUserContext, updateAllowedResources } = useAppUser();
 
     useEffect(() => {
         const token = localStorage.getItem('token')
@@ -59,6 +59,7 @@ const AuthForm = () => {
                     localStorage.setItem('refreshToken', data.refreshToken);
 
                     updateUserContext(data.user);
+                    updateAllowedResources(data.allowedResources);
                     
                     navigate('/home'); // Redirect to profile page
                 } else {

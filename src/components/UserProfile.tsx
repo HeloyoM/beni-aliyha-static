@@ -6,7 +6,7 @@ import { Alert } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { profile, updatePassword } from '../api/auth';
 import { updateProfile } from '../api/user';
-import AppUserContext from '../context/AppUserContext';
+import { useAppUser } from '../context/AppUser.context';
 
 // Validation schema for updating phone and address
 const updateProfileSchema = yup.object({
@@ -29,7 +29,7 @@ const UserProfile = () => {
     const [resetSuccess, setResetSuccess] = useState(false);
     const navigate = useNavigate();
 
-    const { user } = useContext(AppUserContext)
+    const { user } = useAppUser();
 
     const token = localStorage.getItem('token');
 

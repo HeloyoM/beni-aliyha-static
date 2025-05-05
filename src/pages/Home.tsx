@@ -1,10 +1,10 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import '../App.css';
 import { Button } from '@mui/material';
 import Campaign from '../components/Campaign';
 import { CardContent, Typography, Grid, Paper, styled } from '@mui/material';
-import { Cake, Clock, Award, Calendar as CalendarIcon, List, PlusCircle } from 'lucide-react';
-import AppUserContext from '../context/AppUserContext';
+import { Cake, Clock, Award, List, PlusCircle } from 'lucide-react';
+import { useAppUser } from '../context/AppUser.context';
 import { getLessons } from '../api/lesson';
 import { motion, AnimatePresence } from 'framer-motion';
 import { DayPicker } from "react-day-picker";
@@ -13,6 +13,7 @@ import ILesson from '../interfaces/ILesson.interface';
 import Lesson from '../components/Lesson';
 import Scheduler from '../components/Scheduler';
 import CandlelightingTimes from '../components/CandleLightingTimes';
+import TestPermission from '../components/TestPermission';
 
 // Styled components for consistent styling
 const DashboardSection = styled(Paper)(({ theme }) => ({
@@ -38,10 +39,10 @@ const Home: React.FC = () => {
   const [isInsertingLesson, setIsInsertingLesson] = useState(false);
   const [isInsertingCampaign, setIsInsertingCampaign] = useState(false);
 
-  const { user } = useContext(AppUserContext);
+  const { user } = useAppUser();
 
   useEffect(() => {
-
+    if (lessons.length) return
     const fetchLessonsData = async () => {
       try {
         const response = await getLessons();
@@ -207,7 +208,7 @@ const Home: React.FC = () => {
           <DashboardSection style={{ backgroundColor: '#e0f7fa' }}>
             <CardContent sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
 
-            <CandlelightingTimes />
+              <CandlelightingTimes />
 
               <Scheduler />
 

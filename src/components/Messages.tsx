@@ -1,11 +1,10 @@
 
-import React, { useState, useEffect, useContext } from 'react';
+import { useState, useEffect } from 'react';
 import { Avatar, Box, Typography, CircularProgress, Alert, TextField, Button } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { format, formatDistanceToNow } from 'date-fns';
 import { getMessages, postMessage, replyToMessage } from '../api/message';
-import AppUserContext from '../context/AppUserContext';
-import { MessageCircle, Send } from 'lucide-react';
+import { Send } from 'lucide-react';
 import { io, Socket } from 'socket.io-client';
 
 // Styled components for enhanced UI
@@ -99,8 +98,6 @@ const Messages = () => {
     const [replyText, setReplyText] = useState<{ [messageId: string]: string }>({}); // Store reply text for each message
     const [newMessageDescription, setNewMessageDescription] = useState('');
     const [socket, setSocket] = useState<Socket | null>(null);
-
-    const { user } = useContext(AppUserContext)
 
     useEffect(() => {
         // Initialize Socket.IO connection
@@ -223,7 +220,7 @@ const Messages = () => {
                 socket.emit('sendMessage', data.newMessage);
             }
 
-            setMessages(prevMessages => [data.newMessage, ...prevMessages ]);
+            setMessages(prevMessages => [data.newMessage, ...prevMessages]);
             setNewMessageDescription('');
         } catch (err: any) {
             setError(err.message || 'An error occurred while sending the message.');

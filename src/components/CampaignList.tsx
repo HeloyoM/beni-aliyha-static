@@ -5,7 +5,7 @@ import { styled } from '@mui/material/styles';
 import { format } from 'date-fns';
 import { useNavigate } from 'react-router-dom';
 import { getCampaignMembers, getCampaigns, joinCampaign } from '../api/campaign';
-import AppUserContext from '../context/AppUserContext';
+import { useAppUser } from '../context/AppUser.context';
 import { MessageCircle } from 'lucide-react';
 
 // Styled components for enhanced UI
@@ -54,7 +54,7 @@ const CampaignList = () => {
     const navigate = useNavigate();
     const token = localStorage.getItem('token'); // Get token from localStorage
 
-    const { user } = useContext(AppUserContext);
+    const { user } = useAppUser();
 
     useEffect(() => {
         const fetchCampaigns = async () => {

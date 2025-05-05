@@ -5,7 +5,7 @@ import Home from './pages/Home';
 import Header from './components/Header';
 import { jwtDecode } from 'jwt-decode'; // Import jwt-decode
 import ScreenWrapper from './components/ScreenWrapper';
-import AppUserContext from './context/AppUserContext';
+import { AppUserProvider } from './context/AppUser.context';
 import AppServerMsgContext from "./context/AppServerMsg";
 import './App.css';
 import UserProfile from './components/UserProfile';
@@ -39,11 +39,11 @@ const App: React.FC = () => {
 
   return (
     <AppServerMsgContext.Provider value={{ updateServerMsgContext, serverMsg }}>
-      <AppUserContext.Provider value={{ updateUserContext, user: crrUser }}>
+      <AppUserProvider>
         <Router>
           <AppContent setUser={setUser} />
         </Router>
-      </AppUserContext.Provider>
+      </AppUserProvider>
     </AppServerMsgContext.Provider>
   )
 }

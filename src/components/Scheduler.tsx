@@ -1,6 +1,6 @@
 import { Alert, Button, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, Grid, InputLabel, MenuItem, Select, styled, TextField, Typography } from "@mui/material";
 import { useContext, useEffect, useState } from "react";
-import AppUserContext from "../context/AppUserContext";
+import { useAppUser } from '../context/AppUser.context';
 import { getSchedules, insertSchedule } from "../api/schedule";
 import { HDate, HebrewCalendar, Location } from "@hebcal/core";
 import { CalendarIcon } from "lucide-react";
@@ -46,7 +46,7 @@ const Scheduler = () => {
     const [loading, setLoading] = useState(false);
     const [success, setSuccess] = useState(false);
 
-    const { user } = useContext(AppUserContext);
+    const { user } = useAppUser();
 
     useEffect(() => {
         const events = HebrewCalendar.calendar({
