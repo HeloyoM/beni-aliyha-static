@@ -1,18 +1,18 @@
-import React, { useContext, useEffect, useRef, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import '../App.css';
-import { Button, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, InputLabel, MenuItem, Select, TextField } from '@mui/material';
-import Footer from '../components/Footer';
+import { Alert, Button, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, InputLabel, MenuItem, Select, TextField } from '@mui/material';
 import Campaign from '../components/Campaign';
 import { CardContent, Typography, Grid, Paper, styled } from '@mui/material';
 import { Cake, Clock, Tv, Calendar as CalendarIcon, List, PlusCircle } from 'lucide-react';
-import { CalOptions, HDate, HebrewCalendar, HebrewDateEvent, Location, months } from '@hebcal/core';
+import { CalOptions, HDate, HebrewCalendar, HebrewDateEvent, Location } from '@hebcal/core';
 import AppUserContext from '../context/AppUserContext';
 import { getSchedules, insertSchedule } from '../api/schedule';
 import { createLesson, getLessons } from '../api/lesson';
-import { motion } from 'framer-motion';
-import dayjs, { Dayjs } from 'dayjs';
+import { motion, AnimatePresence } from 'framer-motion';
 import { DayPicker } from "react-day-picker";
 import 'react-day-picker/dist/style.css';
+import ILesson from '../interfaces/ILesson.interface';
+import Lesson from '../components/Lesson';
 
 const now = new HDate();
 const year = now.getFullYear();
@@ -52,16 +52,7 @@ interface ScheduleEntry {
   maariv_time: string | null;
 }
 
-interface Lesson {
-  id: string;
-  greg_date: string;
-  start_time: string;
-  hebrew_date: string
-  end_time: string;
-  topic: string;
-  description?: string;
-  teacher?: string;
-}
+
 
 const Home: React.FC = () => {
   const [sedarot, setSedarot] = useState<ParashaType[]>([]);
@@ -71,17 +62,10 @@ const Home: React.FC = () => {
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<ScheduleEntry | null>(null);
   const [editedData, setEditedData] = useState<Partial<ScheduleEntry>>({});
-  const [lessons, setLessons] = useState<Lesson[]>([]);
-  const [newLesson, setNewLesson] = useState<Partial<Lesson>>({ // State for new lesson form
-    greg_date: '',
-    start_time: '',
-    end_time: '',
-    topic: '',
-    description: '',
-    teacher: '',
-  });
+  const [lessons, setLessons] = useState<ILesson[]>([]);
+
   const [isInsertingLesson, setIsInsertingLesson] = useState(false);
-  const [selectedDate, setSelectedDate] = useState<Date | undefined>();
+  const [isInsertingCampaign, setIsInsertingCampaign] = useState(false);
 
   const { user } = useContext(AppUserContext);
 
@@ -174,8 +158,7 @@ const Home: React.FC = () => {
       const response = await insertSchedule(payload)
 
       const data = response.data as any;
-      console.log({ data })
-      // Update the data in the state
+
       setScheduleData(scheduleData.map(item =>
         item.id === editingItem?.id ? { ...item, ...editedData, hebrew_date: hebrewDateString } : item
       ));
@@ -232,7 +215,7 @@ const Home: React.FC = () => {
     return `${hours}h ${remainingMinutes}m`;
   };
 
-  const getNextLesson = (lessons: Lesson[]) => {
+  const getNextLesson = (lessons: ILesson[]) => {
     const now = new Date();
     const upcomingLessons = lessons.filter(lesson => new Date(lesson.greg_date) >= now);
     if (upcomingLessons.length > 0) {
@@ -244,87 +227,32 @@ const Home: React.FC = () => {
 
   const nextLesson = getNextLesson(lessons);
 
-
-  const handleNewLessonInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    setNewLesson({ ...newLesson, [e.target.name]: e.target.value });
-  };
-
-  const handleInsertLesson = async () => {
-    try {
-      if (
-        !newLesson.greg_date ||
-        !newLesson.start_time ||
-        !newLesson.end_time ||
-        !newLesson.topic
-      ) {
-        alert('Please fill in all required fields.');
-        return;
-      }
-      
-      const gerg_date = new Date(newLesson.greg_date)
-      const now = new HDate(gerg_date);
-      const year = now.getFullYear();
-
-      const options: CalOptions = {
-        year: year,
-        isHebrewYear: false,
-        location: Location.lookup('Tel Aviv'),
-        month: now.getMonthName(),
-      };
-
-      const hd = new HDate(now.dd, options.month, options.year);
-
-      const ev = new HebrewDateEvent(hd);
-
-      newLesson.greg_date = gerg_date.toLocaleDateString('en-GB');
-      newLesson.hebrew_date = ev.render('he');
-
-      const response = await createLesson(newLesson);
-
-      const data = response.data as any;
-      setLessons([...lessons, data]); // Add the new lesson to the list
-      setNewLesson({  // Reset the form
-        greg_date: '',
-        start_time: '',
-        end_time: '',
-        topic: '',
-        description: '',
-        teacher: '',
-      });
-
-      setIsInsertingLesson(false);
-      setSelectedDate(undefined);
-    } catch (error: any) {
-      console.error('Error inserting lesson:', error);
-      alert('Failed to insert lesson: ' + error.message);
-    }
-  };
-
-  const handleDateChange = (date: any) => {
-    setSelectedDate(date);
-    setNewLesson({ ...newLesson, greg_date: date ? date : '' });
-  };
-
-
   return (
     <div style={{ padding: '20px' }}>
 
       <Grid container spacing={3} sx={{ mt: 15 }}>
 
         <Grid size={6}>
+
           <DashboardSection >
+
             <SectionTitle><Clock size={20} /> Time of Lessons</SectionTitle>
+
             <CardContent style={{ maxHeight: '300px', overflowY: 'auto', padding: '15px' }}>
+
               {lessons.length > 0 ? (
                 lessons.map((lesson) => {
                   const isNextLesson = nextLesson?.id === lesson.id;
+
                   return (
                     <motion.div
                       key={lesson.id}
                       style={{
-                        marginBottom: '15px',
-                        padding: '12px',
+                        // overflow: 'hidden', // Ensure content doesn't overflow during animation
+                        // marginBottom: isInsertingLesson ? '15px' : '0px',
+                        // padding: isInsertingLesson ? '12px' : '0px', // Conditional padding
                         borderRadius: '8px',
+                        padding: '15px',
                         backgroundColor: '#f5f5f5',
                         border: '1px solid #ddd',
                         display: 'flex',
@@ -337,6 +265,18 @@ const Home: React.FC = () => {
                       }}
                       whileHover={{ backgroundColor: '#f0f0f0' }}
                     >
+                      <AnimatePresence>
+                        {isInsertingLesson && (
+                          <motion.div
+                            initial={{ opacity: 0, y: -10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: 10 }}
+                          >
+                            <Typography variant="h6" style={{ color: '#ff6f00', marginBottom: '10px' }}>Lesson</Typography>
+
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
                       <Typography
                         variant="body1"
                         style={{
@@ -386,6 +326,7 @@ const Home: React.FC = () => {
                 <Typography variant="body2">No lessons scheduled.</Typography>
               )}
             </CardContent>
+
             {canEdit && (
               <>
                 <Button
@@ -399,71 +340,9 @@ const Home: React.FC = () => {
                 {isInsertingLesson && (
                   <Paper style={{ padding: '15px', marginTop: '10px', backgroundColor: '#f9f9f9' }}>
                     <Typography variant="h6" style={{ marginBottom: '10px' }}>Insert New Lesson</Typography>
-                    <Grid container spacing={2}>
-                      <Grid size={12}>
-                        <MyDatePicker
-                          selected={selectedDate}
-                          onChange={handleDateChange}
-                        />
-                      </Grid>
-                      <Grid size={6}>
-                        <TextField
-                          fullWidth
-                          label="Start Time (HH:MM)"
-                          name="start_time"
-                          value={newLesson.start_time || ''}
-                          onChange={handleNewLessonInputChange}
-                          required
-                        />
-                      </Grid>
-                      <Grid size={6}>
-                        <TextField
-                          fullWidth
-                          label="End Time (HH:MM)"
-                          name="end_time"
-                          value={newLesson.end_time || ''}
-                          onChange={handleNewLessonInputChange}
-                          required
-                        />
-                      </Grid>
-                      <Grid size={12}>
-                        <TextField
-                          fullWidth
-                          label="Topic"
-                          name="topic"
-                          value={newLesson.topic || ''}
-                          onChange={handleNewLessonInputChange}
-                          required
-                        />
-                      </Grid>
-                      <Grid size={12}>
-                        <TextField
-                          fullWidth
-                          label="Description"
-                          name="description"
-                          value={newLesson.description || ''}
-                          onChange={handleNewLessonInputChange}
-                          multiline
-                          rows={3}
-                        />
-                      </Grid>
-                      <Grid size={6}>
-                        <TextField
-                          fullWidth
-                          label="Teacher"
-                          name="teacher"
-                          value={newLesson.teacher || ''}
-                          onChange={handleNewLessonInputChange}
-                        />
-                      </Grid>
-                    </Grid>
-                    <Button
-                      variant="contained"
-                      onClick={handleInsertLesson}
-                      style={{ marginTop: '15px' }}
-                    >
-                      Insert Lesson
-                    </Button>
+
+                    <Lesson lessons={lessons} setLessons={setLessons} />
+
                   </Paper>
                 )}
               </>
@@ -591,16 +470,33 @@ const Home: React.FC = () => {
           </DashboardSection>
         </Grid>
 
-        <Grid size={6}>
+        <Grid size={10}>
+
           <DashboardSection>
-            <SectionTitle><Tv size={20} /> Ads</SectionTitle>
+            <SectionTitle><Tv size={20} /> Campaigns</SectionTitle>
+            <Button
+              variant="outlined"
+              onClick={() => setIsInsertingCampaign(!isInsertingCampaign)}
+              style={{ marginTop: '10px' }}
+            >
+              {isInsertingCampaign ? 'Cancel' : 'Insert New Campaign'} <PlusCircle size={16} style={{ marginLeft: '5px' }} />
+            </Button>
             <CardContent>
-              {/* Ads content here */}
-              <Typography variant="body2">Display promotional content or advertisements.</Typography>
             </CardContent>
+            {isInsertingCampaign && (
+              <Paper style={{ padding: '15px', marginTop: '10px', backgroundColor: '#f9f9f9' }}>
+                <Typography variant="h6" style={{ marginBottom: '10px' }}>Insert New Campaign</Typography>
+
+                <Campaign />
+
+              </Paper>
+            )}
+
           </DashboardSection>
+
         </Grid>
-        <Grid size={4}>
+
+        <Grid size={2}>
           <DashboardSection>
             <SectionTitle><Cake size={20} /> Birthdays</SectionTitle>
             <CardContent>

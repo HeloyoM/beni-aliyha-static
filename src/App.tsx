@@ -89,7 +89,7 @@ const AppContent = ({ setUser }: Props) => {
         return;
       }
     } else {
-      // handleLogout();
+      handleLogout();
     }
 
   }, [handleLogout]);

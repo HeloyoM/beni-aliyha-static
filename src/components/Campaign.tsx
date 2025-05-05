@@ -1,13 +1,12 @@
-import React, { useEffect, useState } from 'react';
-import { TextField, Button, Grid, Alert, Paper, Typography, Select, MenuItem, FormControl, InputLabel, FormHelperText, Divider } from '@mui/material';
+import { useEffect, useState } from 'react';
+import { TextField, Button, Grid, Alert, Typography, Select, MenuItem, FormControl, InputLabel, FormHelperText, Divider } from '@mui/material';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
 import dayjs, { Dayjs } from 'dayjs';
 import { DayPicker } from "react-day-picker";
 import { styled } from '@mui/material/styles';
-import 'react-day-picker/dist/style.css';
 import { createCampaign, getCampaignTypes } from '../api/campaign';
-import { useNavigate } from 'react-router-dom';
+import 'react-day-picker/dist/style.css';
 
 // Validation schema using yup
 const newCampaignSchema = yup.object({
@@ -17,32 +16,19 @@ const newCampaignSchema = yup.object({
     description: yup.string().required('Description is required'),
 });
 
-// Campaign types
-const campaignTypes = [
-    { id: 'call', name: 'Call' },
-];
-
 interface campaignTypes {
     id: string
     name: string
 }
+
 const Campaign = () => {
     const [campaignTypes, setCampaignTypes] = useState<campaignTypes[]>([]);
     const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
-    const [success, setSuccess] = useState(false); // Add state for success message
-    const [selectedDate, setSelectedDate] = useState(dayjs());
-
-    const navigate = useNavigate();
-
-    const token = localStorage.getItem('token');
+    const [success, setSuccess] = useState(false);
 
     useEffect(() => {
         const fetchTypes = async () => {
-            if (!token) {
-                navigate('/'); // Redirect to login if no token
-                return;
-            }
             if (!campaignTypes.length) {
                 setLoading(true);
                 setError(null);
@@ -78,18 +64,15 @@ const Campaign = () => {
             setLoading(true);
             setError(null);
             try {
-                // Simulate API call (replace with your actual API endpoint)
                 const response = await createCampaign(values);
 
                 const data = response.data as any;
 
                 if (response.status > 200) {
-                    // Handle successful campaign creation
-                    console.log(data); // Log the response
-                    setSuccess(true); // Set success state
+                    console.log(data);
+                    setSuccess(true);
                     formik.resetForm(); // Clear the form
                 } else {
-                    // Handle error responses from the server
                     setError(data.message || 'Failed to create campaign');
                 }
             } catch (error: any) {
@@ -101,30 +84,21 @@ const Campaign = () => {
         },
     });
 
-    console.log(formik.values)
-
     return (
-        <Grid container justifyContent="center" alignItems="center" style={{ marginTop: 10, minHeight: '100vh', backgroundColor: '#f0f4c3' }}>
-            <Grid>
-                <Paper elevation={3} style={{ display: 'grid', gridTemplateColumns: 'auto auto', flexDirection: 'row', minWidth: '100vh', padding: 20, borderRadius: 16 }}>
+        <>
+            <form onSubmit={formik.handleSubmit}>
 
-                    <form onSubmit={formik.handleSubmit}>
-
-                        <Typography variant="h4" align="center" style={{ marginBottom: 20, color: '#1a5235' }}>
-                            New Campaign
-                        </Typography>
-
-                        {error && (
-                            <Alert severity="error" style={{ marginBottom: 10 }}>
-                                {error}
-                            </Alert>
-                        )}
-                        {success && (
-                            <Alert severity="success" style={{ marginBottom: 10 }}>
-                                Campaign created successfully!
-                            </Alert>
-                        )}
-
+                <Grid container spacing={2}>
+                    <Grid size={12}>
+                        <MyDatePicker
+                            selected={formik.values.dueDate}
+                            onChange={(date: Dayjs | null) => {
+                                if (date) {
+                                    formik.setFieldValue('dueDate', date);
+                                }
+                            }} />
+                    </Grid>
+                    <Grid size={6}>
                         <TextField
                             fullWidth
                             id="name"
@@ -138,13 +112,13 @@ const Campaign = () => {
                             InputProps={{ style: { borderRadius: 8, borderColor: '#81c784' } }}
                         />
 
-
+                    </Grid>
+                    <Grid size={6}>
                         <FormControl
                             fullWidth
                             error={formik.touched.type && Boolean(formik.errors.type)}
                             style={{ marginBottom: 15, backgroundColor: '#fff', borderRadius: 8 }}
                         >
-
 
                             <InputLabel id="type-label" style={{ color: formik.touched.type && formik.errors.type ? '#d32f2f' : '#000' }}>
                                 Campaign Type
@@ -171,43 +145,50 @@ const Campaign = () => {
                                 </FormHelperText>
                             )}
                         </FormControl>
+                    </Grid>
 
-                        <MyDatePicker
-                            selected={formik.values.dueDate}
-                            onChange={(date: Dayjs | null) => {
-                                if (date) {
-                                    formik.setFieldValue('dueDate', date);
-                                }
-                            }} />
-                        <Button
-                            type="submit"
+                    <Grid size={12}>
+                        <TextField
                             fullWidth
-                            variant="contained"
-                            color="primary"
-                            disabled={loading}
-                            style={{ marginTop: 20, backgroundColor: '#4caf50', color: '#fff', borderRadius: 8 }}
-                        >
-                            {loading ? 'Creating...' : 'Create Campaign'}
-                        </Button>
-                    </form>
+                            id="description"
+                            name="description"
+                            label="Description"
+                            multiline
+                            rows={4}
+                            value={formik.values.description}
+                            onChange={formik.handleChange}
+                            error={formik.touched.description && Boolean(formik.errors.description)}
+                            helperText={formik.touched.description && formik.errors.description}
+                            InputProps={{ style: { borderRadius: 8, borderColor: '#81c784' } }}
+                        />
+                    </Grid>
+                </Grid>
 
-                    <TextField
-                        fullWidth
-                        id="description"
-                        name="description"
-                        label="Description"
-                        multiline
-                        rows={4}
-                        value={formik.values.description}
-                        onChange={formik.handleChange}
-                        error={formik.touched.description && Boolean(formik.errors.description)}
-                        helperText={formik.touched.description && formik.errors.description}
-                        style={{ marginLeft: '5%', marginBottom: 15, backgroundColor: '#fff' }}
-                        InputProps={{ style: { borderRadius: 8, borderColor: '#81c784' } }}
-                    />
-                </Paper>
-            </Grid>
-        </Grid>
+                {error && (
+                    <Alert severity="error" style={{ marginBottom: 10 }}>
+                        {error}
+                    </Alert>
+                )}
+                {success && (
+                    <Alert severity="success" style={{ marginBottom: 10 }}>
+                        Campaign created successfully!
+                    </Alert>
+                )}
+
+
+                <Button
+                    type="submit"
+                    fullWidth
+                    variant="contained"
+                    color="primary"
+                    disabled={loading}
+                    style={{ marginTop: '15px' }}
+                >
+                    {loading ? 'Creating...' : 'Create Campaign'}
+                </Button>
+
+            </form>
+        </>
     );
 };
 
@@ -219,8 +200,8 @@ const StyledDayPicker = styled(DayPicker)(({ theme }) => ({
     // border: `1.4px solid ${theme.palette.divider}`, // Use theme's divider
     borderRadius: '8px',
     padding: theme.spacing(2),
-    // boxShadow: theme.shadows[2],              // Add shadow for depth
-    backgroundColor: theme.palette.background.paper, // Use theme's background
+    // boxShadow: theme.shadows[2],
+    backgroundColor: theme.palette.background.paper,
     height: 'auto',
     width: 'auto',
     maxWidth: '450px',
