@@ -1,21 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import '../App.css';
-import { Button, Card } from '@mui/material';
+import { Button, CardContent, Typography, Grid, Paper, styled } from '@mui/material';
 import Campaign from '../components/Campaign';
-import { CardContent, Typography, Grid, Paper, styled } from '@mui/material';
-import { Cake, Clock, Award, List, PlusCircle } from 'lucide-react';
-import { useAppUser } from '../context/AppUser.context';
+import { Clock, Award, List, PlusCircle } from 'lucide-react';
 import { DayPicker } from "react-day-picker";
-import 'react-day-picker/dist/style.css';
 import Lesson from '../components/Lessons/Lesson';
 import Scheduler from '../components/Scheduler';
 import CandlelightingTimes from '../components/CandleLightingTimes';
 import LessonsList from '../components/Lessons/LessonsList';
 import PaymentManagement from '../components/PaymentManagement';
 import useLessons from '../components/Lessons/useLessons';
-import IUser from '../interfaces/User.interface';
-import { format, isToday, isFuture } from 'date-fns';
-import { getAllUsers } from '../api/user';
+import Birthdays from '../components/Birthdays';
+import 'react-day-picker/dist/style.css';
 
 // Styled components for consistent styling
 const DashboardSection = styled(Paper)(({ theme }) => ({
@@ -36,57 +32,9 @@ const SectionTitle = styled(Typography)(({ theme }) => ({
 }));
 
 const Home: React.FC = () => {
-  const [users, setUsers] = useState<IUser[]>([]);
-  const [error, setError] = useState<string | null>(null);
-  const [upcomingBirthdays, setUpcomingBirthdays] = useState<IUser[]>([]);
-  const [todayBirthdays, setTodayBirthdays] = useState<IUser[]>([]);
-
   const [isInsertingCampaign, setIsInsertingCampaign] = useState(false);
 
   const { lessons, setLessons } = useLessons();
-  console.log({ users })
-  useEffect(() => {
-    if (!!users.length) return
-
-    const fetchUsers = async () => {
-      try {
-        const response = await getAllUsers();
-
-        const data = response.data as any;
-        if (response.status !== 200) {
-          throw new Error(data.message || 'Failed to fetch users');
-        }
-
-        setUsers(data.users);
-
-      } catch (error: any) {
-        setError(error.message);
-      }
-    };
-    fetchUsers();
-  }, [users]);
-
-  useEffect(() => {
-    const todayBirthdays = users.filter(user => {
-      if (!user.birthday) return false;
-      const userBirthday = new Date(user.birthday);
-      return isToday(userBirthday);
-    });
-
-    const upcomingBirthdays = users.filter(user => {
-      if (!user.birthday) return false;
-      const userBirthday = new Date(user.birthday);
-      return isFuture(userBirthday);
-    }).sort((a, b) => {
-      const dateA = new Date(a.birthday!).getTime();
-      const dateB = new Date(b.birthday!).getTime();
-      return dateA - dateB;
-    });
-
-    setTodayBirthdays(todayBirthdays);
-    setUpcomingBirthdays(upcomingBirthdays);
-
-  }, [users]);
 
   return (
     <div style={{ padding: '20px' }}>
@@ -152,43 +100,7 @@ const Home: React.FC = () => {
         </Grid>
 
         <Grid size={2}>
-          <Card>
-            <CardContent>
-              <Typography variant="h6" style={{ display: 'flex', alignItems: 'center', marginBottom: 10 }}>
-                <Cake style={{ marginRight: 5, height: 20, width: 20 }} /> Birthdays Today
-              </Typography>
-              {todayBirthdays.length > 0 ? (
-                <ul>
-                  {todayBirthdays.map(user => (
-                    <li key={user.id}>
-                      {user.first_name} {user.last_name} ({format(new Date(user.birthday!), 'PPP')})
-                    </li>
-                  ))}
-                </ul>
-              ) : (
-                <Typography variant="body2">No birthdays today.</Typography>
-              )}
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent>
-              <Typography variant="h6" style={{ display: 'flex', alignItems: 'center', marginBottom: 10 }}>
-                <Cake style={{ marginRight: 5, height: 20, width: 20 }} /> Upcoming Birthdays
-              </Typography>
-              {upcomingBirthdays.length > 0 ? (
-                <ul>
-                  {upcomingBirthdays.map(user => (
-                    <li key={user.id}>
-                      {user.first_name} {user.last_name} ({format(new Date(user.birthday!), 'PPP')})
-                    </li>
-                  ))}
-                </ul>
-              ) : (
-                <Typography variant="body2">No upcoming birthdays.</Typography>
-              )}
-            </CardContent>
-          </Card>
-
+          <Birthdays />
         </Grid>
 
 
