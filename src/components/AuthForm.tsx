@@ -61,19 +61,16 @@ const AuthForm = () => {
             if (response.status >= 200 && response.status < 300) {
                 // Handle successful login/registration
                 console.log(data); // Log the response
-                if (isLogin) {
-                    // Store token and refresh token
-                    localStorage.setItem('token', data.token);
-                    localStorage.setItem('refreshToken', data.refreshToken);
 
-                    updateUserContext(data.user);
-                    updateAllowedResources(data.allowedResources);
+                // Store token and refresh token
+                localStorage.setItem('token', data.token);
+                localStorage.setItem('refreshToken', data.refreshToken);
 
-                    navigate('/home'); // Redirect to profile page
-                } else {
-                    setIsLogin(true); // Switch to login after successful registration
-                    formik.resetForm();
-                }
+                updateUserContext(data.user);
+                updateAllowedResources(data.allowedResources);
+                formik.resetForm();
+                navigate('/home'); // Redirect to profile page
+
 
             } else {
                 // Handle error responses from the server

@@ -7,4 +7,5 @@ export default interface IUser {
     role_id: number;
     level: number;
     address: string;
+    birthday: Date;
 }
