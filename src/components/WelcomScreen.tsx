@@ -1,6 +1,6 @@
 import React from 'react';
 import { Box, Button, Typography, styled } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import AuthForm from './AuthForm';
 
 // Styled component for the welcome text
@@ -45,6 +45,8 @@ const GuestButton = styled(Button)(({ theme }) => ({
 const WelcomeScreen = () => {
     const navigate = useNavigate();
 
+    const shouldShowWrapper = document.title !== 'register';
+    console.log(document.title)
     const handleGuestButtonClick = () => {
         navigate('/guest');
     };
@@ -64,7 +66,7 @@ const WelcomeScreen = () => {
                 justifyContent: 'center',
                 alignItems: 'center',
                 // Position absolutely to cover the entire screen
-                position: 'fixed',
+                position: document.title !== 'register' ? 'fixed' : 'inherit',
                 top: 0,
                 left: 0,
                 zIndex: 1000, // Ensure it's on top of other content
@@ -90,9 +92,9 @@ const WelcomeScreen = () => {
 
             <AuthForm />
 
-            <GuestButton variant="contained" onClick={handleGuestButtonClick}>
+            {shouldShowWrapper && <GuestButton variant="contained" onClick={handleGuestButtonClick}>
                 Enter as Guest
-            </GuestButton>
+            </GuestButton>}
 
         </Box>
     );

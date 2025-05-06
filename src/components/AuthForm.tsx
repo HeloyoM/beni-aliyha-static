@@ -1,10 +1,13 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { Alert, TextField, Button, Grid, Paper, Typography, Link, Box } from '@mui/material';
+import { Alert, TextField, Button, Grid, Paper, Typography, Link, Box, styled } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
 import { login, register } from '../api/auth';
 import { useAppUser } from '../context/AppUser.context';
+import { DayPicker } from 'react-day-picker';
+import dayjs, { Dayjs } from 'dayjs';
+import { format } from 'date-fns';
 
 // Validation schema using yup
 const validationSchema = yup.object({
@@ -13,7 +16,8 @@ const validationSchema = yup.object({
     email: yup.string().email('Invalid email address').required('Email is required'),
     password: yup.string().min(4, 'Password must be at least 4 characters').required('Password is required'),
     phone: yup.string().matches(/^[0-9]{10}$/, 'Phone number must be 10 digits'),
-    address: yup.string()
+    address: yup.string(),
+    birthday: yup.date(),
 });
 
 // Login schema
@@ -26,6 +30,8 @@ const AuthForm = () => {
     const [isLogin, setIsLogin] = useState(true); // State to toggle between login and register
     const [error, setError] = useState<string | null>(null); // State to hold error messages
     const [loading, setLoading] = useState(false);
+    const [selectedDate, setSelectedDate] = useState<Dayjs | null>(dayjs());
+
     const navigate = useNavigate();
 
     const { updateUserContext, updateAllowedResources } = useAppUser();
@@ -35,9 +41,11 @@ const AuthForm = () => {
 
         if (token) {
             navigate('/home')
+        } else {
+            document.title = isLogin ? 'login' : 'register'
         }
 
-    }, [])
+    }, [isLogin])
 
     // Function to handle form submission (Login and Register)
     const handleSubmit = async (values: any) => {
@@ -60,7 +68,7 @@ const AuthForm = () => {
 
                     updateUserContext(data.user);
                     updateAllowedResources(data.allowedResources);
-                    
+
                     navigate('/home'); // Redirect to profile page
                 } else {
                     setIsLogin(true); // Switch to login after successful registration
@@ -88,11 +96,12 @@ const AuthForm = () => {
             password: '',
             phone: '',
             address: '',
+            birthday: null
         },
         validationSchema: isLogin ? loginValidationSchema : validationSchema,
         onSubmit: handleSubmit,
     });
-console.log({isLogin})
+    console.log(formik.values)
     return (
         <Grid container justifyContent="center" alignItems="center" style={{ minHeight: '50vh', backgroundColor: 'inherit' }}>
             <Grid /*item xs={12} sm={8} md={6} lg={4} */>
@@ -187,6 +196,19 @@ console.log({isLogin})
                                     style={{ marginBottom: 15, backgroundColor: '#fff' }}
                                     InputProps={{ style: { borderRadius: 8, borderColor: '#81c784' } }}
                                 />
+                                <label
+                                    htmlFor="birthday"
+                                    className="block text-sm font-medium text-gray-700"
+                                >
+                                    Birthday
+                                </label>
+                                <MyDatePicker selected={selectedDate} onChange={(newValue) => {
+                                    setSelectedDate(newValue);
+                                    formik.setFieldValue(
+                                        'birthday',
+                                        newValue ? format(newValue, 'yyyy-MM-dd') : null,
+                                    );
+                                }} />
                             </>
                         )}
                         <Button
@@ -199,21 +221,22 @@ console.log({isLogin})
                         >
                             {loading ? 'Loading...' : isLogin ? 'Login' : 'Register'}
                         </Button>
-                        <Box mt={2} textAlign="center">
-                            <Link
-                                href="#"
-                                onClick={() => {
-                                    setIsLogin(!isLogin);
-                                    formik.resetForm(); // Reset form when switching
-                                    setError(null);
-                                }}
-                                variant="body2"
-                                style={{ color: '#1a5235' }}
-                            >
-                                {isLogin ? 'Create an account' : 'Already have an account? Login'}
-                            </Link>
-                        </Box>
                     </form>
+                    <Button sx={{ display: "flex", alignItems: 'center' }} >
+                        <Link
+                            href="#"
+                            onClick={() => {
+                                console.log('clicked')
+                                setIsLogin(!isLogin);
+                                formik.resetForm(); // Reset form when switching
+                                setError(null);
+                            }}
+                            variant="body2"
+                            style={{ color: '#1a5235' }}
+                        >
+                            {isLogin ? 'Create an account' : 'Already have an account? Login'}
+                        </Link>
+                    </Button>
                 </Paper>
             </Grid>
         </Grid>
@@ -221,3 +244,100 @@ console.log({isLogin})
 };
 
 export default AuthForm;
+
+
+
+const StyledDayPicker = styled(DayPicker)(({ theme }) => ({
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    // border: `1.4px solid ${theme.palette.divider}`, // Use theme's divider
+    borderRadius: '8px',
+    padding: theme.spacing(2),
+    // boxShadow: theme.shadows[2],              // Add shadow for depth
+    backgroundColor: theme.palette.background.paper, // Use theme's background
+    height: 'auto',
+    width: 'auto',
+    maxWidth: '450px',
+
+    '.rdp-head': {
+        color: theme.palette.text.primary,
+        fontWeight: '600',
+        paddingBottom: theme.spacing(1),
+    },
+    '.rdp-nav': {
+        marginBottom: theme.spacing(1),
+    },
+    '.rdp-nav-button': {
+        color: theme.palette.action.active,
+        '&:hover': {
+            backgroundColor: theme.palette.action.hover,
+        },
+    },
+    '.rdp-month': {
+        padding: 0,
+        backgroundColor: theme.palette.background.paper,
+        borderRadius: '8px',
+    },
+    '.rdp-table': {
+        borderCollapse: 'collapse',
+        border: 'none',
+        margin: 0,
+    },
+
+    '.rdp-tbody': {
+        border: 'none'
+    },
+    '.rdp-day': {
+        padding: '8px',
+        borderRadius: '4px',
+        cursor: 'pointer',
+        transition: 'background-color 0.3s, color 0.3s',
+        color: theme.palette.text.primary,
+        '&:hover': {
+            backgroundColor: theme.palette.action.hover,
+            color: theme.palette.primary.main,
+        },
+        '&[aria-selected="true"]': {
+            backgroundColor: theme.palette.primary.main,
+            color: theme.palette.primary.contrastText,
+            fontWeight: 'bold',
+            boxShadow: '0 2px 5px rgba(0, 0, 0, 0.2)',
+        },
+        '&:disabled': {
+            color: theme.palette.text.disabled,
+            backgroundColor: 'transparent',
+            cursor: 'default',
+            '&:hover': {
+                backgroundColor: 'transparent',
+                color: theme.palette.text.disabled,
+            },
+        },
+    },
+    '.rdp-caption': {
+        paddingTop: theme.spacing(2),
+        color: theme.palette.text.secondary,
+        fontSize: '0.875rem',
+        textAlign: 'center',
+    },
+}));
+
+type MyDatePickerProps = {
+    onChange: (day: any) => void
+    selected: any
+}
+function MyDatePicker({ selected, onChange }: MyDatePickerProps) {
+
+    return (
+        <StyledDayPicker
+            mode="single"
+            selected={selected}
+            onSelect={day => onChange(day)}
+            footer={
+                <Typography variant="caption" color="textSecondary">
+                    {selected ? `Selected: ${selected}` : "Pick a day."}
+                </Typography>
+            }
+        />
+    );
+}
