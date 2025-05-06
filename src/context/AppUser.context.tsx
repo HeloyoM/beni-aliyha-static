@@ -1,7 +1,5 @@
-import React, { createContext, useState, useEffect, useContext, useCallback, useMemo } from 'react';
+import React, { createContext, useState, useEffect, useContext, useMemo } from 'react';
 import IUser from '../interfaces/User.interface';
-
-
 
 interface AppUserContextProps {
     user: IUser;
@@ -12,6 +10,7 @@ interface AppUserContextProps {
     canEditLessons: boolean
     canEditUsers: boolean
     canEditSchedules: boolean
+    canEditPayments: boolean
 }
 
 const AppUserContext = createContext<AppUserContextProps | undefined>(undefined);
@@ -21,24 +20,41 @@ const AppUserProvider: React.FC<{ children: React.ReactNode }> = ({ children }) 
     const [canEditLessons, setCanEditLesson] = useState<boolean>(false);
     const [canEditSchedules, setCanEditSchedules] = useState<boolean>(false);
     const [canEditUsers, setEditUsers] = useState<boolean>(false);
+    const [canEditPayments, setEditPayments] = useState<boolean>(false);
     const [allowedResources, setAllowedResources] = useState<string[] | null>(null);
 
     const getPermissions = useMemo(() => {
+
         allowedResources?.map((row, i) => {
+
+
             const resource = row.split(':')
+
+
             if (resource.includes('lessons')) {
                 if (resource.includes('write')) {
                     setCanEditLesson(true)
                 }
-            } else if (resource.includes('schedules')) {
+            } 
+            
+            else if (resource.includes('schedules')) {
                 if (resource.includes('write')) {
                     setCanEditSchedules(true)
                 }
-            } else if (resource.includes('users')) {
+            } 
+            
+            else if (resource.includes('users')) {
                 if (resource.includes('delete')) {
                     setEditUsers(true)
                 }
             }
+
+            else if (resource.includes('payments')) {
+                if (resource.includes('write')) {
+                    setEditPayments(true)
+                }
+            }
+            
         })
     }, [allowedResources])
 
@@ -58,14 +74,16 @@ const AppUserProvider: React.FC<{ children: React.ReactNode }> = ({ children }) 
         setAllowedResources(resources);
     };
 
-
     const logout = () => {
         setUser({} as IUser);
         setAllowedResources(null);
         localStorage.removeItem('user');
         localStorage.removeItem('token');
         localStorage.removeItem('refreshToken');
-
+        setEditPayments(false);
+        setCanEditLesson(false);
+        setCanEditSchedules(false);
+        setEditUsers(false);
     };
 
     const contextValue = {
@@ -77,6 +95,7 @@ const AppUserProvider: React.FC<{ children: React.ReactNode }> = ({ children }) 
         canEditSchedules,
         canEditUsers,
         updateAllowedResources,
+        canEditPayments
     };
 
     return (

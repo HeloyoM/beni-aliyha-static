@@ -1,14 +1,24 @@
 import { GET, POST } from "./api-req";
 import { UpdateProfileDto } from "./dto/UpdateProfile.dto";
 
-const API = 'user'
+const API = 'user';
 
 export const updateProfile = async (payload: UpdateProfileDto) => {
     try {
-        const response = await POST(`${API}/update-profile`, payload)
+        const response = await POST(`${API}/update-profile`, payload);
 
-        return response
+        return response;
     } catch (error) {
-        throw new Error('Failed to update profile')
+        throw new Error('Failed to update profile');
+    }
+}
+
+export const getAllUsers = async () => {
+    try {
+        const response = await GET(`${API}/all`);
+
+        return response;
+    } catch (error) {
+        throw new Error('Failed to fetch all users');
     }
 }

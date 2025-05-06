@@ -44,7 +44,8 @@ const LessonsList = () => {
                             style={{
                                 borderRadius: '8px',
                                 padding: '15px',
-                                backgroundColor: '#f5f5f5',
+                                backgroundColor: isNextLesson ? 'rgb(52, 171, 83)' : '#f5f5f5',
+                                color: isNextLesson ? '#fff' : '#ff6f00',
                                 border: '1px solid #ddd',
                                 display: 'flex',
                                 flexDirection: 'column',
@@ -54,7 +55,7 @@ const LessonsList = () => {
                                 transition: 'background-color 0.3s ease, transform 0.2s ease',
                                 fontWeight: isNextLesson ? 'bold' : 'normal', // Bold the next lesson
                             }}
-                            whileHover={{ backgroundColor: '#f0f0f0' }}
+                            whileHover={{ backgroundColor: '#93CCEA' }}
                         >
                             <AnimatePresence>
                                 {isInsertingLesson && (
@@ -63,7 +64,7 @@ const LessonsList = () => {
                                         animate={{ opacity: 1, y: 0 }}
                                         exit={{ opacity: 0, y: 10 }}
                                     >
-                                        <Typography variant="h6" style={{ color: '#ff6f00', marginBottom: '10px' }}>Lesson</Typography>
+                                        <Typography variant="h6" style={{ color: isNextLesson ? '#fff' : '#ff6f00', marginBottom: '10px' }}>Lesson</Typography>
 
                                     </motion.div>
                                 )}
@@ -72,30 +73,30 @@ const LessonsList = () => {
                                 variant="body1"
                                 style={{
                                     fontWeight: isNextLesson ? 'bold' : 'normal',
-                                    color: '#2c3e50',
+                                    color: isNextLesson ? '#fff' : '#2c3e50',
                                 }}
                             >
                                 {lesson.topic}
                             </Typography>
                             <div style={{ display: 'flex', gap: '15px', alignItems: 'center' }}>
-                                <Typography variant="body2" style={{ color: '#7f8c8d' }}>
+                                <Typography variant="body2" style={{ color: isNextLesson ? '#fff' : '#7f8c8d' }}>
                                     Date: {lesson.greg_date}
                                 </Typography>
-                                <Typography variant="body2" style={{ color: '#7f8c8d' }}>
+                                <Typography variant="body2" style={{ color: isNextLesson ? '#fff' : '#7f8c8d' }}>
                                     Time: {lesson.start_time} - {lesson.end_time}
                                 </Typography>
                                 <Typography
                                     variant="body2"
                                     style={{
                                         fontWeight: isNextLesson ? 'bold' : 'normal',
-                                        color: '#34495e',
+                                        color: isNextLesson ? '#fff' : '#34495e',
                                     }}
                                 >
                                     ({getDuration(lesson.start_time, lesson.end_time)})
                                 </Typography>
                             </div>
                             {lesson.description && (
-                                <Typography variant="body2" style={{ fontStyle: 'italic', color: '#95a5a6' }}>
+                                <Typography variant="body2" style={{ fontStyle: 'italic', color: isNextLesson ? '#fff' : '#95a5a6' }}>
                                     {lesson.description}
                                 </Typography>
                             )}
@@ -104,7 +105,7 @@ const LessonsList = () => {
                                     variant="body2"
                                     style={{
                                         fontWeight: isNextLesson ? 'bold' : 'normal',
-                                        color: '#2c3e50',
+                                        color: isNextLesson ? '#fff' : '#2c3e50',
                                     }}
                                 >
                                     Teacher: {lesson.teacher}

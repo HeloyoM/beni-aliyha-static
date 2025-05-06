@@ -5,7 +5,6 @@ import Campaign from '../components/Campaign';
 import { CardContent, Typography, Grid, Paper, styled } from '@mui/material';
 import { Cake, Clock, Award, List, PlusCircle } from 'lucide-react';
 import { useAppUser } from '../context/AppUser.context';
-
 import { DayPicker } from "react-day-picker";
 import 'react-day-picker/dist/style.css';
 import Lesson from '../components/Lessons/Lesson';
