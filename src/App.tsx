@@ -5,7 +5,7 @@ import Home from './pages/Home';
 import Header from './components/Header';
 import { jwtDecode } from 'jwt-decode'; // Import jwt-decode
 import ScreenWrapper from './components/ScreenWrapper';
-import { AppUserProvider } from './context/AppUser.context';
+import { AppUserProvider, useAppUser } from './context/AppUser.context';
 import AppServerMsgContext from "./context/AppServerMsg";
 import './App.css';
 import UserProfile from './components/UserProfile';
@@ -14,6 +14,7 @@ import CampaignList from './components/CampaignList';
 import Messages from './components/Messages';
 import { profile } from './api/auth';
 import GuestPage from './components/GuestPage';
+import IUser from './interfaces/User.interface';
 
 // Helper function to check token expiration
 const isTokenExpired = (token: string | null) => {
@@ -31,17 +32,15 @@ const isTokenExpired = (token: string | null) => {
 };
 
 const App: React.FC = () => {
-  const [crrUser, setUser] = React.useState<any>(null);
   const [serverMsg, setServerMsg] = React.useState('');
 
-  const updateUserContext = (user: any) => { setUser(user) }
   const updateServerMsgContext = (msg: any) => { setServerMsg(msg) }
 
   return (
     <AppServerMsgContext.Provider value={{ updateServerMsgContext, serverMsg }}>
       <AppUserProvider>
         <Router>
-          <AppContent setUser={setUser} />
+          <AppContent />
         </Router>
       </AppUserProvider>
     </AppServerMsgContext.Provider>
@@ -50,13 +49,12 @@ const App: React.FC = () => {
 
 export default App;
 
-type Props = {
-  setUser: React.Dispatch<any>
-}
-const AppContent = ({ setUser }: Props) => {
+const AppContent = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
+  const { updateUserContext, logout, updateAllowedResources } = useAppUser();
+  
   // Determine whether to show the Header and ScreenWrapper
   const shouldShowWrapper = location.pathname !== '/' && location.pathname !== '/guest';
 
@@ -64,9 +62,7 @@ const AppContent = ({ setUser }: Props) => {
 
   // Function to handle logout
   const handleLogout = useCallback(() => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('refreshToken');
-    setUser(null);
+    logout()
     navigate('/');
   }, [navigate]);
 
@@ -78,7 +74,9 @@ const AppContent = ({ setUser }: Props) => {
           const response = await profile();
 
           const data = response.data as any;
-          setUser(data.user)
+
+          updateUserContext(data.user)
+          updateAllowedResources(data.allowedResources)
         }
 
         fetchUserProfile();

@@ -1,62 +1,71 @@
-import React, { createContext, useState, useEffect, useContext } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { createContext, useState, useEffect, useContext, useCallback, useMemo } from 'react';
+import IUser from '../interfaces/User.interface';
 
-// Define the User interface
-interface User {
-    id: number;
-    email: string;
-    first_name: string;
-    last_name: string;
-    phone: string;
-    role_id: number;
-    level: number;
-    address: string;
-}
+
 
 interface AppUserContextProps {
-    user: User;
-    updateUserContext: (user: User) => void;
+    user: IUser;
+    updateUserContext: (user: IUser) => void;
     logout: () => void;
-    allowedResources: string[] | null;  // Add allowedResources
-    updateAllowedResources: (resources: string[]) => void; // Add setter
+    allowedResources: string[] | null;
+    updateAllowedResources: (resources: string[]) => void;
+    canEditLessons: boolean
+    canEditUsers: boolean
+    canEditSchedules: boolean
 }
 
 const AppUserContext = createContext<AppUserContextProps | undefined>(undefined);
 
 const AppUserProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-    const [user, setUser] = useState<User>({} as User);
-    const [allowedResources, setAllowedResources] = useState<string[] | null>(null);  // Initialize state
-    // const navigate = useNavigate();
+    const [user, setUser] = useState<IUser>({} as IUser);
+    const [canEditLessons, setCanEditLesson] = useState<boolean>(false);
+    const [canEditSchedules, setCanEditSchedules] = useState<boolean>(false);
+    const [canEditUsers, setEditUsers] = useState<boolean>(false);
+    const [allowedResources, setAllowedResources] = useState<string[] | null>(null);
+
+    const getPermissions = useMemo(() => {
+        allowedResources?.map((row, i) => {
+            const resource = row.split(':')
+            if (resource.includes('lessons')) {
+                if (resource.includes('write')) {
+                    setCanEditLesson(true)
+                }
+            } else if (resource.includes('schedules')) {
+                if (resource.includes('write')) {
+                    setCanEditSchedules(true)
+                }
+            } else if (resource.includes('users')) {
+                if (resource.includes('delete')) {
+                    setEditUsers(true)
+                }
+            }
+        })
+    }, [allowedResources])
 
     useEffect(() => {
         const storedUser = localStorage.getItem('user');
-        const storedResources = localStorage.getItem('allowedResources');
         if (storedUser) {
             setUser(JSON.parse(storedUser));
         }
-        if (storedResources) {
-            setAllowedResources(JSON.parse(storedResources));
-        }
-    }, []);
+    }, [allowedResources]);
 
-    const updateUserContext = (userData: User) => {
+    const updateUserContext = (userData: IUser) => {
         setUser(userData);
         localStorage.setItem('user', JSON.stringify(userData));
     };
 
-    const updateAllowedResources = (resources: string[]) => { // Setter
+    const updateAllowedResources = (resources: string[]) => {
         setAllowedResources(resources);
-        localStorage.setItem('allowedResources', JSON.stringify(resources));
     };
 
+
     const logout = () => {
-        setUser({} as User);
-        setAllowedResources(null); //clear
+        setUser({} as IUser);
+        setAllowedResources(null);
         localStorage.removeItem('user');
         localStorage.removeItem('token');
         localStorage.removeItem('refreshToken');
-        localStorage.removeItem('allowedResources'); // Remove allowedResources
-        // navigate('/auth');
+
     };
 
     const contextValue = {
@@ -64,6 +73,9 @@ const AppUserProvider: React.FC<{ children: React.ReactNode }> = ({ children }) 
         updateUserContext,
         logout,
         allowedResources,
+        canEditLessons,
+        canEditSchedules,
+        canEditUsers,
         updateAllowedResources,
     };
 

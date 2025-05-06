@@ -1,11 +1,14 @@
 import { CalOptions, HDate, HebrewDateEvent, Location } from '@hebcal/core';
-import { Alert, Button, Grid, styled, TextField, Typography } from '@mui/material';
+import { Alert, Button, Grid, Paper, styled, TextField, Typography } from '@mui/material';
 import { useState } from 'react';
 import { DayPicker } from "react-day-picker";
 import 'react-day-picker/dist/style.css';
-import { createLesson } from '../api/lesson';
-import ILesson from '../interfaces/ILesson.interface';
+import useLessons from './useLessons'
 import dayjs, { Dayjs } from 'dayjs';
+import ILesson from '../../interfaces/ILesson.interface';
+import { createLesson } from '../../api/lesson';
+import { useAppUser } from '../../context/AppUser.context';
+import { PlusCircle } from 'lucide-react';
 
 function initLessonState() {
     return {
@@ -17,18 +20,19 @@ function initLessonState() {
         teacher: '',
     }
 }
-type LessonProps = {
-    lessons: ILesson[]
-    setLessons: React.Dispatch<React.SetStateAction<ILesson[]>>
-}
 
-const Lesson = (props: LessonProps) => {
+const Lesson = () => {
     const [selectedDate, setSelectedDate] = useState<Dayjs | null>(dayjs());
     const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
-    const [success, setSuccess] = useState(false); // Add state for success message
+    const [success, setSuccess] = useState(false);
     const [newLesson, setNewLesson] = useState<Partial<ILesson>>(initLessonState());
 
+    const { lessons, setLessons, setIsInsertingLesson, isInsertingLesson } = useLessons();
+    const { canEditLessons } = useAppUser();
+
+
+    console.log({ canEditLessons })
     const handleDateChange = (date: any) => {
         setSelectedDate(date);
         setNewLesson({ ...newLesson, greg_date: date ? date : '' });
@@ -77,7 +81,7 @@ const Lesson = (props: LessonProps) => {
 
             if (response.status > 200) {
                 newLesson.id = data.insertId
-                props.setLessons([newLesson as ILesson, ...props.lessons]);
+                setLessons([newLesson as ILesson, ...lessons]);
 
                 setNewLesson(initLessonState());
 
@@ -95,91 +99,111 @@ const Lesson = (props: LessonProps) => {
         }
 
     };
+
+    if (!canEditLessons) return <></>
+
     return (
+
         <>
-            <Grid container spacing={2}>
-                <Grid size={12}>
-                    <MyDatePicker
-                        selected={selectedDate}
-                        onChange={handleDateChange}
-                    />
-                </Grid>
-                <Grid size={6}>
-                    <TextField
-                        fullWidth
-                        label="Start Time (HH:MM)"
-                        name="start_time"
-                        value={newLesson.start_time || ''}
-                        onChange={handleNewLessonInputChange}
-                        required
-                    />
-                </Grid>
-                <Grid size={6}>
-                    <TextField
-                        fullWidth
-                        label="End Time (HH:MM)"
-                        name="end_time"
-                        value={newLesson.end_time || ''}
-                        onChange={handleNewLessonInputChange}
-                        required
-                    />
-                </Grid>
-                <Grid size={12}>
-                    <TextField
-                        fullWidth
-                        label="Topic"
-                        name="topic"
-                        value={newLesson.topic || ''}
-                        onChange={handleNewLessonInputChange}
-                        required
-                    />
-                </Grid>
-                <Grid size={12}>
-                    <TextField
-                        fullWidth
-                        label="Description"
-                        name="description"
-                        value={newLesson.description || ''}
-                        onChange={handleNewLessonInputChange}
-                        multiline
-                        rows={3}
-                    />
-                </Grid>
-                <Grid size={6}>
-                    <TextField
-                        fullWidth
-                        label="Teacher"
-                        name="teacher"
-                        value={newLesson.teacher || ''}
-                        onChange={handleNewLessonInputChange}
-                    />
-                </Grid>
-            </Grid>
-
-            {
-                error && (
-                    <Alert severity="error" style={{ marginBottom: 10 }}>
-                        {error}
-                    </Alert>
-                )
-            }
-
-            {
-                success && (
-                    <Alert severity="success" style={{ marginBottom: 10 }}>
-                        Lesson created successfully!
-                    </Alert>
-                )
-            }
-
             <Button
-                variant="contained"
-                disabled={loading}
-                onClick={handleInsertLesson}
-                style={{ marginTop: '15px' }}
+                variant="outlined"
+                onClick={() => setIsInsertingLesson(!isInsertingLesson)}
+                style={{ marginTop: '10px' }}
             >
-                {loading ? 'Creating...' : 'Create Lesson'}
+                {isInsertingLesson ? 'Cancel' : 'Create New Lesson'} <PlusCircle size={16} style={{ marginLeft: '5px' }} />
             </Button>
+
+            {isInsertingLesson && (
+                <Paper style={{ padding: '15px', marginTop: '10px', backgroundColor: '#f9f9f9' }}>
+                    <Typography variant="h6" style={{ marginBottom: '10px' }}>Insert New Lesson</Typography>
+
+
+                    <Grid container spacing={2}>
+                        <Grid size={12}>
+                            <MyDatePicker
+                                selected={selectedDate}
+                                onChange={handleDateChange}
+                            />
+                        </Grid>
+                        <Grid size={6}>
+                            <TextField
+                                fullWidth
+                                label="Start Time (HH:MM)"
+                                name="start_time"
+                                value={newLesson.start_time || ''}
+                                onChange={handleNewLessonInputChange}
+                                required
+                            />
+                        </Grid>
+                        <Grid size={6}>
+                            <TextField
+                                fullWidth
+                                label="End Time (HH:MM)"
+                                name="end_time"
+                                value={newLesson.end_time || ''}
+                                onChange={handleNewLessonInputChange}
+                                required
+                            />
+                        </Grid>
+                        <Grid size={12}>
+                            <TextField
+                                fullWidth
+                                label="Topic"
+                                name="topic"
+                                value={newLesson.topic || ''}
+                                onChange={handleNewLessonInputChange}
+                                required
+                            />
+                        </Grid>
+                        <Grid size={12}>
+                            <TextField
+                                fullWidth
+                                label="Description"
+                                name="description"
+                                value={newLesson.description || ''}
+                                onChange={handleNewLessonInputChange}
+                                multiline
+                                rows={3}
+                            />
+                        </Grid>
+                        <Grid size={6}>
+                            <TextField
+                                fullWidth
+                                label="Teacher"
+                                name="teacher"
+                                value={newLesson.teacher || ''}
+                                onChange={handleNewLessonInputChange}
+                            />
+                        </Grid>
+                    </Grid>
+
+                    {
+                        error && (
+                            <Alert severity="error" style={{ marginBottom: 10 }}>
+                                {error}
+                            </Alert>
+                        )
+                    }
+
+                    {
+                        success && (
+                            <Alert severity="success" style={{ marginBottom: 10 }}>
+                                Lesson created successfully!
+                            </Alert>
+                        )
+                    }
+
+                    <Button
+                        variant="contained"
+                        disabled={loading}
+                        onClick={handleInsertLesson}
+                        style={{ marginTop: '15px' }}
+                    >
+                        {loading ? 'Creating...' : 'Create Lesson'}
+                    </Button>
+
+                </Paper>
+            )}
         </>
     )
 }
