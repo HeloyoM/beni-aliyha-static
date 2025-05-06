@@ -11,6 +11,8 @@ import Lesson from '../components/Lessons/Lesson';
 import Scheduler from '../components/Scheduler';
 import CandlelightingTimes from '../components/CandleLightingTimes';
 import LessonsList from '../components/Lessons/LessonsList';
+import PaymentManagement from '../components/PaymentManagement';
+import useLessons from '../components/Lessons/useLessons';
 
 // Styled components for consistent styling
 const DashboardSection = styled(Paper)(({ theme }) => ({
@@ -33,10 +35,13 @@ const SectionTitle = styled(Typography)(({ theme }) => ({
 const Home: React.FC = () => {
   const [isInsertingCampaign, setIsInsertingCampaign] = useState(false);
 
-  const { user } = useAppUser();
+  const { lessons, setLessons } = useLessons();
 
   return (
     <div style={{ padding: '20px' }}>
+
+
+      {/* <PaymentManagement /> */}
 
       <Grid container spacing={3} sx={{ mt: 15 }}>
 
@@ -48,11 +53,11 @@ const Home: React.FC = () => {
 
             <CardContent style={{ maxHeight: '300px', overflowY: 'auto', padding: '15px' }}>
 
-              <LessonsList />
+              <LessonsList lessons={lessons}/>
 
             </CardContent>
 
-            <Lesson />
+            <Lesson lessons={lessons} setLessons={setLessons}/>
 
           </DashboardSection>
         </Grid>

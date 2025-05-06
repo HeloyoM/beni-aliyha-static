@@ -46,7 +46,7 @@ const Scheduler = () => {
     const [loading, setLoading] = useState(false);
     const [success, setSuccess] = useState(false);
 
-    const { user } = useAppUser();
+    const { user, canEditSchedules } = useAppUser();
 
     useEffect(() => {
         const events = HebrewCalendar.calendar({
@@ -165,8 +165,6 @@ const Scheduler = () => {
 
     const selectedSchedule = selectedParasha ? getScheduleForDate(selectedParasha.date || sedarot[0].date!) : null;
 
-    const canEdit = user && (user.level === 100 || user.level === 101);
-
     return (
         <>
 
@@ -202,7 +200,7 @@ const Scheduler = () => {
                 <div>
                     <Typography variant="body2">
                         Mincha:
-                        {canEdit ? (
+                        {canEditSchedules ? (
                             <input
                                 type="text"
                                 style={{
@@ -224,7 +222,7 @@ const Scheduler = () => {
                     </Typography>
                     <Typography variant="body2">
                         Shacharis:
-                        {canEdit ? (
+                        {canEditSchedules ? (
                             <input
                                 type="text"
                                 style={{
@@ -246,7 +244,7 @@ const Scheduler = () => {
                     </Typography>
                     <Typography variant="body2">
                         Maariv:
-                        {canEdit ? (
+                        {canEditSchedules ? (
                             <input
                                 type="text"
                                 style={{
@@ -278,7 +276,7 @@ const Scheduler = () => {
                     )}
 
 
-                    {canEdit && (
+                    {canEditSchedules && (
                         <Button style={{ marginTop: 16, cursor: 'pointer' }} onClick={() => {
                             handleEdit(selectedSchedule);
                             setIsEditDialogOpen(true);
@@ -287,7 +285,7 @@ const Scheduler = () => {
                         </Button>
                     )}
 
-                    {!canEdit && (<Typography variant="body2" style={{ marginTop: 16 }}>
+                    {!canEditSchedules && (<Typography variant="body2" style={{ marginTop: 16 }}>
                         Display upcoming events, appointments, etc.
                     </Typography>)}
 

@@ -1,11 +1,13 @@
 import { motion, AnimatePresence } from 'framer-motion';
-import { CardContent, Typography, Grid, Paper, styled } from '@mui/material';
-import { useState } from 'react';
+import { Typography } from '@mui/material';
 import ILesson from '../../interfaces/ILesson.interface';
 import useLessons from './useLessons';
 
-const LessonsList = () => {
-    const { lessons, isInsertingLesson } = useLessons();
+type Props = {
+    lessons: ILesson[]
+}
+const LessonsList = ({ lessons }: Props) => {
+    const { isInsertingLesson } = useLessons();
 
     // Helper function to calculate duration
     const getDuration = (startTime: string, endTime: string) => {
@@ -55,7 +57,7 @@ const LessonsList = () => {
                                 transition: 'background-color 0.3s ease, transform 0.2s ease',
                                 fontWeight: isNextLesson ? 'bold' : 'normal', // Bold the next lesson
                             }}
-                            whileHover={{ backgroundColor: '#93CCEA' }}
+                            whileHover={{ backgroundColor: isNextLesson ? '#93CCEA' : 'inherit' }}
                         >
                             <AnimatePresence>
                                 {isInsertingLesson && (

@@ -9,6 +9,7 @@ import ILesson from '../../interfaces/ILesson.interface';
 import { createLesson } from '../../api/lesson';
 import { useAppUser } from '../../context/AppUser.context';
 import { PlusCircle } from 'lucide-react';
+import React from 'react';
 
 function initLessonState() {
     return {
@@ -21,18 +22,20 @@ function initLessonState() {
     }
 }
 
-const Lesson = () => {
+type Props = {
+    lessons: ILesson[]
+    setLessons: React.Dispatch<React.SetStateAction<ILesson[]>>
+}
+const Lesson = ({ lessons, setLessons }: Props) => {
     const [selectedDate, setSelectedDate] = useState<Dayjs | null>(dayjs());
     const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
     const [success, setSuccess] = useState(false);
     const [newLesson, setNewLesson] = useState<Partial<ILesson>>(initLessonState());
 
-    const { lessons, setLessons, setIsInsertingLesson, isInsertingLesson } = useLessons();
+    const { setIsInsertingLesson, isInsertingLesson } = useLessons();
     const { canEditLessons } = useAppUser();
 
-
-    console.log({ canEditLessons })
     const handleDateChange = (date: any) => {
         setSelectedDate(date);
         setNewLesson({ ...newLesson, greg_date: date ? date : '' });
@@ -81,6 +84,7 @@ const Lesson = () => {
 
             if (response.status > 200) {
                 newLesson.id = data.insertId
+                console.log({ newLesson })
                 setLessons([newLesson as ILesson, ...lessons]);
 
                 setNewLesson(initLessonState());
