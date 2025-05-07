@@ -16,6 +16,17 @@ const newCampaignSchema = yup.object({
     description: yup.string().required('Description is required'),
 });
 
+
+const FormCard = styled('div')(({ theme }) => ({
+    background: theme.palette.background.paper,
+    padding: theme.spacing(4),
+    borderRadius: theme.shape.borderRadius * 2,
+    boxShadow: theme.shadows[3],
+    maxWidth: 800,
+    margin: 'auto',
+    marginTop: theme.spacing(4),
+}));
+
 interface campaignTypes {
     id: string
     name: string

@@ -1,12 +1,14 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { Table, TableBody, TableHead, TableRow, TableCell, Paper, Typography, CircularProgress, Alert, Tooltip, IconButton, Button, Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material';
-import { TextField, Grid, Select, MenuItem, FormControl, InputLabel, FormHelperText, Divider } from '@mui/material';
+import { Table, TableBody, TableHead, TableRow, TableCell, Paper, Typography, CircularProgress, Alert, Tooltip, IconButton, Button, Dialog, DialogTitle, DialogContent, DialogActions, Collapse } from '@mui/material';
+import { TextField, Box, Grid, Select, MenuItem, FormControl, InputLabel, FormHelperText, Divider } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { format } from 'date-fns';
+import { CheckCircle, Event } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { getCampaignMembers, getCampaigns, joinCampaign } from '../api/campaign';
 import { useAppUser } from '../context/AppUser.context';
 import { MessageCircle } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 // Styled components for enhanced UI
 const StyledPaper = styled(Paper)(({ theme }) => ({
@@ -188,6 +190,13 @@ const CampaignList = () => {
                 <Typography variant="h4" component="h2" gutterBottom style={{ color: '#1a5235' }}>
                     Campaigns
                 </Typography>
+                {/* <TextField
+                    placeholder="Search campaigns..."
+                    variant="outlined"
+                    size="small"
+                    sx={{ mb: 2 }}
+                    onChange={handleFilterTable}
+                /> */}
                 <Table>
                     <TableHead>
                         <TableRow>
@@ -206,102 +215,121 @@ const CampaignList = () => {
                                 key={campaign.id}
                                 sx={{ "&:hover": { backgroundColor: 'lightgrey', cursor: 'pointer' } }}>
                                 <StyledTableCell>{campaign.campaign_name}</StyledTableCell>
-                                <StyledTableCell>{campaign.type}</StyledTableCell>
+                                <StyledTableCell>{campaign.type}
+                                    {/* <Box display="flex">
+                                        <Event fontSize="small" sx={{ mr: 1, color: 'primary.main' }} />
+                                        {campaign.type}
+                                    </Box> */}
+                                </StyledTableCell>
                                 <StyledTableCell>{format(new Date(campaign.dueDate), 'PPP')}</StyledTableCell>
                                 <StyledTableCell>{campaign.description}</StyledTableCell>
-                                <StyledTableCell>{campaign.active === 1 ? 'yes' : 'no'}</StyledTableCell>
+                                <StyledTableCell sx={{
+                                    backgroundColor: campaign.active === 1 ? '#e8f5e9' : 'inherit',
+                                    '&:hover': { backgroundColor: '#f1f1f1' }
+                                }}>{campaign.active === 1 ? 'yes' : 'no'}</StyledTableCell>
                                 <StyledTableCell>{campaign.created_at}</StyledTableCell>
                             </TableRow>
                         ))}
                     </TableBody>
                 </Table>
             </StyledPaper>
+
+
             {/* Dialog for displaying members */}
-            <Dialog open={openModal} onClose={handleCloseModal} fullWidth maxWidth="md">
-                <DialogTitle>Members of {selectedCampaign?.campaign_name}</DialogTitle>
-                <DialogContent>
-                    {loading ? (
-                        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100px' }}>
-                            <CircularProgress size={40} />
-                        </div>
-                    ) : members.length > 0 ? (
-                        <Table>
-                            <TableHead>
-                                <TableRow>
-                                    <StyledTableHeadCell>Joined At</StyledTableHeadCell>
-                                    <StyledTableHeadCell>Status</StyledTableHeadCell>
-                                    <StyledTableHeadCell>name</StyledTableHeadCell>
-                                    <StyledTableHeadCell>phone number</StyledTableHeadCell>
-                                    <StyledTableHeadCell>email</StyledTableHeadCell>
-                                    <StyledTableHeadCell>Comment</StyledTableHeadCell>
-                                </TableRow>
-                            </TableHead>
-                            <TableBody>
-                                {members.map((member: any) => {
-                                    const hasComment = member.comment && member.comment.length > 0;
-                                    return (
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.3 }}>
+                <Dialog open={openModal} onClose={handleCloseModal} fullWidth maxWidth="md">
+                    <DialogContent dividers sx={{ px: 3, py: 2, maxHeight: '70vh', overflowY: 'auto' }}>
+                        {loading ? (
+                            <Box display="flex" justifyContent="center" alignItems="center" height="100px">
+                                <CircularProgress size={40} />
+                            </Box>
+                        ) : members.length > 0 ? (
+                            <>
+                                <Typography variant="h6" gutterBottom>
+                                    Members List
+                                </Typography>
 
-                                        <TableRow key={member.member_id}>
-                                            <StyledTableCell>{format(new Date(member.joined_date), 'PPPpp')}</StyledTableCell>
-                                            <StyledTableCell>{member.status}</StyledTableCell>
-                                            <StyledTableCell>{`${member.first_name + ' ' + member.last_name}`}</StyledTableCell>
-                                            <StyledTableCell>{member.phone}</StyledTableCell>
-                                            <StyledTableCell>{member.email}</StyledTableCell>
-                                            <StyledTableCell>
-                                                {hasComment ? (
-                                                    <>
-                                                        <Tooltip title={member.comment}>
-                                                            <IconButton size="small" onClick={() => {
-                                                                setOpenCommentDialog({ open: true, comment: member.comment });
-                                                            }}>
-                                                                <MessageCircle size={16} color="#4caf50" /> {/* Use a message icon */}
-                                                            </IconButton>
-                                                        </Tooltip>
+                                <Divider sx={{ mb: 2 }} />
 
-                                                    </>
-                                                ) : (
-                                                    <Typography variant="caption" color="textSecondary">
-                                                        No comment
-                                                    </Typography>
-                                                )}
-                                            </StyledTableCell>
-                                        </TableRow>
-                                    )
-                                })}
+                                <Box sx={{ overflowX: 'auto' }}>
+                                    <Table size="small">
+                                        <TableHead>
+                                            <TableRow>
+                                                <StyledTableHeadCell>Joined At</StyledTableHeadCell>
+                                                <StyledTableHeadCell>Status</StyledTableHeadCell>
+                                                <StyledTableHeadCell>name</StyledTableHeadCell>
+                                                <StyledTableHeadCell>phone number</StyledTableHeadCell>
+                                                <StyledTableHeadCell>email</StyledTableHeadCell>
+                                                <StyledTableHeadCell>Comment</StyledTableHeadCell>
+                                            </TableRow>
+                                        </TableHead>
+                                        <TableBody>
+                                            {members.map((member: any) => {
+                                                const hasComment = member.comment && member.comment.length > 0;
+                                                return (
 
-                            </TableBody>
-                            {members.find(m => m.member_id === user.id) ? null : <Button
-                                variant="contained"
-                                color="primary"
-                                onClick={() => setOpenJoinDialog(true)} // Open Join Campaign Dialog
-                                style={{ marginTop: 20, backgroundColor: '#4caf50', color: '#fff', borderRadius: 8 }}
-                            >
-                                Join a Campaign
-                            </Button>}
-                        </Table>
-                    ) : (
-                        <Typography variant="body1" color="text.secondary" align="center">
-                            <Typography>No members found for this campaign.</Typography>
-                            <Button
-                                variant="contained"
-                                color="primary"
-                                onClick={() => setOpenJoinDialog(true)} // Open Join Campaign Dialog
-                                style={{ marginTop: 20, backgroundColor: '#4caf50', color: '#fff', borderRadius: 8 }}
-                            >
-                                Join a Campaign
-                            </Button>
-                        </Typography>
-                    )}
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={handleCloseModal}>Close</Button>
-                </DialogActions>
-            </Dialog>
+                                                    <TableRow key={member.member_id} >
+                                                        <StyledTableCell>{format(new Date(member.joined_date), 'PPPpp')}</StyledTableCell>
+                                                        <StyledTableCell>{member.status}</StyledTableCell>
+                                                        <StyledTableCell>{`${member.first_name + ' ' + member.last_name}`}</StyledTableCell>
+                                                        <StyledTableCell>{member.phone}</StyledTableCell>
+                                                        <StyledTableCell>{member.email}</StyledTableCell>
+                                                        <StyledTableCell>
+                                                            {hasComment ? (
+                                                                <Tooltip title={member.comment} arrow>
+                                                                    <IconButton size="small" onClick={() => setOpenCommentDialog({ open: true, comment: member.comment })}>
+                                                                        <MessageCircle size={16} color="#4caf50" />
+                                                                    </IconButton>
+                                                                </Tooltip>
+                                                            ) : (
+                                                                <Typography variant="caption" color="text.secondary">
+                                                                    No comment
+                                                                </Typography>
+                                                            )}
+                                                        </StyledTableCell>
+                                                    </TableRow>
+                                                )
+                                            })}
+
+                                        </TableBody>
+                                        {members.find(m => m.member_id === user.id) ? null : <Button
+                                            variant="contained"
+                                            color="primary"
+                                            onClick={() => setOpenJoinDialog(true)} // Open Join Campaign Dialog
+                                            style={{ marginTop: 20, backgroundColor: '#4caf50', color: '#fff', borderRadius: 8 }}
+                                        >
+                                            Join a Campaign
+                                        </Button>}
+                                    </Table>
+
+                                </Box>
+                            </>
+                        ) : (
+                            <Box textAlign="center" mt={2}>
+                                <Typography variant="body1" color="text.secondary">
+                                    No members found for this campaign.
+                                </Typography>
+                                <Button
+                                    variant="contained"
+                                    color="success"
+                                    onClick={() => setOpenJoinDialog(true)}
+                                    sx={{ mt: 2, borderRadius: 2 }}
+                                >
+                                    Join Campaign
+                                </Button>
+                            </Box>
+                        )}
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={handleCloseModal}>Close</Button>
+                    </DialogActions>
+                </Dialog>
+            </motion.div>
             {/* Join Campaign Dialog */}
             <Dialog open={openJoinDialog} onClose={() => setOpenJoinDialog(false)}>
                 <DialogTitle>Join a Campaign</DialogTitle>
                 <DialogContent>
-                    {error && <Alert severity="error">{error}</Alert>}
+                    {error && <Collapse in={!!error}><Alert severity="error">{error}</Alert></Collapse>}
                     {joinCampaignSuccess && <Alert severity="success">Successfully joined the campaign!</Alert>}
                     <FormControl fullWidth margin="normal">
                         <InputLabel id="participation-type-label">Participation Type</InputLabel>

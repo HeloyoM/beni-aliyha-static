@@ -10,11 +10,16 @@ import { io, Socket } from 'socket.io-client';
 // Styled components for enhanced UI
 const MessageContainer = styled(Box)(({ theme }) => ({
     padding: theme.spacing(3),
-    borderRadius: '12px',
+    borderRadius: '16px',
     backgroundColor: theme.palette.background.paper,
-    boxShadow: theme.shadows[1],
-    marginBottom: theme.spacing(2),
+    boxShadow: theme.shadows[2],
+    marginBottom: theme.spacing(3),
     border: `1px solid ${theme.palette.divider}`,
+    transition: 'transform 0.2s, box-shadow 0.3s',
+    '&:hover': {
+        transform: 'translateY(-2px)',
+        boxShadow: theme.shadows[4],
+    },
 }));
 
 
@@ -28,12 +33,17 @@ const SenderAvatar = styled(Avatar)(({ theme }) => ({
     marginRight: theme.spacing(1),
     backgroundColor: theme.palette.primary.main,
     color: theme.palette.primary.contrastText,
+    fontWeight: 'bold',
+    fontSize: '1rem',
+
 }));
 
 const MessageText = styled(Typography)(({ theme }) => ({
     color: theme.palette.text.primary,
     marginBottom: theme.spacing(2),
     whiteSpace: 'pre-line', // Preserve line breaks
+    fontSize: '0.95rem',
+    lineHeight: 1.6
 }));
 
 const MessageDate = styled(Typography)(({ theme }) => ({
@@ -41,14 +51,16 @@ const MessageDate = styled(Typography)(({ theme }) => ({
     fontSize: '0.75rem',
     display: 'block',
     textAlign: 'right',
+    fontStyle: 'italic'
 }));
 
 const ReplyContainer = styled(Box)(({ theme }) => ({
     padding: theme.spacing(2),
     borderRadius: '8px',
-    backgroundColor: theme.palette.background.default,
+    backgroundColor: theme.palette.action.hover,
     marginTop: theme.spacing(2),
     borderLeft: `2px solid ${theme.palette.primary.main}`,
+    marginLeft: theme.spacing(2),
 }));
 
 const ReplyHeader = styled(Box)(({ theme }) => ({
@@ -80,16 +92,22 @@ const ReplyForm = styled(Box)(({ theme }) => ({
     marginTop: theme.spacing(2),
     display: 'flex',
     gap: theme.spacing(1),
-    alignItems: 'flex-start', // Align items to the start (top in this case)
+    alignItems: 'flex-start',
+    background: theme.palette.background.default,
+    borderRadius: '8px',
+    padding: theme.spacing(1),
 }));
 
 const NewMessageForm = styled(Box)(({ theme }) => ({
-    marginTop: theme.spacing(4),
-    padding: theme.spacing(2),
+    margin: theme.spacing(3, 0),
+    padding: theme.spacing(3),
     border: `1px solid ${theme.palette.divider}`,
     borderRadius: '12px',
-    backgroundColor: theme.palette.background.paper,
-    boxShadow: theme.shadows[1]
+    backgroundColor: theme.palette.grey[50],
+    boxShadow: theme.shadows[1],
+    display: 'flex',
+    flexDirection: 'column',
+    gap: theme.spacing(2)
 }))
 const Messages = () => {
     const [messages, setMessages] = useState<any[]>([]);
@@ -254,37 +272,45 @@ const Messages = () => {
     }
 
     return (
-        <Box sx={{ marginTop: '2%' }}>
-            <Typography variant="h4" component="h2" gutterBottom style={{ color: '#1a5235' }}>
+        <Box sx={{ marginTop: '2%', maxWidth: '800px', margin: '0 auto', px: 2 }}>
+            <Typography variant="h4" gutterBottom sx={{ color: 'primary.main', fontWeight: 'bold' }}>
                 Messages
             </Typography>
 
             <NewMessageForm>
-                <Typography variant="subtitle1" style={{ fontWeight: 'bold', marginBottom: '0.5rem' }}>Send New Message</Typography>
+                <Typography variant="h6" gutterBottom style={{ fontWeight: 600, color: '#1a5235' }}>
+                    Send a New Message
+                </Typography>
+
                 <TextField
                     fullWidth
-                    placeholder="Your Message"
+                    placeholder="Type your message..."
                     value={newMessageDescription}
                     onChange={(e) => setNewMessageDescription(e.target.value)}
                     variant="outlined"
-                    size="small"
+                    size="medium"
                     multiline
+                    minRows={3}
                 />
-                <Button
-                    variant="contained"
-                    color="primary"
-                    onClick={handleSendMessage}
-                    disabled={!newMessageDescription.trim()}
-                    style={{ marginTop: '1rem' }}
-                >
-                    <Send size={16} /> Send Message
-                </Button>
+
+                <Box display="flex" justifyContent="flex-end">
+                    <Button
+                        variant="contained"
+                        color="primary"
+                        onClick={handleSendMessage}
+                        disabled={!newMessageDescription.trim()}
+                        startIcon={<Send size={16} />}
+                    >
+                        Send
+                    </Button>
+                </Box>
+
             </NewMessageForm>
 
             {messages.map((message: any) => (
                 <MessageContainer key={message.message_id}>
                     <MessageHeader>
-                        <SenderAvatar>{message.sender_email}</SenderAvatar>
+                        <SenderAvatar>{message.sender_email?.[0]?.toUpperCase()}</SenderAvatar>
                         <Typography variant="subtitle1" style={{ fontWeight: 'bold' }}>
                             {message.sender_email}
                         </Typography>
