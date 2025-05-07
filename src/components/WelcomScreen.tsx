@@ -1,7 +1,9 @@
 import React from 'react';
 import { Box, Button, Typography, styled } from '@mui/material';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import AuthForm from './AuthForm';
+import bgVideoUp from '../assets/2.mp4';
+import OnboardingSteps from './OnboardingSteps';
 
 // Styled component for the welcome text
 const WelcomeText = styled(Typography)(({ theme }) => ({
@@ -83,6 +85,36 @@ const WelcomeScreen = () => {
                 }
             }}
         >
+
+
+            <video
+                autoPlay
+                muted
+                loop
+                playsInline
+                src={bgVideoUp}
+                style={{
+                    position: 'absolute',
+                    width: '100%',
+                    height: '100%',
+                    objectFit: 'cover',
+                    zIndex: -2,
+                }}
+            />
+
+            <Box
+                sx={{
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    width: '100%',
+                    height: '100%',
+                    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+                    zIndex: -1,
+                }}
+            />
+
+            {/* <OnboardingSteps /> */}
             <WelcomeText variant="h1" sx={{ position: 'relative' }}>
                 Welcome
             </WelcomeText>

@@ -1,19 +1,19 @@
 // GuestPage.tsx
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Fade, Box, Typography, Grid, Card, CardMedia, CardContent, Button, TextField, Dialog, DialogContent, DialogTitle, IconButton, ImageList, ImageListItem, ImageListItemBar, Paper, Snackbar, Accordion, AccordionSummary, AccordionDetails, Container } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import '../App.css';
 import { useNavigate } from 'react-router-dom';
 import StarBorderIcon from '@mui/icons-material/StarBorder';
-import { PlayCircle, XCircle, Send, Expand,  } from 'lucide-react';
+import { PlayCircle, XCircle, Send, Expand } from 'lucide-react';
 import TestimonialsCarousel from './Texti';
 import { motion } from 'framer-motion';
 import bgVideoUp from '../assets/2.mp4';
 import bgVideoDown from '../assets/3.mp4';
 import { FinalCTASection } from './FinalCTASection';
 import LocationMap from './LocationMap';
+import WhatsappButton from './WhatsappButton';
 
-// Styled component for the sections
 const GuestSection = styled(Box)(({ theme }) => ({
     height: '100vh',
     display: 'flex',
@@ -30,16 +30,6 @@ const ContentBox = styled(Box)(({ theme }) => ({
     textAlign: 'center',
 }));
 
-const ContactFormBox = styled('form')(({ theme }) => ({
-    display: 'flex',
-    flexDirection: 'column',
-    gap: theme.spacing(2),
-    maxWidth: '90%',
-    margin: '0 auto',
-    padding: theme.spacing(2),
-    borderRadius: theme.shape.borderRadius,
-    backgroundColor: theme.palette.background.paper,
-}));
 
 function srcset(image: string, width: number, height: number, rows = 1, cols = 1) {
     return {
@@ -64,26 +54,7 @@ const PlayButton = styled(IconButton)(({ theme }) => ({
         transform: 'translate(-50%, -50%) scale(1.1)',
     },
 }));
-const StyledButton = styled(Button)(({ theme }) => ({
-    padding: theme.spacing(1.5, 3),
-    backgroundColor: theme.palette.primary.main,
-    color: theme.palette.common.white,
-    fontWeight: 600,
-    borderRadius: theme.shape.borderRadius,
-    transition: 'background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease',
-    '&:hover': {
-        backgroundColor: theme.palette.primary.dark,
-        transform: 'scale(1.03)',
-        boxShadow: '0 6px 12px rgba(0, 0, 0, 0.15)',
-    },
-    '&:active': {
-        transform: 'scale(1)',
-        boxShadow: '0 3px 6px rgba(0, 0, 0, 0.1)',
-    },
-    display: 'flex', // Use flexbox for icon alignment
-    alignItems: 'center',
-    gap: theme.spacing(1), // Space between text and icon
-}));
+
 const GuestPage: React.FC = () => {
     const [loaded, setLoaded] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -103,27 +74,12 @@ const GuestPage: React.FC = () => {
         setForm({ name: "", email: "", message: "" });
     };
 
-    const sectionRef = useRef<HTMLDivElement | null>(null)
-
-    const handleScrollToSection = () => {
-        console.log({ sectionRef })
-        if (!sectionRef?.current) return
-
-        sectionRef.current.scrollTo({
-            behavior: 'smooth',
-            // top: sectionRef.current.scrollHeight,
-        })
-    };
 
     useEffect(() => {
         setLoaded(true);
     }, []);
 
     const navigate = useNavigate();
-
-    const handleBackToLogin = () => {
-        navigate('/'); // Navigate to the root path
-    };
 
     const handleVideoClick = useCallback((src: string) => {
         setOpenDialog({ open: true, src });
@@ -138,7 +94,6 @@ const GuestPage: React.FC = () => {
         <>
             <Box
                 sx={{
-                    // height: { xs: '60vh', md: '80vh' },
                     overflowY: 'auto',
                     height: '100vh',
                     backgroundImage: 'url(/images/aliyah-hero.jpg)',
@@ -199,11 +154,6 @@ const GuestPage: React.FC = () => {
             >
 
                 <GuestSection id="pictures" sx={{ justifyContent: 'flex-start', paddingTop: 4 }}>
-                    <Button variant="outlined" onClick={handleBackToLogin} sx={{ mt: 2 }}>
-                        Back
-                    </Button>
-
-
                     <ImageList
                         sx={{
                             width: '100%',
@@ -355,7 +305,7 @@ const GuestPage: React.FC = () => {
                             </Grid>
 
                             <Box sx={{ textAlign: 'center', mt: 5 }}>
-                                <Button variant="contained" size="large" color="primary" onClick={handleScrollToSection}>
+                                <Button variant="contained" size="large" color="primary" href="#contact">
                                     Let’s Talk About Your Future in Israel 🇮🇱
                                 </Button>
                             </Box>
@@ -550,6 +500,8 @@ const GuestPage: React.FC = () => {
                                 for meaningful friendships, excellent education, or a slower, more purposeful pace of life —
                                 this is a place where you can truly feel at home. 🏡
                             </Typography>
+
+                            <WhatsappButton />
                         </motion.div>
 
                         <Grid container spacing={4} mt={4}>
@@ -631,7 +583,6 @@ const GuestPage: React.FC = () => {
 
 
                 <GuestSection
-                    ref={sectionRef}
                     id="contact-us"
                     sx={{
                         background: 'linear-gradient(135deg, #1e3c72 0%, #2a5298 100%)',
@@ -708,6 +659,7 @@ const GuestPage: React.FC = () => {
                                             Send
                                         </Button>
                                     </Box>
+                   
                                 </Box>
                             </Box>
 
