@@ -238,11 +238,12 @@ const StyledDayPicker = styled(DayPicker)(({ theme }) => ({
         padding: '8px',
         borderRadius: '4px',
         cursor: 'pointer',
-        transition: 'background-color 0.3s, color 0.3s',
+        transition: 'background-color 0.3s, color 0.3s, transform 0.2s',
         color: theme.palette.text.primary,
         '&:hover': {
             backgroundColor: theme.palette.action.hover,
             color: theme.palette.primary.main,
+            transform: 'scale(1.05)',
         },
         '&[aria-selected="true"]': {
             backgroundColor: theme.palette.primary.main,
@@ -280,9 +281,14 @@ function MyDatePicker({ selected, onChange }: Props) {
             selected={selected}
             onSelect={day => onChange(day)}
             footer={
-                <Typography variant="caption" color="textSecondary">
-                    {selected ? `Selected: ${selected}` : "Pick a day."}
-                </Typography>
+                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <Typography variant="caption" color="textSecondary">
+                        {selected ? `Selected: ${selected}` : "Pick a day."}
+                    </Typography>
+                    <Button variant="text" onClick={() => onChange(null)}>
+                        Clear
+                    </Button>
+                </div>
             }
         />
     );

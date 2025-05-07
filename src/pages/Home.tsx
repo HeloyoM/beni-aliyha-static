@@ -16,11 +16,17 @@ import { motion } from 'framer-motion';
 
 // Styled components for consistent styling
 const DashboardSection = styled(Paper)(({ theme }) => ({
-  padding: theme.spacing(2),
-  borderRadius: theme.shape.borderRadius,
-  marginBottom: theme.spacing(3),
-  boxShadow: theme.shadows[1],
-  '&:hover': { backgroundColor: '#e3f2fd' }
+  padding: theme.spacing(3),
+  borderRadius: theme.shape.borderRadius * 2,
+  marginBottom: theme.spacing(2),
+  backgroundColor: theme.palette.background.default,
+  boxShadow: theme.shadows[2],
+  transition: 'transform 0.3s ease, box-shadow 0.3s ease',
+  '&:hover': {
+    transform: 'translateY(-2px)',
+    boxShadow: theme.shadows[4],
+   backgroundColor: '#e3f2fd'
+  },
 }));
 
 const SectionTitle = styled(Typography)(({ theme }) => ({
@@ -31,6 +37,18 @@ const SectionTitle = styled(Typography)(({ theme }) => ({
   display: 'flex',
   alignItems: 'center',
   gap: theme.spacing(1),
+}));
+
+const SectionTitleWithIcon = styled(SectionTitle)(({ theme }) => ({
+  fontSize: theme.typography.h6.fontSize,
+  fontWeight: 600,
+  marginBottom: theme.spacing(2),
+  paddingBottom: theme.spacing(1),
+  borderBottom: `2px solid ${theme.palette.primary.light}`,
+  display: 'flex',
+  alignItems: 'center',
+  gap: theme.spacing(1),
+  color: theme.palette.primary.dark,
 }));
 
 const Home: React.FC = () => {
@@ -50,12 +68,12 @@ const Home: React.FC = () => {
 
           <motion.div
             initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.5 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4 }}
           >
             <DashboardSection>
 
-              <SectionTitle variant="h5"><Clock size={20} />Time of Lessons</SectionTitle>
+              <SectionTitleWithIcon><Clock size={20} /> Time of Lessons</SectionTitleWithIcon>
 
               <CardContent style={{ maxHeight: '300px', overflowY: 'auto', padding: '15px' }}>
 
@@ -84,15 +102,18 @@ const Home: React.FC = () => {
         <Grid size={{ xs: 12, sm: 6, md: 4 }}>
 
           <DashboardSection>
-            <SectionTitle variant="h5"><Award size={20} />Campaigns</SectionTitle>
+            <SectionTitleWithIcon variant="h5"><Award size={20} />Campaigns</SectionTitleWithIcon>
             <Button
               variant="outlined"
               onClick={() => setIsInsertingCampaign(!isInsertingCampaign)}
               sx={{
                 marginTop: '10px',
                 '&:hover': {
-                  backgroundColor: '#f5f5f5',
+                  backgroundColor: '#e3f2fd',
                   color: '#1976d2',
+                },
+                '&:focus': {
+                  boxShadow: '0 0 5px 2px rgba(0, 123, 255, 0.5)',
                 }
               }}
             >
@@ -122,7 +143,7 @@ const Home: React.FC = () => {
 
         <Grid size={{ xs: 12, sm: 6, md: 4 }}>
           <DashboardSection>
-            <SectionTitle variant="h5"><Clock size={20} /> Time of Lessons</SectionTitle>
+            <SectionTitleWithIcon variant="h5"><Clock size={20} /> Time of Lessons</SectionTitleWithIcon>
             <CardContent>
               {/* Time of lessons content here */}
               <Typography variant="body2">Display today's or the week's lesson schedule.</Typography>
@@ -133,7 +154,7 @@ const Home: React.FC = () => {
 
         <Grid size={{ xs: 12, sm: 6, md: 4 }}>
           <DashboardSection>
-            <SectionTitle variant="h5"><List size={20} />To-Do List</SectionTitle>
+            <SectionTitleWithIcon variant="h5"><List size={20} />To-Do List</SectionTitleWithIcon>
             <CardContent>
               <Typography variant="body2">Display user's to-do list.</Typography>
             </CardContent>
@@ -205,11 +226,12 @@ const StyledDayPicker = styled(DayPicker)(({ theme }) => ({
     padding: '8px',
     borderRadius: '4px',
     cursor: 'pointer',
-    transition: 'background-color 0.3s, color 0.3s',
+    transition: 'background-color 0.3s, color 0.3s, transform 0.2s',
     color: theme.palette.text.primary,
     '&:hover': {
       backgroundColor: theme.palette.action.hover,
       color: theme.palette.primary.main,
+      transform: 'scale(1.05)',
     },
     '&[aria-selected="true"]': {
       backgroundColor: theme.palette.primary.main,
@@ -233,6 +255,7 @@ const StyledDayPicker = styled(DayPicker)(({ theme }) => ({
     fontSize: '0.875rem',
     textAlign: 'center',
   },
+
 }));
 
 type Props = {
@@ -247,9 +270,14 @@ function MyDatePicker({ selected, onChange }: Props) {
       selected={selected}
       onSelect={day => onChange(day)}
       footer={
-        <Typography variant="caption" color="textSecondary">
-          {selected ? `Selected: ${selected}` : "Pick a day."}
-        </Typography>
+        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+          <Typography variant="caption" color="textSecondary">
+            {selected ? `Selected: ${selected}` : "Pick a day."}
+          </Typography>
+          <Button variant="text" onClick={() => onChange(null)}>
+            Clear
+          </Button>
+        </div>
       }
     />
   );

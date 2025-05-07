@@ -15,6 +15,7 @@ import Messages from './components/Messages';
 import { profile } from './api/auth';
 import GuestPage from './components/GuestPage';
 import IUser from './interfaces/User.interface';
+import FloatingActions from './components/FloatingActions';
 
 // Helper function to check token expiration
 const isTokenExpired = (token: string | null) => {
@@ -95,9 +96,7 @@ const AppContent = () => {
   return (
     <>
       {shouldShowWrapper && (
-        <ScreenWrapper>
-          <Header />
-        </ScreenWrapper>
+          <FloatingActions />
       )}
 
       <Routes>

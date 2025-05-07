@@ -214,7 +214,6 @@ const Lesson = ({ lessons, setLessons }: Props) => {
 
 export default Lesson;
 
-
 const StyledDayPicker = styled(DayPicker)(({ theme }) => ({
     display: 'flex',
     flexDirection: 'column',
@@ -222,8 +221,8 @@ const StyledDayPicker = styled(DayPicker)(({ theme }) => ({
     // border: `1.4px solid ${theme.palette.divider}`, // Use theme's divider
     borderRadius: '8px',
     padding: theme.spacing(2),
-    // boxShadow: theme.shadows[2],              // Add shadow for depth
-    backgroundColor: theme.palette.background.paper, // Use theme's background
+    // boxShadow: theme.shadows[2],
+    backgroundColor: theme.palette.background.paper,
     height: 'auto',
     width: 'auto',
     maxWidth: '450px',
@@ -260,11 +259,12 @@ const StyledDayPicker = styled(DayPicker)(({ theme }) => ({
         padding: '8px',
         borderRadius: '4px',
         cursor: 'pointer',
-        transition: 'background-color 0.3s, color 0.3s',
+        transition: 'background-color 0.3s, color 0.3s, transform 0.2s',
         color: theme.palette.text.primary,
         '&:hover': {
             backgroundColor: theme.palette.action.hover,
             color: theme.palette.primary.main,
+            transform: 'scale(1.05)',
         },
         '&[aria-selected="true"]': {
             backgroundColor: theme.palette.primary.main,
@@ -290,11 +290,11 @@ const StyledDayPicker = styled(DayPicker)(({ theme }) => ({
     },
 }));
 
-type MyDatePickerProps = {
+type DateProps = {
     onChange: (day: any) => void
     selected: any
 }
-function MyDatePicker({ selected, onChange }: MyDatePickerProps) {
+function MyDatePicker({ onChange, selected }: DateProps) {
 
     return (
         <StyledDayPicker
@@ -302,9 +302,14 @@ function MyDatePicker({ selected, onChange }: MyDatePickerProps) {
             selected={selected}
             onSelect={day => onChange(day)}
             footer={
-                <Typography variant="caption" color="textSecondary">
-                    {selected ? `Selected: ${selected}` : "Pick a day."}
-                </Typography>
+                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <Typography variant="caption" color="textSecondary">
+                        {selected ? `Selected: ${selected}` : "Pick a day."}
+                    </Typography>
+                    <Button variant="text" onClick={() => onChange(null)}>
+                        Clear
+                    </Button>
+                </div>
             }
         />
     );
