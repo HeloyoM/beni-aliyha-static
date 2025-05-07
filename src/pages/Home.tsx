@@ -12,6 +12,7 @@ import PaymentManagement from '../components/PaymentManagement';
 import useLessons from '../components/Lessons/useLessons';
 import Birthdays from '../components/Birthdays';
 import 'react-day-picker/dist/style.css';
+import { motion } from 'framer-motion';
 
 // Styled components for consistent styling
 const DashboardSection = styled(Paper)(({ theme }) => ({
@@ -19,6 +20,7 @@ const DashboardSection = styled(Paper)(({ theme }) => ({
   borderRadius: theme.shape.borderRadius,
   marginBottom: theme.spacing(3),
   boxShadow: theme.shadows[1],
+  '&:hover': { backgroundColor: '#e3f2fd' }
 }));
 
 const SectionTitle = styled(Typography)(({ theme }) => ({
@@ -44,24 +46,30 @@ const Home: React.FC = () => {
 
       <Grid container spacing={3} sx={{ mt: 15 }}>
 
-        <Grid size={6}>
+        <Grid size={{ xs: 12, sm: 6, md: 4 }}  >
 
-          <DashboardSection >
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5 }}
+          >
+            <DashboardSection>
 
-            <SectionTitle><Clock size={20} />Time of Lessons</SectionTitle>
+              <SectionTitle variant="h5"><Clock size={20} />Time of Lessons</SectionTitle>
 
-            <CardContent style={{ maxHeight: '300px', overflowY: 'auto', padding: '15px' }}>
+              <CardContent style={{ maxHeight: '300px', overflowY: 'auto', padding: '15px' }}>
 
-              <LessonsList lessons={lessons} />
+                <LessonsList lessons={lessons} />
 
-            </CardContent>
+              </CardContent>
 
-            <Lesson lessons={lessons} setLessons={setLessons} />
+              <Lesson lessons={lessons} setLessons={setLessons} />
 
-          </DashboardSection>
+            </DashboardSection>
+          </motion.div>
         </Grid>
 
-        <Grid size={6}>
+        <Grid size={{ xs: 12, sm: 6, md: 4 }}>
           <DashboardSection style={{ backgroundColor: '#e0f7fa' }}>
             <CardContent sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
 
@@ -73,40 +81,48 @@ const Home: React.FC = () => {
           </DashboardSection>
         </Grid>
 
-        <Grid size={10}>
+        <Grid size={{ xs: 12, sm: 6, md: 4 }}>
 
           <DashboardSection>
-            <SectionTitle><Award size={20} />Campaigns</SectionTitle>
+            <SectionTitle variant="h5"><Award size={20} />Campaigns</SectionTitle>
             <Button
               variant="outlined"
               onClick={() => setIsInsertingCampaign(!isInsertingCampaign)}
-              style={{ marginTop: '10px' }}
+              sx={{
+                marginTop: '10px',
+                '&:hover': {
+                  backgroundColor: '#f5f5f5',
+                  color: '#1976d2',
+                }
+              }}
             >
               {isInsertingCampaign ? 'Cancel' : 'Start New Campaign'} <PlusCircle size={16} style={{ marginLeft: '5px' }} />
             </Button>
             <CardContent>
             </CardContent>
             {isInsertingCampaign && (
-              <Paper style={{ padding: '15px', marginTop: '10px', backgroundColor: '#f9f9f9' }}>
-                <Typography variant="h6" style={{ marginBottom: '10px' }}>Insert New Campaign</Typography>
+              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5 }}>
+                <Paper style={{ padding: '15px', marginTop: '10px', backgroundColor: '#f9f9f9' }}>
+                  <Typography variant="h6" style={{ marginBottom: '10px' }}>Insert New Campaign</Typography>
 
-                <Campaign />
+                  <Campaign />
 
-              </Paper>
+                </Paper>
+              </motion.div>
             )}
 
           </DashboardSection>
 
         </Grid>
 
-        <Grid size={2}>
+        <Grid size={{ xs: 12, sm: 6, md: 4 }}>
           <Birthdays />
         </Grid>
 
 
-        <Grid size={3}>
+        <Grid size={{ xs: 12, sm: 6, md: 4 }}>
           <DashboardSection>
-            <SectionTitle><Clock size={20} /> Time of Lessons</SectionTitle>
+            <SectionTitle variant="h5"><Clock size={20} /> Time of Lessons</SectionTitle>
             <CardContent>
               {/* Time of lessons content here */}
               <Typography variant="body2">Display today's or the week's lesson schedule.</Typography>
@@ -115,9 +131,9 @@ const Home: React.FC = () => {
         </Grid>
 
 
-        <Grid size={12}>
+        <Grid size={{ xs: 12, sm: 6, md: 4 }}>
           <DashboardSection>
-            <SectionTitle><List size={20} />To-Do List</SectionTitle>
+            <SectionTitle variant="h5"><List size={20} />To-Do List</SectionTitle>
             <CardContent>
               <Typography variant="body2">Display user's to-do list.</Typography>
             </CardContent>

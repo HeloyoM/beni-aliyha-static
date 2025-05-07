@@ -57,7 +57,7 @@ const LessonsList = ({ lessons }: Props) => {
                                 transition: 'background-color 0.3s ease, transform 0.2s ease',
                                 fontWeight: isNextLesson ? 'bold' : 'normal', // Bold the next lesson
                             }}
-                            whileHover={{ backgroundColor: isNextLesson ? '#93CCEA' : 'inherit' }}
+                            whileHover={{ backgroundColor: isNextLesson ? '#93CCEA' : 'none' }}
                         >
                             <AnimatePresence>
                                 {isInsertingLesson && (
