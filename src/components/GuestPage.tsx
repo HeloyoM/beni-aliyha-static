@@ -5,11 +5,13 @@ import { styled } from '@mui/material/styles';
 import '../App.css';
 import { useNavigate } from 'react-router-dom';
 import StarBorderIcon from '@mui/icons-material/StarBorder';
-import { PlayCircle, XCircle, Send, Expand } from 'lucide-react';
+import { PlayCircle, XCircle, Send, Expand,  } from 'lucide-react';
 import TestimonialsCarousel from './Texti';
 import { motion } from 'framer-motion';
-import bgVideo from '../assets/1.mp4';
+import bgVideoUp from '../assets/2.mp4';
+import bgVideoDown from '../assets/3.mp4';
 import { FinalCTASection } from './FinalCTASection';
+import LocationMap from './LocationMap';
 
 // Styled component for the sections
 const GuestSection = styled(Box)(({ theme }) => ({
@@ -138,7 +140,7 @@ const GuestPage: React.FC = () => {
                 sx={{
                     // height: { xs: '60vh', md: '80vh' },
                     overflowY: 'auto',
-                    height: '95vh',
+                    height: '100vh',
                     backgroundImage: 'url(/images/aliyah-hero.jpg)',
                     backgroundSize: 'cover',
                     backgroundPosition: 'center',
@@ -150,6 +152,34 @@ const GuestPage: React.FC = () => {
                     px: 2,
                 }}
             >
+
+                <video
+                    autoPlay
+                    muted
+                    loop
+                    playsInline
+                    src={bgVideoUp}
+                    style={{
+                        position: 'absolute',
+                        width: '100%',
+                        height: '100%',
+                        objectFit: 'cover',
+                        zIndex: -2,
+                    }}
+                />
+
+                <Box
+                    sx={{
+                        position: 'absolute',
+                        top: 0,
+                        left: 0,
+                        width: '100%',
+                        height: '100%',
+                        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+                        zIndex: -1,
+                    }}
+                />
+
                 <Box sx={{ bgcolor: 'rgba(0, 0, 0, 0.4)', p: 3, borderRadius: 2 }}>
                     <Typography variant="h3" sx={{ fontWeight: 'bold' }}>
                         Welcome Home to Israel 🇮🇱
@@ -221,6 +251,12 @@ const GuestPage: React.FC = () => {
 
                 </GuestSection>
 
+
+
+
+
+
+
                 <GuestSection id="videos" sx={{ justifyContent: 'flex-start', paddingTop: 4 }}>
 
                     <Typography variant="h5" gutterBottom>See What Life Looks Like Here 🎥</Typography>
@@ -276,6 +312,11 @@ const GuestPage: React.FC = () => {
 
                 </GuestSection>
 
+
+
+
+
+
                 <GuestSection id="text-content" >
                     <Box sx={{ py: 6, px: 2, maxWidth: '900px', mx: 'auto' }}>
 
@@ -323,9 +364,12 @@ const GuestPage: React.FC = () => {
                 </GuestSection>
 
 
-                <GuestSection
-                    id="faq"
-                >
+
+
+
+
+
+                <GuestSection id="faq">
                     <Box sx={{ py: 6, px: 2, maxWidth: '800px', mx: 'auto' }}>
                         <Typography variant="h4" gutterBottom textAlign="center">
                             Frequently Asked Questions
@@ -389,6 +433,12 @@ const GuestPage: React.FC = () => {
 
                 </GuestSection>
 
+
+
+
+
+
+
                 <GuestSection id="people">
                     <Box sx={{ py: 6, px: 2 }}>
                         <Typography variant="h4" gutterBottom textAlign="center">
@@ -439,9 +489,20 @@ const GuestPage: React.FC = () => {
 
                 </GuestSection>
 
+
+
+
+
                 <GuestSection id="testi">
                     <TestimonialsCarousel />
                 </GuestSection>
+
+
+
+
+
+
+
 
                 <GuestSection id="community" style={{ position: 'relative', overflow: 'hidden' }}>
 
@@ -450,7 +511,7 @@ const GuestPage: React.FC = () => {
                         muted
                         loop
                         playsInline
-                        src={bgVideo}
+                        src={bgVideoDown}
                         style={{
                             position: 'absolute',
                             width: '100%',
@@ -546,9 +607,27 @@ const GuestPage: React.FC = () => {
                     </Container>
                 </GuestSection>
 
+
+
+
+
                 <GuestSection id="cta">
                     <FinalCTASection />
                 </GuestSection>
+
+
+
+
+
+
+                <GuestSection id="location">
+                    <LocationMap />
+                </GuestSection>
+
+
+
+
+
 
 
                 <GuestSection
