@@ -16,6 +16,7 @@ import GuestMessages from '../components/GuestsMessages';
 import PaymentsTable from '../components/PaymentsTable';
 import { useAppUser } from '../context/AppUser.context';
 import { getAllPayments, getPayments } from '../api/payments';
+import QuickAddPayment from '../components/QuickAddPayment';
 
 // Styled components for consistent styling
 const DashboardSection = styled(Paper)(({ theme }) => ({
@@ -75,6 +76,7 @@ const Home: React.FC = () => {
   const [payments, setPayments] = useState<Payment[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
+  const [showPayments, setShowPayments] = useState(false);
 
   const { lessons, setLessons } = useLessons();
 
@@ -87,7 +89,6 @@ const Home: React.FC = () => {
 
       const data = response.data as any;
 
-      
       if (response.status !== 200) {
         throw new Error(data.message || 'Failed to fetch payments');
       }
@@ -104,18 +105,21 @@ const Home: React.FC = () => {
     fetchPayments();
   }, [fetchPayments]);
 
+
+  const onAdd = (payload: any) => {
+
+  }
+
   return (
     <Box sx={{ padding: '20px' }}>
 
-
-      <PaymentsTable payments={payments} />
 
       <Grid container spacing={3} sx={{ mt: 15 }}>
 
 
 
 
-        <Grid size={{ xs: 6, sm: 6, md: 4, xl: 12 }}>
+        <Grid size={{ xs: 6, sm: 6, md: 4, xl: 12, lg: 6 }}>
           <DashboardSection>
             <CardContent>
               <GuestMessages />
@@ -229,17 +233,33 @@ const Home: React.FC = () => {
 
 
 
-        <Grid size={{ xs: 12, sm: 6, md: 4 }}>
-          <DashboardSection>
-            <SectionTitleWithIcon variant="h5"><List size={20} />To-Do List</SectionTitleWithIcon>
-            <CardContent>
-              <Typography variant="body2">Display user's to-do list.</Typography>
-            </CardContent>
-          </DashboardSection>
-        </Grid>
+        {/* <Grid size={{ xs: 12, sm: 6, md: 4 }}> */}
+        {/* <DashboardSection> */}
+        {/* <SectionTitleWithIcon variant="h5"><List size={20} />Payments</SectionTitleWithIcon> */}
+        {/* <CardContent> */}
+        {/* </CardContent> */}
+        {/* </DashboardSection> */}
+        {/* </Grid> */}
 
 
       </Grid>
+
+      <Box>
+        <Button
+          variant="outlined"
+          onClick={() => setShowPayments((prev) => !prev)}
+        >
+          {showPayments ? 'Hide Payments' : 'Manage Payments'}
+        </Button>
+
+        {showPayments && (
+          <>
+            <QuickAddPayment />
+            <PaymentsTable payments={payments} />
+          </>
+        )}
+      </Box>
+
     </Box >
   )
 }
