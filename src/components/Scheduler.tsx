@@ -175,8 +175,8 @@ const Scheduler = () => {
                 </Typography>
             )}
 
-            {user && user.level === 100 && selectedParasha && (
-                <FormControl fullWidth>
+            {user && canEditSchedules && selectedParasha && (
+                <FormControl>
                     <InputLabel id="parasha-select-label">Parasha</InputLabel>
                     <Select
                         labelId="parasha-select-label"
@@ -219,6 +219,7 @@ const Scheduler = () => {
                         ) : (
                             <span style={{ marginLeft: '8px' }}>{selectedSchedule.mincha_time || 'N/A'}</span>
                         )}
+                        מנחה
                     </Typography>
                     <Typography variant="body2">
                         Shacharis:
@@ -241,6 +242,7 @@ const Scheduler = () => {
                         ) : (
                             <span style={{ marginLeft: '8px' }}>{selectedSchedule.shacharis_time || 'N/A'}</span>
                         )}
+                        שחרית
                     </Typography>
                     <Typography variant="body2">
                         Maariv:
@@ -262,6 +264,7 @@ const Scheduler = () => {
                         ) : (
                             <span style={{ marginLeft: '8px' }}>{selectedSchedule.maariv_time || 'N/A'}</span>
                         )}
+                        מעריב
                     </Typography>
 
                     {error && (
@@ -294,10 +297,8 @@ const Scheduler = () => {
 
             <Dialog open={isEditDialogOpen} onClose={handleCloseEdit}>
                 <DialogTitle>Edit Schedule Item</DialogTitle>
-                <DialogContent>
+                <DialogContent sx={{ paddingTop: '20px !important' }}>
                     <Grid container spacing={2}>
-                        <Grid>
-                        </Grid>
                         <Grid>
                             <TextField
                                 label="Mincha Time"
@@ -306,12 +307,6 @@ const Scheduler = () => {
                                 onChange={handleInputChange}
                                 type="time"
                             />
-                        </Grid>
-                        <Grid>
-
-                        </Grid>
-                        <Grid>
-
                         </Grid>
                         <Grid>
                             <TextField
@@ -332,9 +327,6 @@ const Scheduler = () => {
                                 onChange={handleInputChange}
                                 type="time"
                             />
-                        </Grid>
-                        <Grid >
-
                         </Grid>
                     </Grid>
                 </DialogContent>

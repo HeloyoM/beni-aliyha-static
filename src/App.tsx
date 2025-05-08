@@ -2,9 +2,7 @@ import React, { useCallback, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation, useNavigate } from 'react-router-dom';
 import { Typography } from '@mui/material';
 import Home from './pages/Home';
-import Header from './components/Header';
-import { jwtDecode } from 'jwt-decode'; // Import jwt-decode
-import ScreenWrapper from './components/ScreenWrapper';
+import { jwtDecode } from 'jwt-decode'; 
 import { AppUserProvider, useAppUser } from './context/AppUser.context';
 import AppServerMsgContext from "./context/AppServerMsg";
 import './App.css';
@@ -14,7 +12,6 @@ import CampaignList from './components/CampaignList';
 import Messages from './components/Messages';
 import { profile } from './api/auth';
 import GuestPage from './components/GuestPage';
-import IUser from './interfaces/User.interface';
 import FloatingActions from './components/FloatingActions';
 
 // Helper function to check token expiration
@@ -55,7 +52,7 @@ const AppContent = () => {
   const location = useLocation();
 
   const { updateUserContext, logout, updateAllowedResources } = useAppUser();
-  
+
   // Determine whether to show the Header and ScreenWrapper
   const shouldShowWrapper = location.pathname !== '/' && location.pathname !== '/guest';
 
@@ -68,6 +65,8 @@ const AppContent = () => {
   }, [navigate]);
 
   useEffect(() => {
+    if (location.pathname === '/guest') return
+
     if (token && !isTokenExpired(token)) {
 
       try {
@@ -88,7 +87,7 @@ const AppContent = () => {
         return;
       }
     } else {
-      // handleLogout();
+      handleLogout();
     }
 
   }, [handleLogout]);
@@ -96,7 +95,7 @@ const AppContent = () => {
   return (
     <>
       {shouldShowWrapper && (
-          <FloatingActions />
+        <FloatingActions />
       )}
 
       <Routes>

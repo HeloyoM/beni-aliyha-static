@@ -8,6 +8,7 @@ const useLessons = () => {
 
     useEffect(() => {
         if (lessons.length) return
+        
         const fetchLessonsData = async () => {
             try {
                 const response = await getLessons();

@@ -113,7 +113,7 @@ const GuestPage: React.FC = () => {
                     muted
                     loop
                     playsInline
-                    src={bgVideoUp}
+                    src={bgVideoDown}
                     style={{
                         position: 'absolute',
                         width: '100%',
@@ -461,7 +461,7 @@ const GuestPage: React.FC = () => {
                         muted
                         loop
                         playsInline
-                        src={bgVideoDown}
+                        src={bgVideoUp}
                         style={{
                             position: 'absolute',
                             width: '100%',

@@ -25,7 +25,7 @@ const DashboardSection = styled(Paper)(({ theme }) => ({
   '&:hover': {
     transform: 'translateY(-2px)',
     boxShadow: theme.shadows[4],
-   backgroundColor: '#e3f2fd'
+    backgroundColor: '#e3f2fd'
   },
 }));
 
@@ -64,7 +64,7 @@ const Home: React.FC = () => {
 
       <Grid container spacing={3} sx={{ mt: 15 }}>
 
-        <Grid size={{ xs: 12, sm: 6, md: 4 }}  >
+        <Grid size={{ xs: 6, sm: 6, md: 4, xl: 6 }}  >
 
           <motion.div
             initial={{ opacity: 0 }}
@@ -87,7 +87,7 @@ const Home: React.FC = () => {
           </motion.div>
         </Grid>
 
-        <Grid size={{ xs: 12, sm: 6, md: 4 }}>
+        <Grid size={{ xs: 6, sm: 6, md: 4, xl: 6 }}>
           <DashboardSection style={{ backgroundColor: '#e0f7fa' }}>
             <CardContent sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
 
@@ -103,6 +103,11 @@ const Home: React.FC = () => {
 
           <DashboardSection>
             <SectionTitleWithIcon variant="h5"><Award size={20} />Campaigns</SectionTitleWithIcon>
+
+            <CardContent>
+            </CardContent>
+
+
             <Button
               variant="outlined"
               onClick={() => setIsInsertingCampaign(!isInsertingCampaign)}
@@ -119,8 +124,7 @@ const Home: React.FC = () => {
             >
               {isInsertingCampaign ? 'Cancel' : 'Start New Campaign'} <PlusCircle size={16} style={{ marginLeft: '5px' }} />
             </Button>
-            <CardContent>
-            </CardContent>
+
             {isInsertingCampaign && (
               <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5 }}>
                 <Paper style={{ padding: '15px', marginTop: '10px', backgroundColor: '#f9f9f9' }}>
@@ -135,6 +139,8 @@ const Home: React.FC = () => {
           </DashboardSection>
 
         </Grid>
+
+
 
         <Grid size={{ xs: 12, sm: 6, md: 4 }}>
           <Birthdays />
