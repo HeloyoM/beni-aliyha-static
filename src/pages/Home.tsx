@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import '../App.css';
 import { Button, CardContent, Typography, Grid, Paper, styled, Box } from '@mui/material';
 import Campaign from '../components/Campaign';
@@ -13,6 +13,9 @@ import Birthdays from '../components/Birthdays';
 import 'react-day-picker/dist/style.css';
 import { motion } from 'framer-motion';
 import GuestMessages from '../components/GuestsMessages';
+import PaymentsTable from '../components/PaymentsTable';
+import { useAppUser } from '../context/AppUser.context';
+import { getAllPayments, getPayments } from '../api/payments';
 
 // Styled components for consistent styling
 const DashboardSection = styled(Paper)(({ theme }) => ({
@@ -51,16 +54,61 @@ const SectionTitleWithIcon = styled(SectionTitle)(({ theme }) => ({
   color: theme.palette.primary.dark,
 }));
 
+interface Payment {
+  id: string;
+  user_id: string;
+  description: string;
+  amount: number;
+  due_date: string;
+  status: string;
+  created_at: string;
+  updated_at: string;
+  user: {
+    id: string;
+    name: string;
+    email: string;
+  };
+}
+
 const Home: React.FC = () => {
   const [isInsertingCampaign, setIsInsertingCampaign] = useState(false);
+  const [payments, setPayments] = useState<Payment[]>([]);
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState<boolean>(false);
 
   const { lessons, setLessons } = useLessons();
+
+  const { canEditPayments } = useAppUser();
+
+  // Fetch payments
+  const fetchPayments = useCallback(async () => {
+    try {
+      const response = canEditPayments ? await getAllPayments() : await getPayments();
+
+      const data = response.data as any;
+
+      
+      if (response.status !== 200) {
+        throw new Error(data.message || 'Failed to fetch payments');
+      }
+
+      setPayments(data);
+    } catch (error: any) {
+      setError(error.message);
+    } finally {
+      setLoading(false);
+    }
+  }, [canEditPayments])
+
+  useEffect(() => {
+    fetchPayments();
+  }, [fetchPayments]);
 
   return (
     <Box sx={{ padding: '20px' }}>
 
 
-      {/* <PaymentManagement /> */}
+      <PaymentsTable payments={payments} />
 
       <Grid container spacing={3} sx={{ mt: 15 }}>
 
