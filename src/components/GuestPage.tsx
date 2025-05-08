@@ -13,6 +13,7 @@ import bgVideoDown from '../assets/3.mp4';
 import { FinalCTASection } from './FinalCTASection';
 import LocationMap from './LocationMap';
 import WhatsappButton from './WhatsappButton';
+import { postGuestMessage } from '../api/message';
 
 const GuestSection = styled(Box)(({ theme }) => ({
     height: '100vh',
@@ -56,30 +57,40 @@ const PlayButton = styled(IconButton)(({ theme }) => ({
 }));
 
 const GuestPage: React.FC = () => {
-    const [loaded, setLoaded] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [snackbarOpen, setSnackbarOpen] = useState(false);
     const [openDialog, setOpenDialog] = useState<{ open: boolean; src: string }>({ open: false, src: '' });
     const [form, setForm] = useState({ name: "", email: "", message: "" });
     const [open, setOpen] = useState(false);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+    const [success, setSuccess] = useState(false);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        console.log(e.target.name, e.target.value)
         setForm({ ...form, [e.target.name]: e.target.value });
     };
 
-    const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
-        // TODO: Add actual email or DB send logic
-        setOpen(true);
-        setForm({ name: "", email: "", message: "" });
+
+
+    const handleSubmit = async () => {
+        try {
+            const response = await postGuestMessage({ description: form.message, email: form.email, name: form.name })
+
+            const data = response.data as any;
+
+            if (response.status < 200) {
+                throw new Error(`Failed to send message: ${data.message}`);
+            }
+
+            setSuccess(true);
+
+            setOpen(true);
+            setForm({ name: "", email: "", message: "" });
+        } catch (err: any) {
+            setError(err.message || 'An error occurred while sending the message.');
+        }
     };
-
-
-    useEffect(() => {
-        setLoaded(true);
-    }, []);
-
-    const navigate = useNavigate();
 
     const handleVideoClick = useCallback((src: string) => {
         setOpenDialog({ open: true, src });
@@ -108,7 +119,7 @@ const GuestPage: React.FC = () => {
                 }}
             >
 
-                <video
+                {/* <video
                     autoPlay
                     muted
                     loop
@@ -121,7 +132,7 @@ const GuestPage: React.FC = () => {
                         objectFit: 'cover',
                         zIndex: -2,
                     }}
-                />
+                /> */}
 
                 <Box
                     sx={{
@@ -456,7 +467,7 @@ const GuestPage: React.FC = () => {
 
                 <GuestSection id="community" style={{ position: 'relative', overflow: 'hidden' }}>
 
-                    <video
+                    {/* <video
                         autoPlay
                         muted
                         loop
@@ -469,7 +480,7 @@ const GuestPage: React.FC = () => {
                             objectFit: 'cover',
                             zIndex: -2,
                         }}
-                    />
+                    /> */}
 
 
                     <Box
@@ -614,7 +625,10 @@ const GuestPage: React.FC = () => {
                                 <Typography variant="body1" textAlign="center" mb={3}>
                                     Have a question or want to learn more? Send us a message!
                                 </Typography>
-                                <Box component="form" onSubmit={handleSubmit}>
+                                <Box component="form" onSubmit={(e) => {
+                                    e.preventDefault();
+                                    handleSubmit();
+                                }}>
                                     <TextField
                                         fullWidth
                                         margin="normal"
@@ -659,7 +673,7 @@ const GuestPage: React.FC = () => {
                                             Send
                                         </Button>
                                     </Box>
-                   
+
                                 </Box>
                             </Box>
 

@@ -1,5 +1,5 @@
 import { Alert, Button, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, Grid, InputLabel, MenuItem, Select, styled, TextField, Typography } from "@mui/material";
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useAppUser } from '../context/AppUser.context';
 import { getSchedules, insertSchedule } from "../api/schedule";
 import { HDate, HebrewCalendar, Location } from "@hebcal/core";
@@ -43,7 +43,6 @@ const Scheduler = () => {
     const [selectedParasha, setSelectedParasha] = useState<ParashaType>();
     const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
     const [error, setError] = useState<string | null>(null);
-    const [loading, setLoading] = useState(false);
     const [success, setSuccess] = useState(false);
 
     const { user, canEditSchedules } = useAppUser();
@@ -125,7 +124,6 @@ const Scheduler = () => {
             hebrew_date: selectedParasha.hebrewDate!
         }
 
-        setLoading(true);
         setError(null);
 
         try {

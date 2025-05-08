@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import '../App.css';
-import { Button, CardContent, Typography, Grid, Paper, styled } from '@mui/material';
+import { Button, CardContent, Typography, Grid, Paper, styled, Box } from '@mui/material';
 import Campaign from '../components/Campaign';
 import { Clock, Award, List, PlusCircle } from 'lucide-react';
 import { DayPicker } from "react-day-picker";
@@ -12,6 +12,7 @@ import useLessons from '../components/Lessons/useLessons';
 import Birthdays from '../components/Birthdays';
 import 'react-day-picker/dist/style.css';
 import { motion } from 'framer-motion';
+import GuestMessages from '../components/GuestsMessages';
 
 // Styled components for consistent styling
 const DashboardSection = styled(Paper)(({ theme }) => ({
@@ -56,12 +57,27 @@ const Home: React.FC = () => {
   const { lessons, setLessons } = useLessons();
 
   return (
-    <div style={{ padding: '20px' }}>
+    <Box sx={{ padding: '20px' }}>
 
 
       {/* <PaymentManagement /> */}
 
       <Grid container spacing={3} sx={{ mt: 15 }}>
+
+
+
+
+        <Grid size={{ xs: 6, sm: 6, md: 4, xl: 12 }}>
+          <DashboardSection>
+            <CardContent>
+              <GuestMessages />
+            </CardContent>
+          </DashboardSection>
+        </Grid>
+
+
+
+
 
         <Grid size={{ xs: 6, sm: 6, md: 4, xl: 6 }}  >
 
@@ -97,6 +113,8 @@ const Home: React.FC = () => {
             </CardContent>
           </DashboardSection>
         </Grid>
+
+
 
         <Grid size={{ xs: 12, sm: 6, md: 4 }}>
 
@@ -141,9 +159,13 @@ const Home: React.FC = () => {
 
 
 
+
+
         <Grid size={{ xs: 12, sm: 6, md: 4 }}>
           <Birthdays />
         </Grid>
+
+
 
 
         <Grid size={{ xs: 12, sm: 6, md: 4 }}>
@@ -157,6 +179,8 @@ const Home: React.FC = () => {
         </Grid>
 
 
+
+
         <Grid size={{ xs: 12, sm: 6, md: 4 }}>
           <DashboardSection>
             <SectionTitleWithIcon variant="h5"><List size={20} />To-Do List</SectionTitleWithIcon>
@@ -168,20 +192,7 @@ const Home: React.FC = () => {
 
 
       </Grid>
-    </div >
-
-
-
-
-    // <React.Fragment>
-    //   <Box>
-
-    //     <Campaign />
-
-    //   </Box>
-
-    //   <Footer />
-    // </React.Fragment>
+    </Box >
   )
 }
 
@@ -190,11 +201,9 @@ const StyledDayPicker = styled(DayPicker)(({ theme }) => ({
   display: 'flex',
   flexDirection: 'column',
   alignItems: 'center',
-  // border: `1.4px solid ${theme.palette.divider}`, // Use theme's divider
   borderRadius: '8px',
   padding: theme.spacing(2),
-  // boxShadow: theme.shadows[2],              // Add shadow for depth
-  backgroundColor: theme.palette.background.paper, // Use theme's background
+  backgroundColor: theme.palette.background.paper,
   height: 'auto',
   width: 'auto',
   maxWidth: '450px',

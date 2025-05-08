@@ -50,7 +50,7 @@ const AppContent = () => {
   }, [navigate]);
 
   useEffect(() => {
-    if (location.pathname !== Paths.GUEST) return
+    if (location.pathname === Paths.GUEST) return
 
     if (token && !isTokenExpired(token)) {
 
@@ -83,7 +83,7 @@ const AppContent = () => {
 
       <Routes>
         <Route path={Paths.ON_BOARDING} element={<WelcomeScreen />} />
-        <Route path={Paths.ON_BOARDING} element={<Home />} />
+        <Route path={Paths.DASHBOARD} element={<Home />} />
         <Route path={Paths.CAMPAIGNS} element={<CampaignList />} />
         <Route path={Paths.MESSAGES} element={<Messages />} />
         <Route path={Paths.PROFILE} element={<UserProfile />} />
