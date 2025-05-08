@@ -1,8 +1,6 @@
 import React, { useCallback, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation, useNavigate } from 'react-router-dom';
-import { Typography } from '@mui/material';
 import Home from './pages/Home';
-import { jwtDecode } from 'jwt-decode'; 
 import { AppUserProvider, useAppUser } from './context/AppUser.context';
 import AppServerMsgContext from "./context/AppServerMsg";
 import './App.css';
@@ -13,21 +11,9 @@ import Messages from './components/Messages';
 import { profile } from './api/auth';
 import GuestPage from './components/GuestPage';
 import FloatingActions from './components/FloatingActions';
-
-// Helper function to check token expiration
-const isTokenExpired = (token: string | null) => {
-  if (!token) return true;
-  try {
-    const decoded: any = jwtDecode(token);
-    console.log({ decoded })
-    if (!decoded.exp) return true;
-    const currentTime = Date.now() / 1000;
-    return decoded.exp < currentTime;
-  } catch (error) {
-    console.error("Error decoding token:", error);
-    return true;
-  }
-};
+import { isTokenExpired } from './utils/isTokenExpired';
+import Paths from './enum/Paths.enum';
+import NotFound from './pages/NotFound';
 
 const App: React.FC = () => {
   const [serverMsg, setServerMsg] = React.useState('');
@@ -54,18 +40,17 @@ const AppContent = () => {
   const { updateUserContext, logout, updateAllowedResources } = useAppUser();
 
   // Determine whether to show the Header and ScreenWrapper
-  const shouldShowWrapper = location.pathname !== '/' && location.pathname !== '/guest';
+  const shouldShowHeader = location.pathname !== Paths.ON_BOARDING && location.pathname !== Paths.GUEST;
 
   const token = localStorage.getItem('token');
 
-  // Function to handle logout
   const handleLogout = useCallback(() => {
     logout()
     navigate('/');
   }, [navigate]);
 
   useEffect(() => {
-    if (location.pathname === '/guest') return
+    if (location.pathname !== Paths.GUEST) return
 
     if (token && !isTokenExpired(token)) {
 
@@ -75,8 +60,8 @@ const AppContent = () => {
 
           const data = response.data as any;
 
-          updateUserContext(data.user)
-          updateAllowedResources(data.allowedResources)
+          updateUserContext(data.user);
+          updateAllowedResources(data.allowedResources);
         }
 
         fetchUserProfile();
@@ -94,27 +79,17 @@ const AppContent = () => {
 
   return (
     <>
-      {shouldShowWrapper && (
-        <FloatingActions />
-      )}
+      {shouldShowHeader && (<FloatingActions />)}
 
       <Routes>
-        <Route path="/" element={<WelcomeScreen />} />
-        <Route path="/home" element={<Home />} />
-        <Route path="/campaings" element={<CampaignList />} />
-        <Route path="/messages" element={<Messages />} />
-        <Route path="/profile" element={<UserProfile />} />
-        <Route path="/guest" element={<GuestPage />} />
-        <Route path="*" element={<NotFound />} />
+        <Route path={Paths.ON_BOARDING} element={<WelcomeScreen />} />
+        <Route path={Paths.ON_BOARDING} element={<Home />} />
+        <Route path={Paths.CAMPAIGNS} element={<CampaignList />} />
+        <Route path={Paths.MESSAGES} element={<Messages />} />
+        <Route path={Paths.PROFILE} element={<UserProfile />} />
+        <Route path={Paths.GUEST} element={<GuestPage />} />
+        <Route path={Paths.NOT_FOUND} element={<NotFound />} />
       </Routes>
     </>
-  )
-}
-
-export const NotFound: React.FC = () => {
-  return (
-    <Typography variant="h3" align="center" gutterBottom>
-      Not found
-    </Typography>
   )
 }

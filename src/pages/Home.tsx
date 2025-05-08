@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import '../App.css';
 import { Button, CardContent, Typography, Grid, Paper, styled } from '@mui/material';
 import Campaign from '../components/Campaign';
@@ -8,7 +8,6 @@ import Lesson from '../components/Lessons/Lesson';
 import Scheduler from '../components/Scheduler';
 import CandlelightingTimes from '../components/CandleLightingTimes';
 import LessonsList from '../components/Lessons/LessonsList';
-import PaymentManagement from '../components/PaymentManagement';
 import useLessons from '../components/Lessons/useLessons';
 import Birthdays from '../components/Birthdays';
 import 'react-day-picker/dist/style.css';
