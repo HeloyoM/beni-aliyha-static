@@ -202,38 +202,17 @@ const AuthForm = ({ mode, onClose }: Props) => {
                                     style={{ marginBottom: 15, backgroundColor: '#fff' }}
                                     InputProps={{ style: { borderRadius: 8, borderColor: '#81c784' } }}
                                 />
-                                {/* <label
-                                    htmlFor="birthday"
-                                    className="block text-sm font-medium text-gray-700"
-                                >
-                                    Birthday
-                                </label> */}
 
                                 <TextField
                                     label='birthday'
-                                    sx={{width: 'auto', height: 55}}
+                                    sx={{ width: 'auto', height: 55 }}
                                     type="date"
                                     name="birthday"
                                     InputLabelProps={{ shrink: true }}
                                     value={formik.values.birthday}
                                     onChange={formik.handleChange}
-                                // onChange={(newValue: any) => {
-                                //     setSelectedDate(newValue);
-                                //     formik.setFieldValue(
-                                //         'birthday',
-                                //         newValue ? newValue : null,
-                                //     );
-                                // }}
                                 />
 
-                                {/* <MyDatePicker selected={selectedDate}
-                                     onChange={(newValue) => {
-                                    setSelectedDate(newValue);
-                                    formik.setFieldValue(
-                                        'birthday',
-                                        newValue ? format(newValue, 'yyyy-MM-dd') : null,
-                                    );
-                                }} /> */}
                             </>
                         )}
                         <Button
@@ -247,21 +226,6 @@ const AuthForm = ({ mode, onClose }: Props) => {
                             {loading ? 'Loading...' : isLogin ? 'Login' : 'Register'}
                         </Button>
                     </form>
-                    {/* <Button sx={{ display: "flex", alignItems: 'center' }} >
-                        <Link
-                            // href="#"
-                            onClick={() => {
-                                console.log('clicked')
-                                setIsLogin(!isLogin);
-                                formik.resetForm(); // Reset form when switching
-                                setError(null);
-                            }}
-                            variant="body2"
-                            style={{ color: '#1a5235' }}
-                        >
-                            {isLogin ? 'Create an account' : 'Already have an account? Login'}
-                        </Link>
-                    </Button> */}
                 </Paper>
             </Grid>
         </Grid>
@@ -269,100 +233,3 @@ const AuthForm = ({ mode, onClose }: Props) => {
 };
 
 export default AuthForm;
-
-
-
-const StyledDayPicker = styled(DayPicker)(({ theme }) => ({
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    // border: `1.4px solid ${theme.palette.divider}`, // Use theme's divider
-    borderRadius: '8px',
-    padding: theme.spacing(2),
-    // boxShadow: theme.shadows[2],              // Add shadow for depth
-    backgroundColor: theme.palette.background.paper, // Use theme's background
-    height: 'auto',
-    width: 'auto',
-    maxWidth: '450px',
-
-    '.rdp-head': {
-        color: theme.palette.text.primary,
-        fontWeight: '600',
-        paddingBottom: theme.spacing(1),
-    },
-    '.rdp-nav': {
-        marginBottom: theme.spacing(1),
-    },
-    '.rdp-nav-button': {
-        color: theme.palette.action.active,
-        '&:hover': {
-            backgroundColor: theme.palette.action.hover,
-        },
-    },
-    '.rdp-month': {
-        padding: 0,
-        backgroundColor: theme.palette.background.paper,
-        borderRadius: '8px',
-    },
-    '.rdp-table': {
-        borderCollapse: 'collapse',
-        border: 'none',
-        margin: 0,
-    },
-
-    '.rdp-tbody': {
-        border: 'none'
-    },
-    '.rdp-day': {
-        padding: '8px',
-        borderRadius: '4px',
-        cursor: 'pointer',
-        transition: 'background-color 0.3s, color 0.3s',
-        color: theme.palette.text.primary,
-        '&:hover': {
-            backgroundColor: theme.palette.action.hover,
-            color: theme.palette.primary.main,
-        },
-        '&[aria-selected="true"]': {
-            backgroundColor: theme.palette.primary.main,
-            color: theme.palette.primary.contrastText,
-            fontWeight: 'bold',
-            boxShadow: '0 2px 5px rgba(0, 0, 0, 0.2)',
-        },
-        '&:disabled': {
-            color: theme.palette.text.disabled,
-            backgroundColor: 'transparent',
-            cursor: 'default',
-            '&:hover': {
-                backgroundColor: 'transparent',
-                color: theme.palette.text.disabled,
-            },
-        },
-    },
-    '.rdp-caption': {
-        paddingTop: theme.spacing(2),
-        color: theme.palette.text.secondary,
-        fontSize: '0.875rem',
-        textAlign: 'center',
-    },
-}));
-
-type MyDatePickerProps = {
-    onChange: (day: any) => void
-    selected: any
-}
-function MyDatePicker({ selected, onChange }: MyDatePickerProps) {
-
-    return (
-        <StyledDayPicker
-            mode="single"
-            selected={selected}
-            onSelect={day => onChange(day)}
-            footer={
-                <Typography variant="caption" color="textSecondary">
-                    {selected ? `Selected: ${selected}` : "Pick a day."}
-                </Typography>
-            }
-        />
-    );
-}
