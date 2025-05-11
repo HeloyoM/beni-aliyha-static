@@ -8,7 +8,8 @@ import { useAppUser } from '../context/AppUser.context';
 import { DayPicker } from 'react-day-picker';
 import dayjs, { Dayjs } from 'dayjs';
 import { format } from 'date-fns';
-
+import Paths from '../enum/Paths.enum';
+import { ArrowBigLeft } from 'lucide-react';
 // Validation schema using yup
 const validationSchema = yup.object({
     first_name: yup.string().required('First Name is required'),
@@ -26,9 +27,14 @@ const loginValidationSchema = yup.object({
     password: yup.string().required('Password is required'),
 });
 
-const AuthForm = () => {
-    const [isLogin, setIsLogin] = useState(true); // State to toggle between login and register
-    const [error, setError] = useState<string | null>(null); // State to hold error messages
+
+type Props = {
+    mode: 'login' | 'register' | null
+    onClose: () => void
+}
+const AuthForm = ({ mode, onClose }: Props) => {
+    const [isLogin, setIsLogin] = useState(mode === 'login' ? true : false);
+    const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
     const [selectedDate, setSelectedDate] = useState<Dayjs | null>(dayjs());
 
@@ -40,51 +46,45 @@ const AuthForm = () => {
         const token = localStorage.getItem('token')
 
         if (token) {
-            navigate('/home')
+            navigate(Paths.DASHBOARD)
         } else {
             document.title = isLogin ? 'login' : 'register'
         }
 
     }, [isLogin])
 
-    // Function to handle form submission (Login and Register)
     const handleSubmit = async (values: any) => {
         setLoading(true);
-        setError(null); // Clear previous errors
-
+        setError(null);
         try {
-            // Simulate API call (replace with your actual API endpoint)
+
             const response = isLogin ? await login(values) : await register(values)
 
             const data = response.data as any;
 
             if (response.status >= 200 && response.status < 300) {
-                // Handle successful login/registration
-                console.log(data); // Log the response
+                console.log(data);
 
-                // Store token and refresh token
                 localStorage.setItem('token', data.token);
                 localStorage.setItem('refreshToken', data.refreshToken);
 
                 updateUserContext(data.user);
                 updateAllowedResources(data.allowedResources);
                 formik.resetForm();
-                navigate('/home'); // Redirect to profile page
+                navigate(Paths.DASHBOARD);
 
 
             } else {
-                // Handle error responses from the server
-                setError(data.message || 'An error occurred'); // Display server message
+                setError(data.message || 'An error occurred');
             }
         } catch (error: any) {
-            // Handle network errors or other exceptions
             setError(error.response?.data?.message || error.message || 'Failed to connect to the server');
         } finally {
             setLoading(false);
         }
     };
 
-    // Formik hook for form management
+
     const formik = useFormik({
         initialValues: {
             first_name: '',
@@ -98,20 +98,29 @@ const AuthForm = () => {
         validationSchema: isLogin ? loginValidationSchema : validationSchema,
         onSubmit: handleSubmit,
     });
-    console.log(formik.values)
+
+
     return (
         <Grid container justifyContent="center" alignItems="center" style={{ minHeight: '50vh', backgroundColor: 'inherit' }}>
-            <Grid /*item xs={12} sm={8} md={6} lg={4} */>
+
+            <Grid size={{ xs: 10, sm: 8, md: 6, lg: 12 }}>
                 <Paper elevation={3} style={{ padding: 20, borderRadius: 16 }}>
+
+                    <Button onClick={onClose} style={{ cursor: 'pointer' }} >Back</Button>
+
+
                     <Typography variant="h4" align="center" style={{ marginBottom: 20, color: '#1a5235' }}>
-                        {isLogin ? 'Login' : 'Register'}
+                        {mode?.toUpperCase()}
                     </Typography>
+
 
                     {error && (
                         <Alert severity="error" style={{ marginBottom: 10 }}>
                             {error}
                         </Alert>
                     )}
+
+
 
                     <form onSubmit={formik.handleSubmit}>
                         {!isLogin && (
@@ -193,19 +202,38 @@ const AuthForm = () => {
                                     style={{ marginBottom: 15, backgroundColor: '#fff' }}
                                     InputProps={{ style: { borderRadius: 8, borderColor: '#81c784' } }}
                                 />
-                                <label
+                                {/* <label
                                     htmlFor="birthday"
                                     className="block text-sm font-medium text-gray-700"
                                 >
                                     Birthday
-                                </label>
-                                <MyDatePicker selected={selectedDate} onChange={(newValue) => {
+                                </label> */}
+
+                                <TextField
+                                    label='birthday'
+                                    sx={{width: 'auto', height: 55}}
+                                    type="date"
+                                    name="birthday"
+                                    InputLabelProps={{ shrink: true }}
+                                    value={formik.values.birthday}
+                                    onChange={formik.handleChange}
+                                // onChange={(newValue: any) => {
+                                //     setSelectedDate(newValue);
+                                //     formik.setFieldValue(
+                                //         'birthday',
+                                //         newValue ? newValue : null,
+                                //     );
+                                // }}
+                                />
+
+                                {/* <MyDatePicker selected={selectedDate}
+                                     onChange={(newValue) => {
                                     setSelectedDate(newValue);
                                     formik.setFieldValue(
                                         'birthday',
                                         newValue ? format(newValue, 'yyyy-MM-dd') : null,
                                     );
-                                }} />
+                                }} /> */}
                             </>
                         )}
                         <Button
@@ -219,9 +247,9 @@ const AuthForm = () => {
                             {loading ? 'Loading...' : isLogin ? 'Login' : 'Register'}
                         </Button>
                     </form>
-                    <Button sx={{ display: "flex", alignItems: 'center' }} >
+                    {/* <Button sx={{ display: "flex", alignItems: 'center' }} >
                         <Link
-                            href="#"
+                            // href="#"
                             onClick={() => {
                                 console.log('clicked')
                                 setIsLogin(!isLogin);
@@ -233,7 +261,7 @@ const AuthForm = () => {
                         >
                             {isLogin ? 'Create an account' : 'Already have an account? Login'}
                         </Link>
-                    </Button>
+                    </Button> */}
                 </Paper>
             </Grid>
         </Grid>

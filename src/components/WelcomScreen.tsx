@@ -1,9 +1,9 @@
-import React from 'react';
+import { useState } from 'react';
 import { Box, Button, Typography, styled } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import AuthForm from './AuthForm';
 import bgVideoUp from '../assets/2.mp4';
-import OnboardingSteps from './OnboardingSteps';
+import { motion } from 'framer-motion';
 
 // Styled component for the welcome text
 const WelcomeText = styled(Typography)(({ theme }) => ({
@@ -30,28 +30,31 @@ const AppNameText = styled(Typography)(({ theme }) => ({
     }
 }));
 
-// Styled component for the guest button
-const GuestButton = styled(Button)(({ theme }) => ({
-    marginTop: theme.spacing(3),
-    padding: theme.spacing(2, 4),
-    fontSize: '1.1rem',
+const StyledButton = styled(Button)(({ theme }) => ({
+    margin: theme.spacing(1),
+    padding: theme.spacing(1.5, 4),
+    fontSize: '1rem',
     fontWeight: 'bold',
-    backgroundColor: theme.palette.secondary.main,
-    color: theme.palette.secondary.contrastText,
+    color: '#fff',
+    backgroundColor: theme.palette.primary.main,
     '&:hover': {
-        backgroundColor: theme.palette.secondary.dark,
+        backgroundColor: theme.palette.primary.dark,
     },
-    position: 'relative', // For stacking above the blur
 }));
 
 const WelcomeScreen = () => {
+    const [authMode, setAuthMode] = useState<'login' | 'register' | null>(null);
     const navigate = useNavigate();
 
-    const shouldShowWrapper = document.title !== 'register';
-    console.log(document.title)
+    const handleGuestClick = () => navigate('/guest');
+    const handleLoginClick = () => setAuthMode('login');
+    const handleRegisterClick = () => setAuthMode('register');
+    const closeForm = () => setAuthMode(null);
+
     const handleGuestButtonClick = () => {
         navigate('/guest');
     };
+
     return (
         <Box
             sx={{
@@ -68,7 +71,7 @@ const WelcomeScreen = () => {
                 justifyContent: 'center',
                 alignItems: 'center',
                 // Position absolutely to cover the entire screen
-                position: document.title !== 'register' ? 'fixed' : 'inherit',
+                position: authMode === 'register' ? 'inherit' : 'fixed',
                 top: 0,
                 left: 0,
                 zIndex: 1000, // Ensure it's on top of other content
@@ -114,8 +117,39 @@ const WelcomeScreen = () => {
                 }}
             />
 
-            {/* <OnboardingSteps /> */}
-            <WelcomeText variant="h1" sx={{ position: 'relative' }}>
+            <Box sx={{ position: 'relative', zIndex: 2, textAlign: 'center' }}>
+                <WelcomeText variant="h1">Welcome</WelcomeText>
+
+                <AppNameText variant="h2">Beni-Aliyah</AppNameText>
+
+
+                {!authMode && (
+                    <Box>
+                        <StyledButton onClick={handleLoginClick}>Login</StyledButton>
+                        <StyledButton onClick={handleRegisterClick}>Register</StyledButton>
+                        <StyledButton onClick={handleGuestClick}>Enter as Guest</StyledButton>
+                    </Box>
+                )}
+
+
+
+                {authMode && (
+                    <motion.div
+                        initial={{ y: 100, opacity: 0 }}
+                        animate={{ y: 0, opacity: 1 }}
+                        exit={{ y: 100, opacity: 0 }}
+                        transition={{ duration: 0.4 }}
+                    >
+                        <AuthForm mode={authMode} onClose={closeForm} />
+                    </motion.div>
+                )}
+
+            </Box>
+
+
+
+
+            {/* <WelcomeText variant="h1" sx={{ position: 'relative' }}>
                 Welcome
             </WelcomeText>
             <AppNameText variant="h2" sx={{ position: 'relative' }}>
@@ -126,7 +160,7 @@ const WelcomeScreen = () => {
 
             {shouldShowWrapper && <GuestButton variant="contained" onClick={handleGuestButtonClick}>
                 Enter as Guest
-            </GuestButton>}
+            </GuestButton>} */}
 
         </Box>
     );
