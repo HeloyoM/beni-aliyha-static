@@ -57,7 +57,6 @@ const Campaign = () => {
                 }
 
             }
-
         }
         fetchTypes()
     }, [campaignTypes])
