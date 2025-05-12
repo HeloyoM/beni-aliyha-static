@@ -1,6 +1,6 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { JSX, useCallback, useEffect, useState } from 'react';
 import '../App.css';
-import { Button, CardContent, Typography, Grid, Paper, styled, Box } from '@mui/material';
+import { Button, Select, CardContent, Typography, Grid, Paper, styled, Box, CircularProgress, Card, Chip, CardHeader, Avatar, TextField, FormControl, MenuItem, InputLabel, Alert, FormHelperText, ListItemIcon, ListItemText } from '@mui/material';
 import Campaign from '../components/Campaign';
 import { Clock, Award, PlusCircle, List } from 'lucide-react';
 import { DayPicker } from "react-day-picker";
@@ -18,6 +18,12 @@ import { useAppUser } from '../context/AppUser.context';
 import { getAllPayments, getPayments } from '../api/payments';
 import QuickAddPayment from '../components/QuickAddPayment';
 import { getMessages } from '../api/message';
+import { createNewEvent, getCommunityEvents, getEventsTypes } from '../api/events';
+import { Baby, Heart, Home as HomeIcon, Cake, Briefcase, Star, GraduationCap, Gem, CalendarHeart } from 'lucide-react';
+import { useFormik } from 'formik';
+import { getAllUsers } from '../api/user';
+import IUser from '../interfaces/User.interface';
+import { CalOptions, HDate, HebrewDateEvent, Location } from '@hebcal/core';
 
 // Styled components for consistent styling
 const DashboardSection = styled(Paper)(({ theme }) => ({
@@ -72,16 +78,107 @@ interface Payment {
   };
 }
 
+export const eventIcons: Record<string, JSX.Element> = {
+  'baby-boy': <Baby />,
+  'baby-girl': <Baby />,
+  'wedding': <Gem />,
+  'engagement': <Heart />,
+  'new-job': <Briefcase />,
+  'housewarming': <HomeIcon />,
+  'birthday': <Cake />,
+  'anniversary': <CalendarHeart />,
+  'graduation': <GraduationCap />,
+  'bar-mitzvah': <Star />,
+};
+
+interface CommunityEvent {
+  id: string;
+  description: string;
+  created_at: string;
+  greg_date: string;
+  hebrew_date: string;
+  icon: string;
+  color: string;
+  type: string
+  user: {
+    name: string;
+    id: string;
+    email: string;
+  };
+}
+
+type EventType = {
+  id: number;
+  name: string;
+  icon: string;
+  color: string;
+};
+
 const Home: React.FC = () => {
   const [publicMessages, setPublicMessages] = useState<any[]>([]);
   const [isInsertingCampaign, setIsInsertingCampaign] = useState(false);
   const [payments, setPayments] = useState<Payment[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
+  const [success, setSuccess] = useState(false);
   const [showPayments, setShowPayments] = useState(false);
+  const [events, setEvents] = useState<CommunityEvent[]>([]);
+  const [newEvent, setNewEvent] = useState('');
+  const [eventTypes, setEventTypes] = useState<EventType[]>([]);
+  const [users, setUsers] = useState<IUser[]>([]);
 
   const { lessons, setLessons } = useLessons();
 
+  const { canEditPayments, canPublishMessages } = useAppUser();
+
+
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const response = await getAllUsers();
+
+        const data = response.data as any;
+        if (response.status !== 200) {
+          throw new Error(data.message || 'Failed to fetch users');
+        }
+
+        setUsers(data.users);
+      } catch (error: any) {
+        setError(error.message);
+      }
+    };
+
+    if (canPublishMessages) {
+      fetchUsers();
+    }
+  }, [canPublishMessages]);
+
+  const fetchEvents = async () => {
+    setLoading(true);
+    try {
+      const response = await getCommunityEvents();
+
+      const data = response.data as any;
+
+      setEvents(data);
+
+      const res = await getEventsTypes();
+
+      const types = res.data as any;
+
+      setEventTypes(types);
+
+    } catch (err) {
+      console.error('Failed to fetch happy events');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+
+  useEffect(() => {
+    fetchEvents();
+  }, []);
 
   useEffect(() => {
     const fetchPublicMessages = async () => {
@@ -101,7 +198,7 @@ const Home: React.FC = () => {
   }, []);
 
 
-  const { canEditPayments } = useAppUser();
+
 
   // Fetch payments
   const fetchPayments = useCallback(async () => {
@@ -126,13 +223,206 @@ const Home: React.FC = () => {
     fetchPayments();
   }, [fetchPayments]);
 
+  const submitEvent = async (values: any) => {
+    setLoading(true);
+    setError(null);
 
+    const gerg_date = new Date(values.greg_date)
+    const now = new HDate(gerg_date);
+    const year = now.getFullYear();
+
+    const options: CalOptions = {
+      year: year,
+      isHebrewYear: false,
+      location: Location.lookup('Tel Aviv'),
+      month: now.getMonthName(),
+    };
+
+    const hd = new HDate(now.dd, options.month, options.year);
+
+    const ev = new HebrewDateEvent(hd);
+
+    values.greg_date = gerg_date.toLocaleDateString('en-GB');
+    values.hebrew_date = ev.render('he');
+
+    try {
+      const response = await createNewEvent(values);
+
+      const data = response.data as any;
+
+      if (response.status === 201) {
+        setSuccess(true);
+        formik.resetForm();
+      }
+    } catch (err) {
+      console.error('Failed to post an event');
+    }
+  }
+
+
+  const formik = useFormik({
+    initialValues: {
+      description: '',
+      user_id: null,
+      type: 0,
+      greg_date: '',
+      hebrew_date: ''
+    },
+    onSubmit: submitEvent,
+  });
+
+  console.log(formik.values)
   return (
     <Box sx={{ padding: '20px' }}>
 
 
       <Grid container spacing={3} sx={{ mt: 15 }}>
 
+
+        <Grid size={{ xs: 12, md: 4 }}>
+
+          {loading ? (
+            <CircularProgress />
+          ) : (
+            events.map(event => (
+              <Grid size={{ xs: 12, md: 4 }} key={event.id}>
+                <Card sx={{ mb: 2, borderLeft: `5px solid ${event.color}` }}>
+                  <CardHeader
+                    avatar={
+                      <Avatar sx={{ bgcolor: event.color }}>
+                        {eventIcons[event.icon] || <Star />} {/* Fallback icon */}
+                      </Avatar>
+                    }
+                    title={event.type}
+                    subheader={`${event.greg_date} / ${event.hebrew_date}`}
+                  />
+                  <CardContent>
+                    <Typography>{event.description}</Typography>
+                  </CardContent>
+                </Card>
+
+
+
+
+              </Grid>
+            ))
+          )}
+
+
+          {canPublishMessages && (
+
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.4 }}>
+              <Box mt={3} p={2} borderRadius={2} boxShadow={2} bgcolor="#f9f9f9">
+                <Typography variant="h6" mb={2}>🎉 Share a Happy Event</Typography>
+
+                {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
+                {success && <Alert severity="success" sx={{ mb: 2 }}>{success}</Alert>}
+
+                <FormControl fullWidth sx={{ mb: 2 }}>
+                  <form onSubmit={formik.handleSubmit}>
+                    <InputLabel>Select Event Type</InputLabel>
+                    <Select
+                      label="type-label"
+                      id="type"
+                      name="type"
+                      fullWidth
+                      value={formik.values.type}
+                      onChange={formik.handleChange}
+                      onBlur={formik.handleBlur}
+                      style={{ borderRadius: 8, borderColor: formik.touched.type && formik.errors.type ? '#d32f2f' : '#81c784' }}
+                      renderValue={(selected) => {
+                        const type = eventTypes.find((t) => String(t.id) === String(selected));
+                        return (
+                          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                            <Avatar
+                              sx={{ width: 24, height: 24, bgcolor: type?.color }}
+                              src={type?.icon}
+                              alt={type?.name}
+                            />
+                            <Typography>{type?.name}</Typography>
+                          </Box>
+                        );
+                      }}
+                    >
+                      {eventTypes.map((t) => (
+                        <MenuItem key={t.id} value={t.id}>
+                          <ListItemIcon>
+                            <Avatar
+                              src={t.icon}
+                              sx={{ width: 24, height: 24, bgcolor: t.color }}
+                              alt={t.name}
+                            >
+                              {eventIcons[t.icon] || <Star />}
+                            </Avatar>
+                          </ListItemIcon>
+                          <ListItemText primary={t.name} />
+                        </MenuItem>
+                      ))}
+                    </Select>
+
+
+                    <TextField
+                      label="What's the event?"
+                      fullWidth
+                      name="description"
+                      multiline
+                      minRows={3}
+                      value={formik.values.description}
+                      onChange={formik.handleChange}
+                      variant="outlined"
+                      sx={{ mb: 2 }}
+                    />
+
+                    <TextField
+                      label='date'
+                      sx={{ width: 'auto', height: 55 }}
+                      type="date"
+                      name="greg_date"
+                      InputLabelProps={{ shrink: true }}
+                      value={formik.values.greg_date}
+                      onChange={formik.handleChange}
+                    />
+
+
+                    <Select
+                      label="member"
+                      id="type"
+                      name="user_id"
+                      fullWidth
+                      value={formik.values.user_id}
+                      onChange={formik.handleChange}
+                      onBlur={formik.handleBlur}
+                      style={{ borderRadius: 8, borderColor: formik.touched.type && formik.errors.type ? '#d32f2f' : '#81c784' }}
+                    >
+                      {users.map((u) => (
+                        <MenuItem key={u.id} value={u.id}>
+                          {u.first_name + ' ' + u.last_name}
+                        </MenuItem>
+                      ))}
+                    </Select>
+
+
+                    {error && (
+                      <Alert severity="error" style={{ marginBottom: 10 }}>
+                        {error}
+                      </Alert>
+                    )}
+                    {success && (
+                      <Alert severity="success" style={{ marginBottom: 10 }}>
+                        Event published successfully!
+                      </Alert>
+                    )}
+
+                    <Button type="submit" disabled={loading} variant="contained" color="primary">
+                      Publish Event
+                    </Button>
+                  </form>
+                </FormControl>
+
+              </Box>
+            </motion.div>
+          )}
+        </Grid>
 
 
 

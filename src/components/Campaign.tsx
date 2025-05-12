@@ -80,7 +80,6 @@ const Campaign = () => {
                 const data = response.data as any;
 
                 if (response.status > 200) {
-                    console.log(data);
                     setSuccess(true);
                     formik.resetForm(); // Clear the form
                 } else {

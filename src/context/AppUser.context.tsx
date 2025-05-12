@@ -26,10 +26,9 @@ const AppUserProvider: React.FC<{ children: React.ReactNode }> = ({ children }) 
     const [allowedResources, setAllowedResources] = useState<string[] | null>(null);
 
     const getPermissions = useMemo(() => {
-
         allowedResources?.map((row, i) => {
-
-
+            
+            
             const resource = row.split(':')
 
 
