@@ -1,16 +1,14 @@
-import React, { useContext, useEffect, useState } from 'react';
-import { Alert, TextField, Button, Grid, Paper, Typography, Link, Box, styled } from '@mui/material';
+import { useEffect, useState } from 'react';
+import { Alert, TextField, Button, Grid, Paper, Typography } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
 import { login, register } from '../api/auth';
 import { useAppUser } from '../context/AppUser.context';
-import { DayPicker } from 'react-day-picker';
 import dayjs, { Dayjs } from 'dayjs';
-import { format } from 'date-fns';
 import Paths from '../enum/Paths.enum';
-import { ArrowBigLeft } from 'lucide-react';
-// Validation schema using yup
+
+// Register schema
 const validationSchema = yup.object({
     first_name: yup.string().required('First Name is required'),
     last_name: yup.string().required('Last Name is required'),
@@ -32,11 +30,19 @@ type Props = {
     mode: 'login' | 'register' | null
     onClose: () => void
 }
+
 const AuthForm = ({ mode, onClose }: Props) => {
-    const [isLogin, setIsLogin] = useState(mode === 'login' ? true : false);
+    const [isLogin, setIsLogin] = useState<boolean | null>(null);
     const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
-    const [selectedDate, setSelectedDate] = useState<Dayjs | null>(dayjs());
+
+
+    useEffect(() => {
+        if (mode) {
+            setIsLogin(mode === 'login' ? true : false)
+            return
+        }
+    }, [mode])
 
     const navigate = useNavigate();
 
@@ -101,12 +107,22 @@ const AuthForm = ({ mode, onClose }: Props) => {
 
 
     return (
-        <Grid container justifyContent="center" alignItems="center" style={{ minHeight: '50vh', backgroundColor: 'inherit' }}>
+        <Grid
+            container
+            justifyContent="center"
+            alignItems="center"
+            style={{
+                minHeight: '50vh',
+                backgroundColor: 'inherit'
+            }}
+        >
 
             <Grid size={{ xs: 10, sm: 8, md: 6, lg: 12 }}>
+
+
                 <Paper elevation={3} style={{ padding: 20, borderRadius: 16 }}>
 
-                    <Button onClick={onClose} style={{ cursor: 'pointer' }} >Back</Button>
+                    <Button onClick={onClose} style={{ cursor: 'pointer' }}>Back</Button>
 
 
                     <Typography variant="h4" align="center" style={{ marginBottom: 20, color: '#1a5235' }}>

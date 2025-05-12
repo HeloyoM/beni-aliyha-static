@@ -11,6 +11,7 @@ interface AppUserContextProps {
     canEditUsers: boolean
     canEditSchedules: boolean
     canEditPayments: boolean
+    canPublishMessages: boolean
 }
 
 const AppUserContext = createContext<AppUserContextProps | undefined>(undefined);
@@ -21,6 +22,7 @@ const AppUserProvider: React.FC<{ children: React.ReactNode }> = ({ children }) 
     const [canEditSchedules, setCanEditSchedules] = useState<boolean>(false);
     const [canEditUsers, setEditUsers] = useState<boolean>(false);
     const [canEditPayments, setEditPayments] = useState<boolean>(false);
+    const [canPublishMessages, setPublishMessages] = useState<boolean>(false);
     const [allowedResources, setAllowedResources] = useState<string[] | null>(null);
 
     const getPermissions = useMemo(() => {
@@ -52,6 +54,12 @@ const AppUserProvider: React.FC<{ children: React.ReactNode }> = ({ children }) 
             else if (resource.includes('payments')) {
                 if (resource.includes('write')) {
                     setEditPayments(true)
+                }
+            }
+
+            else if (resource.includes('messages')) {
+                if (resource.includes('write')) {
+                    setPublishMessages(true)
                 }
             }
             
@@ -95,7 +103,8 @@ const AppUserProvider: React.FC<{ children: React.ReactNode }> = ({ children }) 
         canEditSchedules,
         canEditUsers,
         updateAllowedResources,
-        canEditPayments
+        canEditPayments,
+        canPublishMessages
     };
 
     return (

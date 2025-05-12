@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Box, Button, Typography, styled } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import AuthForm from './AuthForm';
-import bgVideoUp from '../assets/2.mp4';
+import bgVideoUp from '../assets/videos/2.mp4';
 import { motion } from 'framer-motion';
 
 // Styled component for the welcome text

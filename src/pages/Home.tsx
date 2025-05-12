@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import '../App.css';
 import { Button, CardContent, Typography, Grid, Paper, styled, Box } from '@mui/material';
 import Campaign from '../components/Campaign';
-import { Clock, Award, List, PlusCircle } from 'lucide-react';
+import { Clock, Award, PlusCircle, List } from 'lucide-react';
 import { DayPicker } from "react-day-picker";
 import Lesson from '../components/Lessons/Lesson';
 import Scheduler from '../components/Scheduler';
@@ -17,6 +17,7 @@ import PaymentsTable from '../components/PaymentsTable';
 import { useAppUser } from '../context/AppUser.context';
 import { getAllPayments, getPayments } from '../api/payments';
 import QuickAddPayment from '../components/QuickAddPayment';
+import { getMessages } from '../api/message';
 
 // Styled components for consistent styling
 const DashboardSection = styled(Paper)(({ theme }) => ({
@@ -72,6 +73,7 @@ interface Payment {
 }
 
 const Home: React.FC = () => {
+  const [publicMessages, setPublicMessages] = useState<any[]>([]);
   const [isInsertingCampaign, setIsInsertingCampaign] = useState(false);
   const [payments, setPayments] = useState<Payment[]>([]);
   const [error, setError] = useState<string | null>(null);
@@ -79,6 +81,25 @@ const Home: React.FC = () => {
   const [showPayments, setShowPayments] = useState(false);
 
   const { lessons, setLessons } = useLessons();
+
+
+  useEffect(() => {
+    const fetchPublicMessages = async () => {
+      try {
+        const response = await getMessages();
+
+        const data = response.data as any;
+
+        const filtered = data.filter((msg: any) => Boolean(msg.is_public));
+        setPublicMessages(filtered);
+      } catch (error) {
+        console.error('Failed to fetch public messages', error);
+      }
+    };
+
+    fetchPublicMessages();
+  }, []);
+
 
   const { canEditPayments } = useAppUser();
 
@@ -106,15 +127,37 @@ const Home: React.FC = () => {
   }, [fetchPayments]);
 
 
-  const onAdd = (payload: any) => {
-
-  }
-
   return (
     <Box sx={{ padding: '20px' }}>
 
 
       <Grid container spacing={3} sx={{ mt: 15 }}>
+
+
+
+
+
+        <Grid size={{ xs: 12, md: 4 }}>
+          <DashboardSection>
+            <SectionTitleWithIcon variant="h5"><List size={20} />Messages from the Community</SectionTitleWithIcon>
+            <CardContent>
+              {publicMessages.length > 0 ? (
+                publicMessages.map((msg, index) => (
+                  <Paper key={index} elevation={1} sx={{ p: 2, mb: 1, backgroundColor: '#fefefe' }}>
+                    <Typography variant="body1" color="text.primary">{msg.description}</Typography>
+                    <Typography variant="caption" color="text.secondary">
+                      — {msg.user?.name || 'Anonymous'}
+                    </Typography>
+                  </Paper>
+                ))
+              ) : (
+                <Typography variant="body2" color="text.secondary">No public messages yet.</Typography>
+              )}
+            </CardContent>
+          </DashboardSection>
+        </Grid>
+
+
 
 
 
@@ -154,6 +197,9 @@ const Home: React.FC = () => {
           </motion.div>
         </Grid>
 
+
+
+
         <Grid size={{ xs: 6, sm: 6, md: 4, xl: 6 }}>
           <DashboardSection style={{ backgroundColor: '#e0f7fa' }}>
             <CardContent sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
@@ -165,6 +211,9 @@ const Home: React.FC = () => {
             </CardContent>
           </DashboardSection>
         </Grid>
+
+
+
 
 
 

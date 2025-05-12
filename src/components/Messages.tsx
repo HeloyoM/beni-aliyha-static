@@ -6,6 +6,8 @@ import { format, formatDistanceToNow } from 'date-fns';
 import { getMessages, postMessage, replyToMessage } from '../api/message';
 import { Send } from 'lucide-react';
 import { io, Socket } from 'socket.io-client';
+import { FormControlLabel, Switch } from '@mui/material';
+import { useAppUser } from '../context/AppUser.context';
 
 // Styled components for enhanced UI
 const MessageContainer = styled(Box)(({ theme }) => ({
@@ -116,6 +118,9 @@ const Messages = () => {
     const [replyText, setReplyText] = useState<{ [messageId: string]: string }>({}); // Store reply text for each message
     const [newMessageDescription, setNewMessageDescription] = useState('');
     const [socket, setSocket] = useState<Socket | null>(null);
+    const [isPublic, setIsPublic] = useState(false);
+
+    const { canPublishMessages } = useAppUser();
 
     useEffect(() => {
         // Initialize Socket.IO connection
@@ -226,7 +231,7 @@ const Messages = () => {
                 return;
             }
 
-            const response = await postMessage({ description: newMessageDescription })
+            const response = await postMessage({ description: newMessageDescription, isPublic })
 
             const data = response.data as any;
             if (response.status < 200) {
@@ -292,6 +297,11 @@ const Messages = () => {
                     multiline
                     minRows={3}
                 />
+
+                {canPublishMessages && <FormControlLabel
+                    control={<Switch checked={isPublic} onChange={(e) => setIsPublic(e.target.checked)} />}
+                    label="Make Public"
+                />}
 
                 <Box display="flex" justifyContent="flex-end">
                     <Button
