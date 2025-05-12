@@ -1,4 +1,4 @@
-import { POST, GET } from './api-req'
+import { POST, GET, DELETE } from './api-req'
 import { CreateGuestMessageDto } from './dto/CreateGuestMessage.dto'
 import { CreateMessageDto } from './dto/CreateMessage.dto'
 import { ReplyDto } from './dto/Reply.dto'
@@ -52,5 +52,15 @@ export const replyToMessage = async (payload: ReplyDto) => {
         return response
     } catch (error) {
         throw new Error(`Failed to add relpy to message id: ${payload.messageId}`)
+    }
+}
+
+export const deleteGuestMessage = async (id: string) => {
+    try {
+        const response = await DELETE(`${API}/guest/${id}`);
+
+        return response;
+    } catch (error) {
+        throw new Error(`Failed to delete guest message to message id: ${id}`)
     }
 }

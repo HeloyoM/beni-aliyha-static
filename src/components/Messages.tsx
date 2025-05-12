@@ -8,6 +8,7 @@ import { Send } from 'lucide-react';
 import { io, Socket } from 'socket.io-client';
 import { FormControlLabel, Switch } from '@mui/material';
 import { useAppUser } from '../context/AppUser.context';
+import IMessage from '../interfaces/IMessage.interface';
 
 // Styled components for enhanced UI
 const MessageContainer = styled(Box)(({ theme }) => ({
@@ -111,11 +112,12 @@ const NewMessageForm = styled(Box)(({ theme }) => ({
     flexDirection: 'column',
     gap: theme.spacing(2)
 }))
+
 const Messages = () => {
-    const [messages, setMessages] = useState<any[]>([]);
+    const [messages, setMessages] = useState<IMessage[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
-    const [replyText, setReplyText] = useState<{ [messageId: string]: string }>({}); // Store reply text for each message
+    const [replyText, setReplyText] = useState<{ [messageId: string]: string }>({});
     const [newMessageDescription, setNewMessageDescription] = useState('');
     const [socket, setSocket] = useState<Socket | null>(null);
     const [isPublic, setIsPublic] = useState(false);
@@ -203,6 +205,8 @@ const Messages = () => {
             }
             const response = await replyToMessage(payload)
 
+            const data = response.data as any;
+
             if (response.status < 200) {
                 throw new Error(`Failed to send reply: ${response.status}`);
             }
@@ -212,9 +216,9 @@ const Messages = () => {
                 socket.emit('sendReply', { messageId, reply: response.data });
             }
 
-            setMessages(prevMessages =>
-                prevMessages.map(msg =>
-                    msg.message_id === messageId ? { ...msg, replies: [...(msg.replies || []), response.data] } : msg
+            setMessages((prevMessages: any) =>
+                prevMessages.map((msg: any) =>
+                    msg.message_id === messageId ? { ...msg, replies: [...(msg.replies || []), data.reply] } : msg
                 )
             );
             setReplyText(prev => ({ ...prev, [messageId]: '' }));
@@ -349,6 +353,7 @@ const Messages = () => {
                             ))}
                         </Box>
                     )}
+
                     <ReplyForm>
                         <TextField
                             fullWidth

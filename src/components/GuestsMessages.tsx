@@ -1,14 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import { Alert, Box, Paper, Typography, Badge, IconButton } from '@mui/material';
 import { Notifications } from '@mui/icons-material';
-import { getGuestMessages } from '../api/message';
+import { deleteGuestMessage, getGuestMessages } from '../api/message';
 import { useAppUser } from '../context/AppUser.context';
+import { Trash } from 'lucide-react';
 
 const GuestMessages = () => {
-    const { user } = useAppUser();
     const [messages, setMessages] = useState([]);
     const [error, setError] = useState<string | null>(null);
     const [open, setOpen] = useState(false);
+
+    const { user } = useAppUser();
 
     useEffect(() => {
         if (!user || user.role_id > 101) return;
@@ -26,6 +28,14 @@ const GuestMessages = () => {
 
         fetchMessages();
     }, [user]);
+
+    const handleDelte = async (id: string) => {
+        try {
+            const response = await deleteGuestMessage(id)
+        } catch (error: any) {
+            setError(error.message)
+        }
+    }
 
     if (!user || user.role_id > 101) return null;
 
@@ -52,6 +62,7 @@ const GuestMessages = () => {
                             <Box key={index} sx={{ mb: 2, p: 1, borderBottom: '1px solid #ccc' }}>
                                 <Typography variant="subtitle1"><strong>{msg.guest_name}</strong> ({msg.guest_email})</Typography>
                                 <Typography variant="body2">{msg.description}</Typography>
+                                <Trash color="red" cursor="pointer" onClick={() => handleDelte(msg.id)} />
                             </Box>
                         ))
                     )}
