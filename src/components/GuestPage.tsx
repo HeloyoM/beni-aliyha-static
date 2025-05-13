@@ -3,7 +3,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { Fade, Box, Typography, Grid, Card, CardMedia, CardContent, Button, TextField, Dialog, DialogContent, DialogTitle, IconButton, ImageList, ImageListItem, ImageListItemBar, Paper, Snackbar, Accordion, AccordionSummary, AccordionDetails, Container } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import '../App.css';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import StarBorderIcon from '@mui/icons-material/StarBorder';
 import { PlayCircle, XCircle, Send, Expand } from 'lucide-react';
 import TestimonialsCarousel from './Texti';
@@ -65,6 +65,17 @@ const GuestPage: React.FC = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [success, setSuccess] = useState(false);
+   
+    const location = useLocation();
+
+    useEffect(() => {
+        if (location.hash === '#contact-us') {
+            const section = document.getElementById('contact-us');
+            if (section) {
+                section.scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+    }, [location]);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         console.log(e.target.name, e.target.value)
@@ -316,7 +327,7 @@ const GuestPage: React.FC = () => {
                             </Grid>
 
                             <Box sx={{ textAlign: 'center', mt: 5 }}>
-                                <Button variant="contained" size="large" color="primary" href="#contact">
+                                <Button variant="contained" size="large" color="primary" href="#contact-us">
                                     Let’s Talk About Your Future in Israel 🇮🇱
                                 </Button>
                             </Box>

@@ -124,11 +124,6 @@ const Home: React.FC = () => {
           <Events />
         </Grid>
 
-
-
-
-
-
         <Grid size={{ xs: 12, md: 4, lg: 5 }}>
           <DashboardSection>
             <SectionTitleWithIcon variant="h5" mb={2}>🎉 Share an Event</SectionTitleWithIcon>

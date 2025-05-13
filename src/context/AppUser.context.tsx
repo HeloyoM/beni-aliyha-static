@@ -87,6 +87,7 @@ const AppUserProvider: React.FC<{ children: React.ReactNode }> = ({ children }) 
         localStorage.removeItem('user');
         localStorage.removeItem('token');
         localStorage.removeItem('refreshToken');
+        localStorage.removeItem('hideGuestDescription');
         setEditPayments(false);
         setCanEditLesson(false);
         setCanEditSchedules(false);
