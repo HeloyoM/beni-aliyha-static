@@ -7,7 +7,7 @@ import './App.css';
 import UserProfile from './components/UserProfile';
 import WelcomeScreen from './components/WelcomScreen';
 import CampaignList from './components/CampaignList';
-import Messages from './components/Messages';
+import Messages from './components/Message/Messages';
 import { profile } from './api/auth';
 import GuestPage from './components/GuestPage';
 import FloatingActions from './components/FloatingActions';

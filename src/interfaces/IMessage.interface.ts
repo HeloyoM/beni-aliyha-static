@@ -6,10 +6,10 @@ export default interface IMessage {
     description: string;
     created_at: string;
     is_public: boolean;
-    replies?: Reply[]
+    replies?: IReply[]
 }
 
-interface Reply {
+export interface IReply {
     reply_id: string;
     replier_id: string;
     reply_sender_email: string;

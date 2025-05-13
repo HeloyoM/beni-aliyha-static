@@ -4,9 +4,10 @@ import { Notifications } from '@mui/icons-material';
 import { deleteGuestMessage, getGuestMessages } from '../api/message';
 import { useAppUser } from '../context/AppUser.context';
 import { Trash } from 'lucide-react';
+import IMessage from '../interfaces/IMessage.interface';
 
 const GuestMessages = () => {
-    const [messages, setMessages] = useState([]);
+    const [messages, setMessages] = useState<IMessage[]>([]);
     const [error, setError] = useState<string | null>(null);
     const [open, setOpen] = useState(false);
 
@@ -31,7 +32,14 @@ const GuestMessages = () => {
 
     const handleDelte = async (id: string) => {
         try {
-            const response = await deleteGuestMessage(id)
+            const response = await deleteGuestMessage(id);
+
+            const data = response.data as any;
+
+            const result = messages.filter(m => m.message_id === data.message_id);
+
+            setMessages(result);
+            
         } catch (error: any) {
             setError(error.message)
         }

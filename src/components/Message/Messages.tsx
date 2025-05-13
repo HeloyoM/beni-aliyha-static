@@ -1,14 +1,15 @@
 
 import { useState, useEffect } from 'react';
-import { Avatar, Box, Typography, CircularProgress, Alert, TextField, Button } from '@mui/material';
+import { Avatar, Box, Typography, CircularProgress, Alert, TextField, Button, IconButton } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { format, formatDistanceToNow } from 'date-fns';
-import { getMessages, postMessage, replyToMessage } from '../api/message';
-import { Send } from 'lucide-react';
-import { io, Socket } from 'socket.io-client';
-import { FormControlLabel, Switch } from '@mui/material';
-import { useAppUser } from '../context/AppUser.context';
-import IMessage from '../interfaces/IMessage.interface';
+import { deleteMessage, getMessages, postMessage, replyToMessage } from '../../api/message';
+import { Send, Trash } from 'lucide-react';
+// import { io, Socket } from 'socket.io-client';
+import { useAppUser } from '../../context/AppUser.context';
+import IMessage, { IReply } from '../../interfaces/IMessage.interface';
+import MessageForm from './MessageForm';
+import { ChatBubbleOutline } from '@mui/icons-material';
 
 // Styled components for enhanced UI
 const MessageContainer = styled(Box)(({ theme }) => ({
@@ -101,39 +102,29 @@ const ReplyForm = styled(Box)(({ theme }) => ({
     padding: theme.spacing(1),
 }));
 
-const NewMessageForm = styled(Box)(({ theme }) => ({
-    margin: theme.spacing(3, 0),
-    padding: theme.spacing(3),
-    border: `1px solid ${theme.palette.divider}`,
-    borderRadius: '12px',
-    backgroundColor: theme.palette.grey[50],
-    boxShadow: theme.shadows[1],
-    display: 'flex',
-    flexDirection: 'column',
-    gap: theme.spacing(2)
-}))
+
 
 const Messages = () => {
     const [messages, setMessages] = useState<IMessage[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [replyText, setReplyText] = useState<{ [messageId: string]: string }>({});
-    const [newMessageDescription, setNewMessageDescription] = useState('');
-    const [socket, setSocket] = useState<Socket | null>(null);
-    const [isPublic, setIsPublic] = useState(false);
 
-    const { canPublishMessages } = useAppUser();
+    // const [socket, setSocket] = useState<Socket | null>(null);
 
-    useEffect(() => {
-        // Initialize Socket.IO connection
-        const newSocket = io(); // Connect to the server at the same origin
-        setSocket(newSocket);
 
-        // Clean up the socket connection when the component unmounts
-        return () => {
-            newSocket.disconnect();
-        };
-    }, []);
+    const { user } = useAppUser();
+
+    // useEffect(() => {
+    //     // Initialize Socket.IO connection
+    //     const newSocket = io(); // Connect to the server at the same origin
+    //     setSocket(newSocket);
+
+    //     // Clean up the socket connection when the component unmounts
+    //     return () => {
+    //         newSocket.disconnect();
+    //     };
+    // }, []);
 
     const fetchMessages = async () => {
         try {
@@ -163,7 +154,7 @@ const Messages = () => {
         fetchMessages();
     }, []);
 
-    useEffect(() => {
+    /*useEffect(() => {
         if (!socket) return;
         socket.on('newMessage', (newMessage: any) => {
             setMessages(prevMessages => [newMessage, ...prevMessages]);
@@ -183,7 +174,7 @@ const Messages = () => {
             socket.off('newMessage');
             socket.off('newReply');
         };
-    }, [socket]);
+    }, [socket]);*/
 
     const handleReplyChange = (messageId: string, text: string) => {
         setReplyText(prev => ({
@@ -211,10 +202,10 @@ const Messages = () => {
                 throw new Error(`Failed to send reply: ${response.status}`);
             }
 
-            // Emit the reply to the server using Socket.IO
+            /* Emit the reply to the server using Socket.IO
             if (socket) {
                 socket.emit('sendReply', { messageId, reply: response.data });
-            }
+            }*/
 
             setMessages((prevMessages: any) =>
                 prevMessages.map((msg: any) =>
@@ -227,30 +218,17 @@ const Messages = () => {
         }
     };
 
-    const handleSendMessage = async () => {
+
+    const handleDeleteMessage = async (id: string) => {
         try {
-            const token = localStorage.getItem('token');
-            if (!token) {
-                // Redirect
-                return;
+            const response = await deleteMessage(id)
+
+            if (response.status === 200) {
+                setMessages(prev => prev.filter(m => m.message_id !== id));
             }
-
-            const response = await postMessage({ description: newMessageDescription, isPublic })
-
-            const data = response.data as any;
-            if (response.status < 200) {
-                throw new Error(`Failed to send message: ${response.status}`);
-            }
-
-            // Emit the new message to the server using Socket.IO
-            if (socket) {
-                socket.emit('sendMessage', data.newMessage);
-            }
-
-            setMessages(prevMessages => [data.newMessage, ...prevMessages]);
-            setNewMessageDescription('');
-        } catch (err: any) {
-            setError(err.message || 'An error occurred while sending the message.');
+        } catch (error) {
+            console.error('Failed to delete message:', error);
+            setError('Could not delete the message.');
         }
     };
 
@@ -272,56 +250,43 @@ const Messages = () => {
 
     if (messages.length === 0) {
         return (
-            <MessageContainer>
-                <Typography variant="body1" color="text.secondary" align="center">
-                    No messages yet.
+            <Box
+                sx={{
+                    textAlign: 'center',
+                    py: 6,
+                    px: 2,
+                    maxWidth: '800px',
+                    margin: '0 auto',
+                    backgroundColor: '#f9f9f9',
+                    borderRadius: 3,
+                    border: '1px dashed #ccc',
+                    boxShadow: 1,
+                }}
+            >
+                <ChatBubbleOutline sx={{ fontSize: 50, color: 'primary.main', mb: 2 }} />
+
+                <Typography variant="h6" color="text.primary" gutterBottom>
+                    No messages yet
                 </Typography>
-            </MessageContainer>
+
+                <Typography variant="body1" color="text.secondary" mb={3}>
+                    Be the first to post something meaningful or uplifting!
+                </Typography>
+
+                <MessageForm messages={messages} setError={setError} setMessages={setMessages} />
+            </Box>
         );
     }
 
     return (
-        <Box sx={{ marginTop: '2%', maxWidth: '800px', margin: '0 auto', px: 2 }}>
+        <Box sx={{ backgroundColor: '#f0f4f8', py: 4, marginTop: '2%', maxWidth: '800px', margin: '0 auto', px: 2 }}>
             <Typography variant="h4" gutterBottom sx={{ color: 'primary.main', fontWeight: 'bold' }}>
                 Messages
             </Typography>
 
-            <NewMessageForm>
-                <Typography variant="h6" gutterBottom style={{ fontWeight: 600, color: '#1a5235' }}>
-                    Send a New Message
-                </Typography>
+            <MessageForm messages={messages} setError={setError} setMessages={setMessages} />
 
-                <TextField
-                    fullWidth
-                    placeholder="Type your message..."
-                    value={newMessageDescription}
-                    onChange={(e) => setNewMessageDescription(e.target.value)}
-                    variant="outlined"
-                    size="medium"
-                    multiline
-                    minRows={3}
-                />
-
-                {canPublishMessages && <FormControlLabel
-                    control={<Switch checked={isPublic} onChange={(e) => setIsPublic(e.target.checked)} />}
-                    label="Make Public"
-                />}
-
-                <Box display="flex" justifyContent="flex-end">
-                    <Button
-                        variant="contained"
-                        color="primary"
-                        onClick={handleSendMessage}
-                        disabled={!newMessageDescription.trim()}
-                        startIcon={<Send size={16} />}
-                    >
-                        Send
-                    </Button>
-                </Box>
-
-            </NewMessageForm>
-
-            {messages.map((message: any) => (
+            {messages.map((message: IMessage) => (
                 <MessageContainer key={message.message_id}>
                     <MessageHeader>
                         <SenderAvatar>{message.sender_email?.[0]?.toUpperCase()}</SenderAvatar>
@@ -336,11 +301,33 @@ const Messages = () => {
                         {formatDistanceToNow(new Date(message.created_at), { addSuffix: true })} ({format(new Date(message.created_at), 'PPPpp')})
                     </MessageDate>
 
-                    {message.replies && message.replies.length > 0 && (
+
+
+
+
+                    {message.sender_id === user?.id && (
+                        <IconButton
+                            aria-label="delete"
+                            onClick={() => {
+                                if (window.confirm('Are you sure you want to delete this message?')) {
+                                    handleDeleteMessage(message.message_id);
+                                }
+                            }}
+                            size="small"
+                            sx={{ ml: 1 }}
+                        >
+                            <Trash fontSize="small" />
+                        </IconButton>
+                    )}
+
+
+
+
+                    {message.replies && message.replies.length > 0 ? (
                         <Box>
                             <Typography variant="subtitle2" style={{ marginTop: '1rem', fontWeight: 'bold' }}>Replies:</Typography>
-                            {message.replies.map((reply: any) => (
-                                <ReplyContainer key={reply.replier_id}>
+                            {message.replies.map((reply: IReply) => (
+                                <ReplyContainer key={`${reply.replier_id}-${reply.reply_created_at}`}>
                                     <ReplyHeader>
                                         <ReplyAvatar>{reply.reply_sender_email[0]}</ReplyAvatar>
                                         <Typography variant="body2" style={{ fontWeight: '600' }}>
@@ -352,6 +339,10 @@ const Messages = () => {
                                 </ReplyContainer>
                             ))}
                         </Box>
+                    ) : (
+                        <Typography variant="body2" color="text.secondary" sx={{ mt: 1, fontStyle: 'italic' }}>
+                            No replies yet.
+                        </Typography>
                     )}
 
                     <ReplyForm>

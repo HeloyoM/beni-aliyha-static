@@ -64,3 +64,13 @@ export const deleteGuestMessage = async (id: string) => {
         throw new Error(`Failed to delete guest message to message id: ${id}`)
     }
 }
+
+export const deleteMessage = async (id: string) => {
+    try {
+        const response = await DELETE(`${API}/${id}`);
+
+        return response;
+    } catch (error) {
+        throw new Error(`Failed to delete message to message id: ${id}`)
+    }
+}

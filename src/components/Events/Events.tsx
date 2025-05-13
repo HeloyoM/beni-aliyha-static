@@ -50,35 +50,31 @@ export const Events = () => {
     }, []);
 
     return (
-        <>
-            {loading ? (
-                <CircularProgress />
-            ) : (
-                <>
-                    {events.map(event => (
-                        <Grid size={{ xs: 12, md: 4 }} key={event.id}>
-                            <Card sx={{ mb: 2, borderLeft: `5px solid ${event.color}` }}>
-                                <CardHeader
-                                    avatar={
-                                        <Avatar sx={{ bgcolor: event.color }}>
-                                            {eventIcons[event.icon] || <Star />} {/* Fallback icon */}
-                                        </Avatar>
-                                    }
-                                    title={event.type}
-                                    subheader={`${event.greg_date} / ${event.hebrew_date}`}
-                                />
-                                <CardContent>
-                                    <Typography>{event.description}</Typography>
-                                </CardContent>
-                            </Card>
+        loading ? (
+            <CircularProgress />
+        ) : (
+            <>
+                {events.map(event => (
+                    <Grid size={{ xs: 12, md: 4 }} key={event.id}>
+                        <Card sx={{ mb: 2, borderLeft: `5px solid ${event.color}` }}>
+                            <CardHeader
+                                avatar={
+                                    <Avatar sx={{ bgcolor: event.color }}>
+                                        {eventIcons[event.icon] || <Star />} {/* Fallback icon */}
+                                    </Avatar>
+                                }
+                                title={event.type}
+                                subheader={`${event.greg_date} / ${event.hebrew_date}`}
+                            />
+                            <CardContent>
+                                <Typography>{event.description}</Typography>
+                            </CardContent>
+                        </Card>
 
-                        </Grid>
-                    ))}
-                </>
-            )}
-
-            <EventForm />
-        </>
+                    </Grid>
+                ))}
+            </>
+        )
     )
 }
 

@@ -1,6 +1,6 @@
-import React, { JSX, useCallback, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import '../App.css';
-import { Button, Select, CardContent, Typography, Grid, Paper, styled, Box, CircularProgress, Card, Chip, CardHeader, Avatar, TextField, FormControl, MenuItem, InputLabel, Alert, FormHelperText, ListItemIcon, ListItemText } from '@mui/material';
+import { Button, CardContent, Typography, Grid, Paper, styled, Box } from '@mui/material';
 import Campaign from '../components/Campaign';
 import { Clock, Award, PlusCircle, List } from 'lucide-react';
 import { DayPicker } from "react-day-picker";
@@ -17,10 +17,9 @@ import PaymentsTable from '../components/PaymentsTable';
 import { useAppUser } from '../context/AppUser.context';
 import { getAllPayments, getPayments } from '../api/payments';
 import QuickAddPayment from '../components/QuickAddPayment';
-import { getMessages } from '../api/message';
-import { getAllUsers } from '../api/user';
-import IUser from '../interfaces/User.interface';
 import Events from '../components/Events/Events';
+import PublicMessages from '../components/PublicMessages';
+import EventForm from '../components/Events/EventForm';
 
 // Styled components for consistent styling
 const DashboardSection = styled(Paper)(({ theme }) => ({
@@ -76,9 +75,7 @@ interface Payment {
 }
 
 
-
 const Home: React.FC = () => {
-  const [publicMessages, setPublicMessages] = useState<any[]>([]);
   const [isInsertingCampaign, setIsInsertingCampaign] = useState(false);
   const [payments, setPayments] = useState<Payment[]>([]);
   const [error, setError] = useState<string | null>(null);
@@ -89,24 +86,6 @@ const Home: React.FC = () => {
   const { lessons, setLessons } = useLessons();
 
   const { canEditPayments } = useAppUser();
-
-  useEffect(() => {
-    const fetchPublicMessages = async () => {
-      try {
-        const response = await getMessages();
-
-        const data = response.data as any;
-
-        const filtered = data.filter((msg: any) => Boolean(msg.is_public));
-        setPublicMessages(filtered);
-      } catch (error) {
-        console.error('Failed to fetch public messages', error);
-      }
-    };
-
-    fetchPublicMessages();
-  }, []);
-
 
   useEffect(() => {
     const fetchPayments = async () => {
@@ -139,26 +118,36 @@ const Home: React.FC = () => {
       <Grid container spacing={3} sx={{ mt: 15 }}>
 
 
-        <Grid size={{ xs: 12, md: 4 }}>
+
+
+        <Grid size={{ xs: 12, md: 4, lg: 10 }} sx={{ display: 'flex', flexDirection: 'row', gap: '3%', p: 5 }}>
           <Events />
         </Grid>
+
+
+
+
+
+
+        <Grid size={{ xs: 12, md: 4, lg: 5 }}>
+          <DashboardSection>
+            <SectionTitleWithIcon variant="h5" mb={2}>🎉 Share an Event</SectionTitleWithIcon>
+            <CardContent>
+              <EventForm />
+            </CardContent>
+          </DashboardSection>
+        </Grid>
+
+
+
+
+
 
         <Grid size={{ xs: 12, md: 4 }}>
           <DashboardSection>
             <SectionTitleWithIcon variant="h5"><List size={20} />Messages from the Community</SectionTitleWithIcon>
             <CardContent>
-              {publicMessages.length > 0 ? (
-                publicMessages.map((msg, index) => (
-                  <Paper key={index} elevation={1} sx={{ p: 2, mb: 1, backgroundColor: '#fefefe' }}>
-                    <Typography variant="body1" color="text.primary">{msg.description}</Typography>
-                    <Typography variant="caption" color="text.secondary">
-                      — {msg.user?.name || 'Anonymous'}
-                    </Typography>
-                  </Paper>
-                ))
-              ) : (
-                <Typography variant="body2" color="text.secondary">No public messages yet.</Typography>
-              )}
+              <PublicMessages />
             </CardContent>
           </DashboardSection>
         </Grid>
@@ -180,8 +169,8 @@ const Home: React.FC = () => {
 
 
 
-        <Grid size={{ xs: 6, sm: 6, md: 4, xl: 6 }}  >
 
+        <Grid size={{ xs: 6, sm: 6, md: 4, xl: 6 }}  >
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1, y: 0 }}
@@ -206,6 +195,8 @@ const Home: React.FC = () => {
 
 
 
+
+
         <Grid size={{ xs: 6, sm: 6, md: 4, xl: 6 }}>
           <DashboardSection style={{ backgroundColor: '#e0f7fa' }}>
             <CardContent sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
@@ -223,6 +214,7 @@ const Home: React.FC = () => {
 
 
 
+
         <Grid size={{ xs: 12, sm: 6, md: 4 }}>
 
           <DashboardSection>
@@ -230,8 +222,6 @@ const Home: React.FC = () => {
 
             <CardContent>
             </CardContent>
-
-
             <Button
               variant="outlined"
               onClick={() => setIsInsertingCampaign(!isInsertingCampaign)}
@@ -261,8 +251,8 @@ const Home: React.FC = () => {
             )}
 
           </DashboardSection>
-
         </Grid>
+
 
 
 
@@ -271,6 +261,7 @@ const Home: React.FC = () => {
         <Grid size={{ xs: 12, sm: 6, md: 4 }}>
           <Birthdays />
         </Grid>
+
 
 
 
@@ -284,18 +275,6 @@ const Home: React.FC = () => {
             </CardContent>
           </DashboardSection>
         </Grid>
-
-
-
-
-        {/* <Grid size={{ xs: 12, sm: 6, md: 4 }}> */}
-        {/* <DashboardSection> */}
-        {/* <SectionTitleWithIcon variant="h5"><List size={20} />Payments</SectionTitleWithIcon> */}
-        {/* <CardContent> */}
-        {/* </CardContent> */}
-        {/* </DashboardSection> */}
-        {/* </Grid> */}
-
 
       </Grid>
 

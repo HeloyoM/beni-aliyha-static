@@ -120,102 +120,101 @@ const EventForm = () => {
         canPublishMessages ? (
 
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.4 }}>
-                <Box mt={3} p={2} borderRadius={2} boxShadow={2} bgcolor="#f9f9f9">
-                    <Typography variant="h6" mb={2}>🎉 Share an Event</Typography>
 
-                    <FormControl fullWidth sx={{ mb: 2 }}>
-                        <form onSubmit={formik.handleSubmit}>
-                            <InputLabel id="type-label" style={{ color: formik.touched.type && formik.errors.type ? '#d32f2f' : '#000' }}>
-                                Select Event Type
-                            </InputLabel>
-                            <Select
-                                labelId="type-label"
-                                id="type"
-                                name="type"
-                                fullWidth
-                                value={formik.values.type}
-                                onChange={formik.handleChange}
-                                onBlur={formik.handleBlur}
-                                sx={{ m: '3%', borderColor: formik.touched.type && formik.errors.type ? '#d32f2f' : '#81c784' }}
-                            >
-                                {eventTypes.map((t) => (
-                                    <MenuItem key={t.id} value={t.id}>
-                                        <ListItemIcon>
-                                            <Avatar
-                                                src={t.icon}
-                                                sx={{ width: 24, height: 24, bgcolor: t.color }}
-                                                alt={t.name}
-                                            >
-                                                {eventIcons[t.icon] || <Star />}
-                                            </Avatar>
-                                        </ListItemIcon>
-                                        <ListItemText primary={t.name} />
-                                    </MenuItem>
-                                ))}
-                            </Select>
+                <FormControl sx={{ mb: 2 }}>
+                    <form onSubmit={formik.handleSubmit}>
+
+                        <InputLabel id="type-label" style={{ color: formik.touched.type && formik.errors.type ? '#d32f2f' : '#000' }}>
+                            Select Event Type
+                        </InputLabel>
+
+                        <Select
+                            labelId="type-label"
+                            id="type"
+                            name="type"
+                            fullWidth
+                            value={formik.values.type}
+                            onChange={formik.handleChange}
+                            onBlur={formik.handleBlur}
+                            sx={{ m: '3%', borderColor: formik.touched.type && formik.errors.type ? '#d32f2f' : '#81c784' }}
+                        >
+                            {eventTypes.map((t) => (
+                                <MenuItem key={t.id} value={t.id}>
+                                    <ListItemIcon>
+                                        <Avatar
+                                            src={t.icon}
+                                            sx={{ width: 24, height: 24, bgcolor: t.color }}
+                                            alt={t.name}
+                                        >
+                                            {eventIcons[t.icon] || <Star />}
+                                        </Avatar>
+                                    </ListItemIcon>
+                                    <ListItemText primary={t.name} />
+                                </MenuItem>
+                            ))}
+                        </Select>
 
 
-                            <TextField
-                                label="What's the event?"
-                                fullWidth
-                                name="description"
-                                multiline
-                                minRows={3}
-                                value={formik.values.description}
-                                onChange={formik.handleChange}
-                                variant="outlined"
-                                sx={{ mb: 2 }}
-                            />
+                        <TextField
+                            label="What's the event?"
+                            fullWidth
+                            name="description"
+                            multiline
+                            minRows={3}
+                            value={formik.values.description}
+                            onChange={formik.handleChange}
+                            variant="outlined"
+                            sx={{ mb: 2 }}
+                        />
 
-                            <TextField
-                                sx={{ width: 'auto', height: 55 }}
-                                type="date"
-                                name="greg_date"
-                                value={formik.values.greg_date}
-                                onChange={formik.handleChange}
-                            />
+                        <TextField
+                            sx={{ width: 'auto', height: 55 }}
+                            type="date"
+                            name="greg_date"
+                            value={formik.values.greg_date}
+                            onChange={formik.handleChange}
+                        />
 
-                            {/* <InputLabel id="member-label" style={{ color: formik.touched.type && formik.errors.type ? '#d32f2f' : '#000' }}>
+                        {/* <InputLabel id="member-label" style={{ color: formik.touched.type && formik.errors.type ? '#d32f2f' : '#000' }}>
                                 member
                             </InputLabel> */}
 
-                            <Select
-                                labelId="member-label"
-                                id="member"
-                                name="user_id"
-                                fullWidth
-                                value={formik.values.user_id}
-                                onChange={formik.handleChange}
-                                onBlur={formik.handleBlur}
-                                sx={{ mt: '3%', borderColor: formik.touched.type && formik.errors.type ? '#d32f2f' : '#81c784' }}
-                            >
-                                {users.map((u) => (
-                                    <MenuItem key={u.id} value={u.id}>
-                                        {u.first_name + ' ' + u.last_name}
-                                    </MenuItem>
-                                ))}
-                            </Select>
+                        <Select
+                            labelId="member-label"
+                            id="member"
+                            name="user_id"
+                            fullWidth
+                            value={formik.values.user_id}
+                            onChange={formik.handleChange}
+                            onBlur={formik.handleBlur}
+                            sx={{ mt: '3%', borderColor: formik.touched.type && formik.errors.type ? '#d32f2f' : '#81c784' }}
+                        >
+                            {users.map((u) => (
+                                <MenuItem key={u.id} value={u.id}>
+                                    {u.first_name + ' ' + u.last_name}
+                                </MenuItem>
+                            ))}
+                        </Select>
 
 
-                            {error && (
-                                <Alert severity="error" style={{ marginBottom: 10 }}>
-                                    {error}
-                                </Alert>
-                            )}
-                            {success && (
-                                <Alert severity="success" style={{ marginBottom: 10 }}>
-                                    Event published successfully!
-                                </Alert>
-                            )}
+                        {error && (
+                            <Alert severity="error" style={{ marginBottom: 10 }}>
+                                {error}
+                            </Alert>
+                        )}
+                        {success && (
+                            <Alert severity="success" style={{ marginBottom: 10 }}>
+                                Event published successfully!
+                            </Alert>
+                        )}
 
-                            <Button type="submit" disabled={loading} variant="contained" color="primary">
-                                Publish Event
-                            </Button>
+                        <Button type="submit" disabled={loading} variant="contained" color="primary">
+                            Publish Event
+                        </Button>
 
-                        </form>
-                    </FormControl>
+                    </form>
+                </FormControl>
 
-                </Box>
             </motion.div>
         ) : <></>
     )
