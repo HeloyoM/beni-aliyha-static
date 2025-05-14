@@ -5,6 +5,7 @@ enum Paths {
     PROFILE = '/profile',
     MESSAGES = "/messages",
     CAMPAIGNS = '/campaings',
+    PRIVACY = '/static/media/privacy.pdf',
     NOT_FOUND = '*'
 }
 

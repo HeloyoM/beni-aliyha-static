@@ -14,17 +14,25 @@ import FloatingActions from './components/FloatingActions';
 import { isTokenExpired } from './utils/isTokenExpired';
 import Paths from './enum/Paths.enum';
 import NotFound from './pages/NotFound';
+import PrivacyBanner from './components/PrivacyBanner';
+import Footer from './components/Footer';
 
 const App: React.FC = () => {
   const [serverMsg, setServerMsg] = React.useState('');
 
   const updateServerMsgContext = (msg: any) => { setServerMsg(msg) }
 
+  // const location = useLocation();
+
+  // const notShowFotter = location.pathname === Paths.ON_BOARDING;
+
   return (
     <AppServerMsgContext.Provider value={{ updateServerMsgContext, serverMsg }}>
       <AppUserProvider>
         <Router>
           <AppContent />
+          <PrivacyBanner />
+          <Footer />
         </Router>
       </AppUserProvider>
     </AppServerMsgContext.Provider>

@@ -23,6 +23,7 @@ import EventForm from '../components/Events/EventForm';
 import { Masonry } from '@mui/lab';
 import IPayment from '../interfaces/IPayment.interface';
 import DonationCard from '../components/DonationCard';
+import Footer from '../components/Footer';
 
 // Styled components for consistent styling
 const DashboardSection = styled(Paper)(({ theme }) => ({
@@ -292,7 +293,6 @@ const Home: React.FC = () => {
             </DashboardSection>
           </Grid>
         )}
-
 
       </Masonry>
 

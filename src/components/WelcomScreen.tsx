@@ -48,12 +48,9 @@ const WelcomeScreen = () => {
 
     const handleGuestClick = () => navigate('/guest');
     const handleLoginClick = () => setAuthMode('login');
-    const handleRegisterClick = () => setAuthMode('register');
+    // const handleRegisterClick = () => setAuthMode('register');
     const closeForm = () => setAuthMode(null);
 
-    const handleGuestButtonClick = () => {
-        navigate('/guest');
-    };
 
     return (
         <Box
@@ -126,7 +123,7 @@ const WelcomeScreen = () => {
                 {!authMode && (
                     <Box>
                         <StyledButton onClick={handleLoginClick}>Login</StyledButton>
-                        <StyledButton onClick={handleRegisterClick}>Register</StyledButton>
+                        {/* <StyledButton onClick={handleRegisterClick}>Register</StyledButton> */}
                         <StyledButton onClick={handleGuestClick}>Enter as Guest</StyledButton>
                     </Box>
                 )}
