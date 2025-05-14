@@ -24,6 +24,7 @@ import { Masonry } from '@mui/lab';
 import IPayment from '../interfaces/IPayment.interface';
 import DonationCard from '../components/DonationCard';
 import Footer from '../components/Footer';
+import Syn from '../assets/20.jpg';
 
 // Styled components for consistent styling
 const DashboardSection = styled(Paper)(({ theme }) => ({
@@ -95,7 +96,6 @@ const Home: React.FC = () => {
   const fetchPayments = async () => {
     try {
 
-      console.log({ canEditPayments })
       const response = canEditPayments ? await getAllPayments() : await getPayments();
 
       const data = response.data as any;
@@ -126,182 +126,209 @@ const Home: React.FC = () => {
 
       <Box
         sx={{
-          position: 'absolute',
-          top: 0,
-          left: 0,
+          position: 'relative',
           width: '100%',
-          height: '100%',
-          backgroundImage: 'url(../assets/12.jpg)',
-          zIndex: -1,
+          minHeight: '100vh',
+          '&::before': {
+            content: '""',
+            position: 'fixed', // ✅ fix the background in place
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundImage: `url(${Syn})`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            backgroundRepeat: 'no-repeat',
+            filter: 'blur(8px)',
+            zIndex: 0,
+            pointerEvents: 'none', // allows interaction with page content
+          },
+          '&::after': {
+            content: '""',
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: 'rgba(0,0,0,0.1)', 
+            zIndex: 0,
+            pointerEvents: 'none',
+          }
         }}
-      />
-
-
-      <Grid size={{ xs: 6, sm: 6, md: 4, xl: 6, lg: 10 }}>
-        <DashboardSection style={{ backgroundColor: '#e0f7fa', maxWidth: '450px', margin: 'auto auto' }}>
-          <CardContent sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
-
-            <CandlelightingTimes />
-
-            <Scheduler />
-
-          </CardContent>
-        </DashboardSection>
-      </Grid>
-
-
-      <Tabs
-        value={activeTab}
-        onChange={handleChange}
-        variant="scrollable"
-        scrollButtons="auto"
-        textColor="primary"
-        indicatorColor="primary"
-        sx={{ mb: 3 }}
       >
-        {/* <Tab label="All" /> */}
-        <Tab label="Community" />
-        <Tab label="Messages" />
-        <Tab label="Lessons" />
-        <Tab label="Campaigns" />
-        <Tab label="Payments" />
-        {user.level === 101 || user.level === 100 && <Tab label="Admin" />}
-      </Tabs>
+        <Box sx={{ position: 'relative', zIndex: 1, color: '#fff', p: 4 }}>
 
-      <Masonry columns={{ xs: 1, sm: 2, md: 3, lg: 2 }} spacing={2} sx={{ margin: 'auto auto' }}>
-        {(activeTab === 0) && (
-          <>
+          <Grid size={{ xs: 6, sm: 6, md: 4, xl: 6, lg: 10 }}>
+            <DashboardSection style={{ backgroundColor: '#e0f7fa', maxWidth: '450px', margin: 'auto auto' }}>
+              <CardContent sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
 
-            <Grid size={{ xs: 12, md: 4, lg: 12 }} sx={{ display: 'flex', flexDirection: 'column', gap: '3%', p: 5 }}>
-              <Events />
-              {/* </Grid>
+                <CandlelightingTimes />
+
+                <Scheduler />
+
+              </CardContent>
+            </DashboardSection>
+          </Grid>
+
+
+          <Tabs
+            value={activeTab}
+            onChange={handleChange}
+            variant="scrollable"
+            scrollButtons="auto"
+            textColor="primary"
+            indicatorColor="primary"
+            sx={{ mb: 3 }}
+          >
+            {/* <Tab label="All" /> */}
+            <Tab label="Community" />
+            <Tab label="Messages" />
+            <Tab label="Lessons" />
+            <Tab label="Campaigns" />
+            <Tab label="Payments" />
+            {user.level === 101 || user.level === 100 && <Tab label="Admin" />}
+          </Tabs>
+
+          <Masonry columns={{ xs: 1, sm: 2, md: 3, lg: 2 }} spacing={2} sx={{ margin: 'auto auto' }}>
+            {(activeTab === 0) && (
+              <>
+
+                <Grid size={{ xs: 12, md: 4, lg: 12 }} sx={{ display: 'flex', flexDirection: 'column', gap: '3%', p: 5 }}>
+                  <Events />
+                  {/* </Grid>
 
             <Grid size={{ xs: 12, md: 4, lg: 5 }}> */}
-              <DashboardSection>
-                <SectionTitleWithIcon variant="h5" mb={2}>🎉 Share an Event</SectionTitleWithIcon>
-                <CardContent>
-                  <EventForm />
-                </CardContent>
-              </DashboardSection>
-            </Grid>
+                  <DashboardSection>
+                    <SectionTitleWithIcon variant="h5" mb={2}>🎉 Share an Event</SectionTitleWithIcon>
+                    <CardContent>
+                      <EventForm />
+                    </CardContent>
+                  </DashboardSection>
+                </Grid>
 
-            <Grid size={{ xs: 12, sm: 6, md: 4 }}>
-              <Birthdays />
-            </Grid>
+                <Grid size={{ xs: 12, sm: 6, md: 4 }}>
+                  <Birthdays />
+                </Grid>
 
-            <Grid size={{ xs: 12, sm: 6, md: 4 }}>
-              <DonationCard />
-            </Grid>
-          </>
-        )}
-
-
-        {(activeTab === 1) && (
-          <Grid size={{ xs: 12, md: 4 }}>
-            <DashboardSection>
-              <SectionTitleWithIcon variant="h5"><List size={20} />Messages from the Community</SectionTitleWithIcon>
-              <CardContent>
-                <PublicMessages />
-              </CardContent>
-            </DashboardSection>
-          </Grid>
-        )}
+                <Grid size={{ xs: 12, sm: 6, md: 4 }}>
+                  <DonationCard />
+                </Grid>
+              </>
+            )}
 
 
-        {(activeTab === 2) && (
-          <Grid size={{ xs: 6, sm: 6, md: 4, xl: 6 }}  >
-            <DashboardSection>
-
-              <SectionTitleWithIcon><Clock size={20} /> Time of Lessons</SectionTitleWithIcon>
-
-              <CardContent style={{ maxHeight: '300px', overflowY: 'auto', padding: '15px' }}>
-
-                <LessonsList lessons={lessons} />
-
-              </CardContent>
-
-              <Lesson lessons={lessons} setLessons={setLessons} />
-
-            </DashboardSection>
-          </Grid>
-        )}
+            {(activeTab === 1) && (
+              <Grid size={{ xs: 12, md: 4 }}>
+                <DashboardSection>
+                  <SectionTitleWithIcon variant="h5"><List size={20} />Messages from the Community</SectionTitleWithIcon>
+                  <CardContent>
+                    <PublicMessages />
+                  </CardContent>
+                </DashboardSection>
+              </Grid>
+            )}
 
 
+            {(activeTab === 2) && (
+              <Grid size={{ xs: 6, sm: 6, md: 4, xl: 6 }}  >
+                <DashboardSection>
 
-        {(activeTab === 3) && (
-          <Grid size={{ xs: 12, sm: 6, md: 4 }}>
+                  <SectionTitleWithIcon><Clock size={20} /> Time of Lessons</SectionTitleWithIcon>
 
-            <DashboardSection>
-              <SectionTitleWithIcon variant="h5"><Award size={20} />Campaigns</SectionTitleWithIcon>
+                  <CardContent style={{ maxHeight: '300px', overflowY: 'auto', padding: '15px' }}>
 
-              <CardContent>
-              </CardContent>
-              <Button
-                variant="outlined"
-                onClick={() => setIsInsertingCampaign(!isInsertingCampaign)}
-                sx={{
-                  marginTop: '10px',
-                  '&:hover': {
-                    backgroundColor: '#e3f2fd',
-                    color: '#1976d2',
-                  },
-                  '&:focus': {
-                    boxShadow: '0 0 5px 2px rgba(0, 123, 255, 0.5)',
-                  }
-                }}
-              >
-                {isInsertingCampaign ? 'Cancel' : 'Start New Campaign'} <PlusCircle size={16} style={{ marginLeft: '5px' }} />
-              </Button>
+                    <LessonsList lessons={lessons} />
 
-              {isInsertingCampaign && (
-                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5 }}>
-                  <Paper style={{ padding: '15px', marginTop: '10px', backgroundColor: '#f9f9f9' }}>
-                    <Typography variant="h6" style={{ marginBottom: '10px' }}>Insert New Campaign</Typography>
+                  </CardContent>
 
-                    <Campaign />
+                  <Lesson lessons={lessons} setLessons={setLessons} />
 
-                  </Paper>
-                </motion.div>
-              )}
-
-            </DashboardSection>
-          </Grid>
-
-        )}
+                </DashboardSection>
+              </Grid>
+            )}
 
 
 
-        {(activeTab === 4) && (
-          <Grid size={{ /*xs: 6, sm: 6, md: 4, xl: 12, lg: 6*/xs: 12, md: 4, lg: 12, xl: 10 }}>
-            <DashboardSection>
-              <CardContent>
-                <QuickAddPayment setPayments={setPayments} />
-                <PaymentsTable payments={payments} />
-              </CardContent>
-            </DashboardSection>
-          </Grid>
-        )}
+            {(activeTab === 3) && (
+              <Grid size={{ xs: 12, sm: 6, md: 4 }}>
+
+                <DashboardSection>
+                  <SectionTitleWithIcon variant="h5"><Award size={20} />Campaigns</SectionTitleWithIcon>
+
+                  <CardContent>
+                  </CardContent>
+                  <Button
+                    variant="outlined"
+                    onClick={() => setIsInsertingCampaign(!isInsertingCampaign)}
+                    sx={{
+                      marginTop: '10px',
+                      '&:hover': {
+                        backgroundColor: '#e3f2fd',
+                        color: '#1976d2',
+                      },
+                      '&:focus': {
+                        boxShadow: '0 0 5px 2px rgba(0, 123, 255, 0.5)',
+                      }
+                    }}
+                  >
+                    {isInsertingCampaign ? 'Cancel' : 'Start New Campaign'} <PlusCircle size={16} style={{ marginLeft: '5px' }} />
+                  </Button>
+
+                  {isInsertingCampaign && (
+                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5 }}>
+                      <Paper style={{ padding: '15px', marginTop: '10px', backgroundColor: '#f9f9f9' }}>
+                        <Typography variant="h6" style={{ marginBottom: '10px' }}>Insert New Campaign</Typography>
+
+                        <Campaign />
+
+                      </Paper>
+                    </motion.div>
+                  )}
+
+                </DashboardSection>
+              </Grid>
+
+            )}
 
 
 
-        {(activeTab === 5) && (
-          <Grid size={{ xs: 6, sm: 6, md: 4, xl: 12, lg: 6 }}>
-            <DashboardSection>
-              <CardContent>
-                <GuestMessages />
-              </CardContent>
-            </DashboardSection>
-          </Grid>
-        )}
+            {(activeTab === 4) && (
+              <Grid size={{ /*xs: 6, sm: 6, md: 4, xl: 12, lg: 6*/xs: 12, md: 4, lg: 12, xl: 10 }}>
+                <DashboardSection>
+                  <CardContent>
+                    <QuickAddPayment setPayments={setPayments} />
+                    <PaymentsTable payments={payments} />
+                  </CardContent>
+                </DashboardSection>
+              </Grid>
+            )}
 
-      </Masonry>
 
 
-      {/* <Grid container spacing={3} sx={{ mt: 15 }}>
+            {(activeTab === 5) && (
+              <Grid size={{ xs: 6, sm: 6, md: 4, xl: 12, lg: 6 }}>
+                <DashboardSection>
+                  <CardContent>
+                    <GuestMessages />
+                  </CardContent>
+                </DashboardSection>
+              </Grid>
+            )}
+
+          </Masonry>
+
+
+          {/* <Grid container spacing={3} sx={{ mt: 15 }}>
 
       </Grid> */}
 
-    </Box >
+        </Box >
+      </Box>
+    </Box>
+
+
+
   )
 }
 

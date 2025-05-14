@@ -11,11 +11,8 @@ const Footer = () => {
     const link = '../documents/privacy.pdf';
 
     const openTab = () => {
-        window.open(
-            Paths.PRIVACY,
-            require(link)
-        )
-    }
+        window.open(Paths.PRIVACY, '_blank');
+    };
 
     return (
         <Box
@@ -37,7 +34,7 @@ const Footer = () => {
             <Grid2 container spacing={2}>
                 <Typography variant="body2" sx={{ position: 'absolute', bottom: 0, alignItems: 'center', display: 'flex' }}>
                     © {new Date().getFullYear()} 0587769313 | All Rights Reserved Meir Juli
-                    © 2025 Bnei Aliyah | <a onClick={() => openTab()}>Privacy Policy</a>
+                    <a style={{ textDecoration: 'underline', color:'blue', cursor: 'pointer', marginLeft: 6 }} onClick={() => openTab()}>Privacy Policy</a>
                 </Typography>
             </Grid2>
         </Box>

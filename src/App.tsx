@@ -96,7 +96,7 @@ const AppContent = () => {
         <Route path={Paths.MESSAGES} element={<Messages />} />
         <Route path={Paths.PROFILE} element={<UserProfile />} />
         <Route path={Paths.GUEST} element={<GuestPage />} />
-        <Route path={Paths.NOT_FOUND} element={<NotFound />} />
+        {/* <Route path={Paths.NOT_FOUND} element={<NotFound />} /> */}
       </Routes>
     </>
   )
