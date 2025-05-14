@@ -7,27 +7,14 @@ import {
     Grid,
     Box,
     ToggleButtonGroup,
-    ToggleButton
+    ToggleButton,
+    Select,
+    MenuItem
 } from '@mui/material';
-import { format } from 'date-fns';
+import { format, isBefore } from 'date-fns';
+import IPayment from '../interfaces/IPayment.interface';
 
-interface Payment {
-    id: string;
-    user_id: string;
-    description: string;
-    amount: number;
-    due_date: string;
-    status: string;
-    created_at: string;
-    updated_at: string;
-    user: {
-        id: string;
-        name: string;
-        email: string;
-    };
-}
-
-const getStatusColor = (status: Payment['status']) => {
+const getStatusColor = (status: IPayment['status']) => {
     switch (status) {
         case 'paid': return 'success';
 
@@ -46,12 +33,19 @@ const isOverdue = (dueDate: string, status: string) => {
 };
 
 type Props = {
-    payments: Payment[];
+    payments: IPayment[];
 };
 
 const PaymentsTable: React.FC<Props> = ({ payments }) => {
     const [view, setView] = useState<'cards' | 'table'>('cards');
     const isMobile = useMediaQuery('(max-width:600px)');
+    const [statusMap, setStatusMap] = useState<Record<string, IPayment['status']>>({});
+
+
+    const handleStatusChange = (id: string, newStatus: IPayment['status']) => {
+        setStatusMap((prev) => ({ ...prev, [id]: newStatus }));
+        // TODO: send to backend via fetch/axios/mutation
+    };
 
     return (
         <Box sx={{ px: isMobile ? 1 : 4, py: 2 }}>
@@ -98,10 +92,11 @@ const PaymentsTable: React.FC<Props> = ({ payments }) => {
                                         User: {p.user.name} ({p.user.email})
                                     </Typography>
                                     <Typography variant="body2" color="text.secondary" mt={1}>
-                                        Amount: <strong>${p.amount}</strong>
+                                        Amount: <strong>₪{p.amount}</strong>
                                     </Typography>
                                     <Typography variant="body2" color="text.secondary">
-                                        Due: {format(new Date(p.due_date), 'MMM dd, yyyy')}
+                                        Due: {p.due_date}
+                                        {isBefore(p.due_date, new Date()) && ' (Overdue)'}
                                     </Typography>
                                     <Typography variant="caption" color="text.disabled">
                                         Created: {format(new Date(p.created_at), 'MMM dd, yyyy')}
@@ -135,6 +130,7 @@ const PaymentsTable: React.FC<Props> = ({ payments }) => {
                                 <TableCell align="center"><b>Due Date</b></TableCell>
                                 <TableCell align="center"><b>Status</b></TableCell>
                                 <TableCell align="center"><b>Created</b></TableCell>
+                                <TableCell align="center"></TableCell>
                             </TableRow>
                         </TableHead>
                         <TableBody>
@@ -148,10 +144,10 @@ const PaymentsTable: React.FC<Props> = ({ payments }) => {
                                     <TableCell>{p.user.name} ({p.user.email})</TableCell>
                                     <TableCell>{p.description}</TableCell>
                                     <TableCell align="right">
-                                        ${p.amount}
+                                        ₪{p.amount}
                                     </TableCell>
                                     <TableCell align="center">
-                                        {format(new Date(p.due_date), 'MMM dd, yyyy')}
+                                        {p.due_date}
                                     </TableCell>
                                     <TableCell align="center">
                                         <Chip
@@ -164,6 +160,20 @@ const PaymentsTable: React.FC<Props> = ({ payments }) => {
                                     <TableCell align="center">
                                         {format(new Date(p.created_at), 'MMM dd, yyyy')}
                                     </TableCell>
+                                    <TableCell align="center">
+                                    <Select
+                                        size="small"
+                                        value={statusMap[p.id] || p.status}
+                                        onChange={(e) => handleStatusChange(p.id, e.target.value as IPayment['status'])}
+                                        variant="outlined"
+                                        sx={{ minWidth: 100 }}
+                                    >
+                                        <MenuItem value="paid">Paid</MenuItem>
+                                        <MenuItem value="pending">Pending</MenuItem>
+                                        <MenuItem value="overdue">Overdue</MenuItem>
+                                        <MenuItem value="cancelled">Cancelled</MenuItem>
+                                    </Select>
+                                </TableCell>
                                 </TableRow>
                             ))}
                             {payments.length === 0 && (

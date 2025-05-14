@@ -110,7 +110,7 @@ const LessonsList = ({ lessons }: Props) => {
                                         color: isNextLesson ? '#fff' : '#2c3e50',
                                     }}
                                 >
-                                    Teacher: {lesson.teacher}
+                                    by: {lesson.teacher}
                                 </Typography>
                             )}
                         </motion.div>

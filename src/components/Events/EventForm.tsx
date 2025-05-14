@@ -216,7 +216,30 @@ const EventForm = () => {
                 </FormControl>
 
             </motion.div>
-        ) : <></>
+        ) : (
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.4 }}>
+
+            <Box
+                sx={{
+                    mt: 4,
+                    p: 3,
+                    borderRadius: 2,
+                    backgroundColor: '#fff3e0',
+                    border: '1px solid #ffcc80',
+                    textAlign: 'center',
+                    maxWidth: 500,
+                    mx: 'auto',
+                }}
+            >
+                <Typography variant="h6" color="warning.main" gutterBottom>
+                    You don’t have permission to publish events
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                    If you believe this is a mistake or you’d like to request permission, please contact the administrator.
+                </Typography>
+            </Box>
+            </motion.div>
+        )
     )
 }
 

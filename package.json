@@ -6,6 +6,7 @@
     "@emotion/styled": "^11.14.0",
     "@hebcal/core": "^5.9.3",
     "@mui/icons-material": "^7.0.1",
+    "@mui/lab": "^7.0.0-beta.12",
     "@mui/material": "^7.0.1",
     "@mui/styles": "^6.4.10",
     "@testing-library/dom": "^10.4.0",

@@ -173,7 +173,7 @@ const Lesson = ({ lessons, setLessons }: Props) => {
                         <Grid size={6}>
                             <TextField
                                 fullWidth
-                                label="Teacher"
+                                label="by"
                                 name="teacher"
                                 value={newLesson.teacher || ''}
                                 onChange={handleNewLessonInputChange}

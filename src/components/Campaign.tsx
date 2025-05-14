@@ -1,12 +1,21 @@
 import { useEffect, useState } from 'react';
-import { TextField, Button, Grid, Alert, Typography, Select, MenuItem, FormControl, InputLabel, FormHelperText, Divider } from '@mui/material';
+import {
+    TextField,
+    Button,
+    Grid,
+    Alert,
+    Select,
+    MenuItem,
+    FormControl,
+    InputLabel,
+    FormHelperText
+} from '@mui/material';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
 import dayjs, { Dayjs } from 'dayjs';
-import { DayPicker } from "react-day-picker";
-import { styled } from '@mui/material/styles';
 import { createCampaign, getCampaignTypes } from '../api/campaign';
 import 'react-day-picker/dist/style.css';
+import AppDatePicker from './AppDatePicker';
 
 // Validation schema using yup
 const newCampaignSchema = yup.object({
@@ -17,15 +26,15 @@ const newCampaignSchema = yup.object({
 });
 
 
-const FormCard = styled('div')(({ theme }) => ({
-    background: theme.palette.background.paper,
-    padding: theme.spacing(4),
-    borderRadius: theme.shape.borderRadius * 2,
-    boxShadow: theme.shadows[3],
-    maxWidth: 800,
-    margin: 'auto',
-    marginTop: theme.spacing(4),
-}));
+// const FormCard = styled('div')(({ theme }) => ({
+//     background: theme.palette.background.paper,
+//     padding: theme.spacing(4),
+//     borderRadius: theme.shape.borderRadius * 2,
+//     boxShadow: theme.shadows[3],
+//     maxWidth: 800,
+//     margin: 'auto',
+//     marginTop: theme.spacing(4),
+// }));
 
 interface campaignTypes {
     id: string
@@ -99,7 +108,7 @@ const Campaign = () => {
 
                 <Grid container spacing={2}>
                     <Grid size={12}>
-                        <MyDatePicker
+                        <AppDatePicker
                             selected={formik.values.dueDate}
                             onChange={(date: Dayjs | null) => {
                                 if (date) {
@@ -200,107 +209,5 @@ const Campaign = () => {
         </>
     );
 };
-
-
-const StyledDayPicker = styled(DayPicker)(({ theme }) => ({
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    // border: `1.4px solid ${theme.palette.divider}`, // Use theme's divider
-    borderRadius: '8px',
-    padding: theme.spacing(2),
-    // boxShadow: theme.shadows[2],
-    backgroundColor: theme.palette.background.paper,
-    height: 'auto',
-    width: 'auto',
-    maxWidth: '450px',
-
-    '.rdp-head': {
-        color: theme.palette.text.primary,
-        fontWeight: '600',
-        paddingBottom: theme.spacing(1),
-    },
-    '.rdp-nav': {
-        marginBottom: theme.spacing(1),
-    },
-    '.rdp-nav-button': {
-        color: theme.palette.action.active,
-        '&:hover': {
-            backgroundColor: theme.palette.action.hover,
-        },
-    },
-    '.rdp-month': {
-        padding: 0,
-        backgroundColor: theme.palette.background.paper,
-        borderRadius: '8px',
-    },
-    '.rdp-table': {
-        borderCollapse: 'collapse',
-        border: 'none',
-        margin: 0,
-    },
-
-    '.rdp-tbody': {
-        border: 'none'
-    },
-    '.rdp-day': {
-        padding: '8px',
-        borderRadius: '4px',
-        cursor: 'pointer',
-        transition: 'background-color 0.3s, color 0.3s, transform 0.2s',
-        color: theme.palette.text.primary,
-        '&:hover': {
-            backgroundColor: theme.palette.action.hover,
-            color: theme.palette.primary.main,
-            transform: 'scale(1.05)',
-        },
-        '&[aria-selected="true"]': {
-            backgroundColor: theme.palette.primary.main,
-            color: theme.palette.primary.contrastText,
-            fontWeight: 'bold',
-            boxShadow: '0 2px 5px rgba(0, 0, 0, 0.2)',
-        },
-        '&:disabled': {
-            color: theme.palette.text.disabled,
-            backgroundColor: 'transparent',
-            cursor: 'default',
-            '&:hover': {
-                backgroundColor: 'transparent',
-                color: theme.palette.text.disabled,
-            },
-        },
-    },
-    '.rdp-caption': {
-        paddingTop: theme.spacing(2),
-        color: theme.palette.text.secondary,
-        fontSize: '0.875rem',
-        textAlign: 'center',
-    },
-}));
-
-type Props = {
-    onChange: (day: any) => void
-    selected: any
-}
-function MyDatePicker({ selected, onChange }: Props) {
-
-    return (
-        <StyledDayPicker
-            mode="single"
-            selected={selected}
-            onSelect={day => onChange(day)}
-            footer={
-                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <Typography variant="caption" color="textSecondary">
-                        {selected ? `Selected: ${selected}` : "Pick a day."}
-                    </Typography>
-                    <Button variant="text" onClick={() => onChange(null)}>
-                        Clear
-                    </Button>
-                </div>
-            }
-        />
-    );
-}
 
 export default Campaign;

@@ -106,7 +106,7 @@ export const Events = () => {
                             subheader={`${event.greg_date} / ${event.hebrew_date}`}
                         />
                         <CardContent>
-                            <Typography>{event.description}</Typography>
+                            <Typography sx={{ fontFamily: 'Sora, sens-serif', fontWeight: 600 }}>{event.description}</Typography>
                         </CardContent>
                     </Card>
 

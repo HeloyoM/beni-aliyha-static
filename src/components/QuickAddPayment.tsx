@@ -4,17 +4,23 @@ import {
     Paper,
     Alert
 } from '@mui/material';
-import dayjs from 'dayjs';
+import dayjs, { Dayjs } from 'dayjs';
 import { useState } from 'react';
 import { createPayment } from '../api/payments';
+import IPayment from '../interfaces/IPayment.interface';
+import AppDatePicker from './AppDatePicker';
 
 const presetDescriptions = ['Cleaning', 'Donate', 'Maintenance', 'Other'];
 
-export default function QuickAddPayment() {
+type Props = {
+    setPayments: React.Dispatch<React.SetStateAction<IPayment[]>>
+}
+export default function QuickAddPayment({ setPayments }: Props) {
     const [descChoice, setDescChoice] = useState('');
     const [customDesc, setCustomDesc] = useState('');
     const [amount, setAmount] = useState('');
-    const [dueDate, setDueDate] = useState('');
+    const [dueDate, setDueDate] = useState<string | null>(null);
+    const [selectedDate, setSelectedDate] = useState<Dayjs | null>(dayjs());
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
     const [success, setSuccess] = useState(false);
@@ -30,10 +36,12 @@ export default function QuickAddPayment() {
 
         setLoading(true);
 
+         const gerg_date = new Date(dueDate)
+
         const payment = {
             description: finalDescription,
             amount: parseFloat(amount),
-            due_date: dueDate,
+            due_date: gerg_date.toLocaleDateString('en-GB')
         };
 
 
@@ -46,10 +54,14 @@ export default function QuickAddPayment() {
             if (response.status > 200) {
                 console.log(data);
 
+                setPayments(prev => [data, ...prev])
                 setSuccess(true);
-                setAmount('');
+                // Reset
+                setDescChoice('');
                 setCustomDesc('');
-                setDueDate('');
+                setAmount('');
+                setDueDate(null);
+                setError('');
             } else {
                 setError(data.message || 'Failed to create payment');
             }
@@ -59,14 +71,11 @@ export default function QuickAddPayment() {
         } finally {
             setLoading(false);
         }
+    };
 
-
-        // Reset
-        setDescChoice('');
-        setCustomDesc('');
-        setAmount('');
-        setDueDate(dayjs().format('YYYY-MM-DD'));
-        setError('');
+    const handleDateChange = (date: any) => {
+        setSelectedDate(date);
+        setDueDate(date);
     };
 
     return (
@@ -109,14 +118,17 @@ export default function QuickAddPayment() {
                     inputProps={{ min: 0 }}
                 />
 
-                <TextField
+                {/* <TextField
                     label="Due Date"
                     type="date"
                     InputLabelProps={{ shrink: true }}
                     value={dueDate}
                     onChange={(e) => setDueDate(e.target.value)}
+                /> */}
+                <AppDatePicker
+                    selected={selectedDate}
+                    onChange={handleDateChange}
                 />
-
                 {error && (
                     <Alert severity="error" style={{ marginBottom: 10 }}>
                         {error}
@@ -127,7 +139,7 @@ export default function QuickAddPayment() {
                         Payment updated successfully!
                     </Alert>
                 )}
-                
+
             </Box>
 
 
