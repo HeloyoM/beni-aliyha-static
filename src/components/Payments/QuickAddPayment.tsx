@@ -6,9 +6,9 @@ import {
 } from '@mui/material';
 import dayjs, { Dayjs } from 'dayjs';
 import { useState } from 'react';
-import { createPayment } from '../api/payments';
-import IPayment from '../interfaces/IPayment.interface';
-import AppDatePicker from './AppDatePicker';
+import IPayment from '../../interfaces/IPayment.interface';
+import { createPayment } from '../../api/payments';
+import AppDatePicker from '../AppDatePicker';
 
 const presetDescriptions = ['Cleaning', 'Donate', 'Maintenance', 'Other'];
 
@@ -118,13 +118,7 @@ export default function QuickAddPayment({ setPayments }: Props) {
                     inputProps={{ min: 0 }}
                 />
 
-                {/* <TextField
-                    label="Due Date"
-                    type="date"
-                    InputLabelProps={{ shrink: true }}
-                    value={dueDate}
-                    onChange={(e) => setDueDate(e.target.value)}
-                /> */}
+          
                 <AppDatePicker
                     selected={selectedDate}
                     onChange={handleDateChange}

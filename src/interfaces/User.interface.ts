@@ -4,8 +4,9 @@ export default interface IUser {
     first_name: string;
     last_name: string;
     phone: string;
-    role_id: number;
+    role_name: string;
     level: number;
     address: string;
     birthday: Date;
+    active: boolean;
 }

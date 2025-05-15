@@ -22,3 +22,13 @@ export const getAllUsers = async () => {
         throw new Error('Failed to fetch all users');
     }
 }
+
+export const actionClicked = async (type: string) => {
+    try {
+        const response = await POST(`${API}/user-actions`, { type });
+
+        return response;
+    } catch (error) {
+        throw new Error('Failed to fetch all users');
+    }
+}

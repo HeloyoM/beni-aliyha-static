@@ -2,11 +2,8 @@ import React from 'react';
 import WhatsAppIcon from '@mui/icons-material/WhatsApp';
 
 const WhatsappButton: React.FC = () => {
-    const phoneNumber = 'YOUR_PHONE_NUMBER';
-
     const handleClick = () => {
-        const message = encodeURIComponent("Hello! I'm interested in joining the community in Israel.");
-        window.open(`https://wa.me/${phoneNumber}?text=${message}`, '_blank');
+        window.open(`https://chat.whatsapp.com/Gq6mmGhdezlJwVg1lYWnrH`, '_blank');
     };
 
     return (
@@ -20,7 +17,7 @@ const styles: { [key: string]: React.CSSProperties } = {
     container: {
         position: 'fixed',
         bottom: '20px',
-        right: '20px',
+        left: '20px',
         backgroundColor: '#25D366',
         borderRadius: '50%',
         width: '60px',

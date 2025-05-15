@@ -30,7 +30,7 @@ const GuestMessages = () => {
     };
 
     useEffect(() => {
-        if (!user || user.role_id > 101) return;
+        if (!user || user.level > 101) return;
 
         const fetchMessages = async () => {
             try {
@@ -61,7 +61,7 @@ const GuestMessages = () => {
         }
     }
 
-    if (!user || user.role_id > 101) return null;
+    if (!user || user.level > 101) return null;
 
     return (
         <Box sx={{ p: 2 }}>
@@ -81,7 +81,7 @@ const GuestMessages = () => {
                 Admins can review, manage, and remove these messages if needed.
             </Typography>)}
 
-            {showDescription &&<FormControlLabel
+            {showDescription && <FormControlLabel
                 control={
                     <Checkbox
                         checked={!showDescription}

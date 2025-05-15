@@ -12,7 +12,7 @@ import {
     MenuItem
 } from '@mui/material';
 import { format, isBefore } from 'date-fns';
-import IPayment from '../interfaces/IPayment.interface';
+import IPayment from '../../interfaces/IPayment.interface';
 
 const getStatusColor = (status: IPayment['status']) => {
     switch (status) {

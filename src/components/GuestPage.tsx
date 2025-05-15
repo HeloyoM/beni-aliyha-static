@@ -523,7 +523,7 @@ const GuestPage: React.FC = () => {
                                 this is a place where you can truly feel at home. 🏡
                             </Typography>
 
-                            <WhatsappButton />
+                            {/* <WhatsappButton /> */}
                         </motion.div>
 
                         <Grid container spacing={4} mt={4}>

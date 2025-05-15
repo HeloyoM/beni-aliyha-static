@@ -1,9 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import '../App.css';
-import { Button, CardContent, Typography, Grid, Paper, styled, Box, Tabs, Tab, Accordion, AccordionSummary, AccordionDetails, useTheme, useMediaQuery } from '@mui/material';
+import { Button, CardContent, Typography, Grid, Paper, styled, Box, Tabs, Tab } from '@mui/material';
 import Campaign from '../components/Campaign';
-import { Clock, Award, PlusCircle, List, Expand } from 'lucide-react';
-import { DayPicker } from "react-day-picker";
+import { Clock, Award, PlusCircle, List } from 'lucide-react';
 import Lesson from '../components/Lessons/Lesson';
 import Scheduler from '../components/Scheduler';
 import CandlelightingTimes from '../components/CandleLightingTimes';
@@ -13,18 +12,16 @@ import Birthdays from '../components/Birthdays';
 import 'react-day-picker/dist/style.css';
 import { motion } from 'framer-motion';
 import GuestMessages from '../components/GuestsMessages';
-import PaymentsTable from '../components/PaymentsTable';
 import { useAppUser } from '../context/AppUser.context';
-import { getAllPayments, getPayments } from '../api/payments';
-import QuickAddPayment from '../components/QuickAddPayment';
 import Events from '../components/Events/Events';
 import PublicMessages from '../components/PublicMessages';
 import EventForm from '../components/Events/EventForm';
 import { Masonry } from '@mui/lab';
-import IPayment from '../interfaces/IPayment.interface';
 import DonationCard from '../components/DonationCard';
-import Footer from '../components/Footer';
 import Syn from '../assets/20.jpg';
+import Payments from '../components/Payments/Payments';
+import WhatsappButton from '../components/WhatsappButton';
+import UserManagementTable from '../components/UserManagementTable';
 
 // Styled components for consistent styling
 const DashboardSection = styled(Paper)(({ theme }) => ({
@@ -64,25 +61,8 @@ const SectionTitleWithIcon = styled(SectionTitle)(({ theme }) => ({
 }));
 
 
-
-const Item = styled(Paper)(({ theme }) => ({
-  backgroundColor: '#fff',
-  ...theme.typography.body2,
-  padding: theme.spacing(0.5),
-  textAlign: 'center',
-  color: (theme.vars || theme).palette.text.secondary,
-  ...theme.applyStyles('dark', {
-    backgroundColor: '#1A2027',
-  }),
-}));
-
 const Home: React.FC = () => {
   const [isInsertingCampaign, setIsInsertingCampaign] = useState(false);
-  const [payments, setPayments] = useState<IPayment[]>([]);
-  const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState<boolean>(false);
-  const [success, setSuccess] = useState(false);
-  const [showPayments, setShowPayments] = useState(false);
   const [activeTab, setActiveTab] = useState(0);
 
   const handleChange = (_: React.SyntheticEvent, newValue: number) => {
@@ -91,33 +71,7 @@ const Home: React.FC = () => {
 
   const { lessons, setLessons } = useLessons();
 
-  const { canEditPayments, user } = useAppUser();
-
-  const fetchPayments = async () => {
-    try {
-
-      const response = canEditPayments ? await getAllPayments() : await getPayments();
-
-      const data = response.data as any;
-
-      if (response.status !== 200) {
-        throw new Error(data.message || 'Failed to fetch payments');
-      }
-
-      setPayments(data);
-    } catch (error: any) {
-      setError(error.message);
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  useEffect(() => {
-    if (canEditPayments) {
-      fetchPayments();
-    }
-  }, [canEditPayments])
-
+  const { user } = useAppUser();
 
   return (
 
@@ -151,7 +105,7 @@ const Home: React.FC = () => {
             left: 0,
             right: 0,
             bottom: 0,
-            backgroundColor: 'rgba(0,0,0,0.1)', 
+            backgroundColor: 'rgba(0,0,0,0.1)',
             zIndex: 0,
             pointerEvents: 'none',
           }
@@ -177,16 +131,17 @@ const Home: React.FC = () => {
             onChange={handleChange}
             variant="scrollable"
             scrollButtons="auto"
-            textColor="primary"
+            textColor="secondary"
             indicatorColor="primary"
             sx={{ mb: 3 }}
           >
             {/* <Tab label="All" /> */}
-            <Tab label="Community" />
-            <Tab label="Messages" />
-            <Tab label="Lessons" />
-            <Tab label="Campaigns" />
-            <Tab label="Payments" />
+            <Tab label="Community" sx={{ color: 'white' }} />
+            <Tab label="Messages" sx={{ color: 'white' }} />
+            <Tab label="Lessons" sx={{ color: 'white' }} />
+            <Tab label="Campaigns" sx={{ color: 'white' }} />
+            <Tab label="Payments" sx={{ color: 'white' }} />
+            <Tab label="Kehilla" sx={{ color: 'white' }} />
             {user.level === 101 || user.level === 100 && <Tab label="Admin" />}
           </Tabs>
 
@@ -255,9 +210,6 @@ const Home: React.FC = () => {
 
                 <DashboardSection>
                   <SectionTitleWithIcon variant="h5"><Award size={20} />Campaigns</SectionTitleWithIcon>
-
-                  <CardContent>
-                  </CardContent>
                   <Button
                     variant="outlined"
                     onClick={() => setIsInsertingCampaign(!isInsertingCampaign)}
@@ -296,9 +248,9 @@ const Home: React.FC = () => {
             {(activeTab === 4) && (
               <Grid size={{ /*xs: 6, sm: 6, md: 4, xl: 12, lg: 6*/xs: 12, md: 4, lg: 12, xl: 10 }}>
                 <DashboardSection>
+                  <SectionTitleWithIcon variant="h5"><Award size={20} />Payments</SectionTitleWithIcon>
                   <CardContent>
-                    <QuickAddPayment setPayments={setPayments} />
-                    <PaymentsTable payments={payments} />
+                    <Payments />
                   </CardContent>
                 </DashboardSection>
               </Grid>
@@ -310,12 +262,23 @@ const Home: React.FC = () => {
               <Grid size={{ xs: 6, sm: 6, md: 4, xl: 12, lg: 6 }}>
                 <DashboardSection>
                   <CardContent>
-                    <GuestMessages />
+                    <UserManagementTable />
                   </CardContent>
                 </DashboardSection>
               </Grid>
             )}
 
+
+            {(activeTab === 6) && (
+              <Grid size={{ xs: 6, sm: 6, md: 4, xl: 12, lg: 6 }}>
+                <DashboardSection>
+                  <CardContent>
+                    <GuestMessages />
+                  </CardContent>
+                </DashboardSection>
+              </Grid>
+            )}
+            <WhatsappButton />
           </Masonry>
 
 
