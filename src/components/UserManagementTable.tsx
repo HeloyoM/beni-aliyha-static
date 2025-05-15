@@ -5,7 +5,8 @@ import {
     Box,
     TextField,
     Grid,
-    CardContent
+    CardContent,
+    Alert
 } from '@mui/material';
 import { styled, useTheme } from '@mui/material/styles';
 import { getAllUsers } from '../api/user';
@@ -45,7 +46,10 @@ const UserManagementTable = () => {
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
-    const { user } = useAppUser();
+    const { user, canDeleteUsers, canReadUsers } = useAppUser();
+
+    const [error, setError] = useState<string | null>(null);
+    const [success, setSuccess] = useState<boolean | null>(null);
     const [search, setSearch] = useState("");
     const [users, setUsers] = useState<IUser[]>([]);
     const [loading, setLoading] = useState(true);
@@ -87,9 +91,16 @@ const UserManagementTable = () => {
 
     const handleSaveChanges = async () => {
         setSaving(true);
+
+        setError(null);
+        setSuccess(null);
+
         try {
             const response = await toggleActivationUser(changes);
-            console.log({ response })
+
+            if (response.status === 200) {
+                setSuccess(true);
+            }
             setChanges([]);
         } catch (err) {
             console.error('Error saving changes:', err);
@@ -97,12 +108,6 @@ const UserManagementTable = () => {
             setSaving(false);
         }
     };
-
-    // const visibleFields = (level: number) => {
-    //     if (level === 100) return ['email', 'phone', 'address', 'active'];
-    //     if (level === 101) return ['email', 'phone', 'address'];
-    //     return ['email'];
-    // };
 
     const handleToggle = (userId: string) => {
         setUsers((prev) =>
@@ -112,11 +117,9 @@ const UserManagementTable = () => {
         );
 
         setChanges((prev) => {
-            // If userId already exists in the changes array, remove it
             if (prev.includes(userId)) {
                 return prev.filter(id => id !== userId);
             } else {
-                // Otherwise, add it
                 return [...prev, userId];
             }
         });
@@ -148,8 +151,12 @@ const UserManagementTable = () => {
     return (
         <TableContainer component={Paper} sx={{ mt: 2, p: 1 }}>
 
+            <Typography variant="h6" align="center" gutterBottom>
+                Kehilla members
+            </Typography>
+
             <TextField
-                label="Search users"
+                label="Search member..."
                 variant="outlined"
                 value={search}
                 onChange={(e) => handleSearch(e)}
@@ -164,10 +171,10 @@ const UserManagementTable = () => {
                             <CardContent>
                                 <Typography variant="h6">{u.first_name} {u.last_name}</Typography>
                                 <Typography variant="body2" color="text.secondary">{u.email}</Typography>
-                                {user.level < 102 && (
+                                {canReadUsers && (
                                     <Typography variant="body2">{u.phone}</Typography>
                                 )}
-                                {user.level === 100 && (
+                                {canDeleteUsers && (
                                     <div style={{ marginTop: 10 }}>
                                         <Typography variant="body2">
                                             Active: <Switch
@@ -184,10 +191,7 @@ const UserManagementTable = () => {
             </Grid>
 
             {!filteredUsers.length && users.map((u) => (
-                <><Typography variant="h6" align="center" gutterBottom>
-                    Kehilla members
-                </Typography>
-
+                <>
 
                     <UserRow key={u.id}>
                         <Box>
@@ -200,13 +204,13 @@ const UserManagementTable = () => {
                             <Typography variant="body2" color="text.secondary">
                                 {u.address}
                             </Typography>
-                            {user.level === 100 && (
+                            {canDeleteUsers && (
                                 <Typography variant="caption" color="text.disabled">
                                     ID: {u.id}
                                 </Typography>
                             )}
                         </Box>
-                        {user.level === 100 && (
+                        {canDeleteUsers && (
                             <Switch
                                 checked={!!u.active}
                                 onChange={() => handleToggle(u.id)}
@@ -217,17 +221,29 @@ const UserManagementTable = () => {
                 </>
             ))}
 
-            {user.level === 100 && (
-                <Box mt={3} textAlign={isMobile ? 'center' : 'right'}>
-                    <Button
-                        variant="contained"
-                        color="primary"
-                        onClick={handleSaveChanges}
-                        disabled={saving || Object.keys(changes).length === 0}
-                    >
-                        {saving ? 'Saving...' : 'Save Changes'}
-                    </Button>
-                </Box>
+            {canDeleteUsers && (
+                <>
+                    {error && (
+                        <Alert severity="error" style={{ marginBottom: 10 }}>
+                            {error}
+                        </Alert>
+                    )}
+                    {success && (
+                        <Alert severity="success" style={{ marginBottom: 10 }}>
+                            User updated successfully!
+                        </Alert>
+                    )}
+
+                    <Box mt={3} textAlign={isMobile ? 'center' : 'right'}>
+                        <Button
+                            variant="contained"
+                            color="primary"
+                            onClick={handleSaveChanges}
+                            disabled={saving || Object.keys(changes).length === 0}
+                        >
+                            {saving ? 'Saving...' : 'Save Changes'}
+                        </Button>
+                    </Box></>
             )}
         </TableContainer>
     );

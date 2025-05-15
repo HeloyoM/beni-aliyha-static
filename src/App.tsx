@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation, useNavigate } from 'react-router-dom';
 import Home from './pages/Home';
 import { AppUserProvider, useAppUser } from './context/AppUser.context';
@@ -18,13 +18,9 @@ import PrivacyBanner from './components/PrivacyBanner';
 import Footer from './components/Footer';
 
 const App: React.FC = () => {
-  const [serverMsg, setServerMsg] = React.useState('');
+  const [serverMsg, setServerMsg] = useState('');
 
   const updateServerMsgContext = (msg: any) => { setServerMsg(msg) }
-
-  // const location = useLocation();
-
-  // const notShowFotter = location.pathname === Paths.ON_BOARDING;
 
   return (
     <AppServerMsgContext.Provider value={{ updateServerMsgContext, serverMsg }}>
@@ -32,7 +28,6 @@ const App: React.FC = () => {
         <Router>
           <AppContent />
           <PrivacyBanner />
-          <Footer />
         </Router>
       </AppUserProvider>
     </AppServerMsgContext.Provider>
@@ -96,7 +91,7 @@ const AppContent = () => {
         <Route path={Paths.MESSAGES} element={<Messages />} />
         <Route path={Paths.PROFILE} element={<UserProfile />} />
         <Route path={Paths.GUEST} element={<GuestPage />} />
-        {/* <Route path={Paths.NOT_FOUND} element={<NotFound />} /> */}
+        <Route path={Paths.NOT_FOUND} element={<NotFound />} />
       </Routes>
     </>
   )

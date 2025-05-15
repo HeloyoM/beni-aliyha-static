@@ -7,11 +7,12 @@ interface AppUserContextProps {
     logout: () => void;
     allowedResources: string[] | null;
     updateAllowedResources: (resources: string[]) => void;
-    canEditLessons: boolean
-    canEditUsers: boolean
-    canEditSchedules: boolean
-    canEditPayments: boolean
-    canPublishMessages: boolean
+    canEditLessons: boolean;
+    canEditSchedules: boolean;
+    canEditPayments: boolean;
+    canPublishMessages: boolean;
+    canDeleteUsers: boolean;
+    canReadUsers: boolean;
 }
 
 const AppUserContext = createContext<AppUserContextProps | undefined>(undefined);
@@ -20,48 +21,51 @@ const AppUserProvider: React.FC<{ children: React.ReactNode }> = ({ children }) 
     const [user, setUser] = useState<IUser>({} as IUser);
     const [canEditLessons, setCanEditLesson] = useState<boolean>(false);
     const [canEditSchedules, setCanEditSchedules] = useState<boolean>(false);
-    const [canEditUsers, setEditUsers] = useState<boolean>(false);
     const [canEditPayments, setEditPayments] = useState<boolean>(false);
     const [canPublishMessages, setPublishMessages] = useState<boolean>(false);
+    const [canDeleteUsers, setCanDeleteUsers] = useState<boolean>(false);
+    const [canReadUsers, setCanReadUsers] = useState<boolean>(false);
+
     const [allowedResources, setAllowedResources] = useState<string[] | null>(null);
 
     const getPermissions = useMemo(() => {
+
         allowedResources?.map((row, i) => {
-            
-            
-            const resource = row.split(':')
 
+            const [resName, resScope] = row.split(':')
 
-            if (resource.includes('lessons')) {
-                if (resource.includes('write')) {
+            if (resName === 'lessons') {
+                if (resScope === 'write') {
                     setCanEditLesson(true)
-                }
-            } 
-            
-            else if (resource.includes('schedules')) {
-                if (resource.includes('write')) {
-                    setCanEditSchedules(true)
-                }
-            } 
-            
-            else if (resource.includes('users')) {
-                if (resource.includes('delete')) {
-                    setEditUsers(true)
                 }
             }
 
-            else if (resource.includes('payments')) {
-                if (resource.includes('write')) {
+            else if (resName === 'schedules') {
+                if (resScope === 'write') {
+                    setCanEditSchedules(true)
+                }
+            }
+
+            else if (resName === 'payments') {
+                if (resScope === 'write') {
                     setEditPayments(true)
                 }
             }
 
-            else if (resource.includes('messages')) {
-                if (resource.includes('write')) {
+            else if (resName === 'messages') {
+                if (resScope === 'write') {
                     setPublishMessages(true)
                 }
             }
-            
+
+            else if (resName === 'users') {
+                if (resScope === 'delete') {
+                    setCanDeleteUsers(true)
+                } else if (resScope === 'read') {
+                    setCanReadUsers(true)
+                }
+            }
+
         })
     }, [allowedResources])
 
@@ -92,7 +96,9 @@ const AppUserProvider: React.FC<{ children: React.ReactNode }> = ({ children }) 
         setEditPayments(false);
         setCanEditLesson(false);
         setCanEditSchedules(false);
-        setEditUsers(false);
+        setCanDeleteUsers(false);
+        setCanReadUsers(false);
+        setPublishMessages(false);
     };
 
     const contextValue = {
@@ -102,10 +108,11 @@ const AppUserProvider: React.FC<{ children: React.ReactNode }> = ({ children }) 
         allowedResources,
         canEditLessons,
         canEditSchedules,
-        canEditUsers,
         updateAllowedResources,
         canEditPayments,
-        canPublishMessages
+        canPublishMessages,
+        canReadUsers,
+        canDeleteUsers
     };
 
     return (

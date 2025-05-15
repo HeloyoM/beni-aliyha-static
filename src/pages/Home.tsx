@@ -261,6 +261,7 @@ const Home: React.FC = () => {
             {(activeTab === 5) && (
               <Grid size={{ xs: 6, sm: 6, md: 4, xl: 12, lg: 6 }}>
                 <DashboardSection>
+                  <SectionTitleWithIcon variant="h5"><Award size={20} />Members</SectionTitleWithIcon>
                   <CardContent>
                     <UserManagementTable />
                   </CardContent>

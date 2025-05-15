@@ -1,12 +1,15 @@
-// components/PrivacyBanner.js
-import React, { useEffect, useState } from 'react';
-import { Box, Typography, Button, Slide, Paper } from '@mui/material';
+
+import { useEffect, useState } from 'react';
+import { Typography, Button, Slide, Paper } from '@mui/material';
+import Footer from './Footer';
+import Paths from '../enum/Paths.enum';
 
 const PrivacyBanner = () => {
     const [show, setShow] = useState(false);
 
     useEffect(() => {
         const accepted = localStorage.getItem('privacyAccepted');
+
         if (!accepted) setShow(true);
     }, []);
 
@@ -15,6 +18,13 @@ const PrivacyBanner = () => {
         setShow(false);
     };
 
+    const openTab = () => {
+        window.open(Paths.PRIVACY, '_blank');
+    };
+
+    if (!show) {
+        return <Footer />
+    }
     return (
         <Slide direction="up" in={show} mountOnEnter unmountOnExit>
             <Paper
@@ -35,11 +45,11 @@ const PrivacyBanner = () => {
             >
                 <Typography variant="body2" sx={{ mr: 2 }}>
                     We use cookies and collect usage data to improve your experience. Read our{' '}
-                    <a href="/privacy" target="_blank" rel="noopener noreferrer">
+                    <a style={{textDecoration: 'underline', color: 'blue', cursor: 'pointer'}} onClick={() => openTab()} target="_blank" rel="noopener noreferrer">
                         Privacy Policy
                     </a>.
                 </Typography>
-                <Button variant="contained" color="primary" size="small" onClick={handleAccept} sx={{marginRight: '4%'}}>
+                <Button variant="contained" color="primary" size="small" onClick={handleAccept} sx={{ marginRight: '4%' }}>
                     Got it
                 </Button>
             </Paper>
