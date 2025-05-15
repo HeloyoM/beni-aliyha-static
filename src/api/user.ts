@@ -1,4 +1,4 @@
-import { GET, POST } from "./api-req";
+import { GET, POST, PUT } from "./api-req";
 import { UpdateProfileDto } from "./dto/UpdateProfile.dto";
 
 const API = 'user';
@@ -32,3 +32,4 @@ export const actionClicked = async (type: string) => {
         throw new Error('Failed to fetch all users');
     }
 }
+

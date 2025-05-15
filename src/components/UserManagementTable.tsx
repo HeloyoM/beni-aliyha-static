@@ -1,10 +1,8 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import {
-    Table, TableBody, TableCell, TableContainer, TableHead, TableRow,
+    TableContainer,
     Paper, Switch, Button, Typography, CircularProgress, useMediaQuery,
     Box,
-    Snackbar,
-    Alert,
     TextField,
     Grid,
     CardContent
@@ -13,24 +11,7 @@ import { styled, useTheme } from '@mui/material/styles';
 import { getAllUsers } from '../api/user';
 import { useAppUser } from '../context/AppUser.context';
 import IUser from '../interfaces/User.interface';
-
-
-// Styled components for enhanced UI
-// const StyledPaper = styled(Paper)(({ theme }) => ({
-//     padding: theme.spacing(2), // Reduced padding for mobile
-//     borderRadius: '12px',
-//     boxShadow: theme.shadows[3],
-//     marginTop: theme.spacing(2), // Reduced margin for mobile
-//     transition: 'transform 0.2s, box-shadow 0.2s',
-//     '&:hover': {
-//         transform: 'translateY(-4px)',
-//         boxShadow: theme.shadows[5],
-//     },
-//     [theme.breakpoints.up('sm')]: {  // Apply larger padding and margin for larger screens
-//         padding: theme.spacing(3),
-//         marginTop: theme.spacing(4),
-//     },
-// }));
+import { toggleActivationUser } from '../api/admin';
 
 const StyledPaper = styled(Paper)(({ theme }) => ({
     padding: theme.spacing(2),
@@ -67,11 +48,9 @@ const UserManagementTable = () => {
     const { user } = useAppUser();
     const [search, setSearch] = useState("");
     const [users, setUsers] = useState<IUser[]>([]);
-    const [activationChanges, setActivationChanges] = useState({});
     const [loading, setLoading] = useState(true);
-    const [touched, setTouched] = useState(false);
     const [saving, setSaving] = useState(false);
-    const [changes, setChanges] = useState({});
+    const [changes, setChanges] = useState<string[]>([]);
     const [filteredUsers, setFilteredUsers] = useState<IUser[]>([]);
 
     useEffect(() => {
@@ -106,21 +85,12 @@ const UserManagementTable = () => {
         }
     }, [search])
 
-    const handleToggleActive = (userId: string, currentStatus: boolean) => {
-        setActivationChanges(prev => ({
-            ...prev,
-            [userId]: !currentStatus
-        }));
-        setUsers(prev =>
-            prev.map(u => u.id === userId ? { ...u, active: !currentStatus } : u)
-        );
-    };
-
     const handleSaveChanges = async () => {
         setSaving(true);
         try {
-            // await saveUserActivationChanges(activationChanges);
-            setActivationChanges({});
+            const response = await toggleActivationUser(changes);
+            console.log({ response })
+            setChanges([]);
         } catch (err) {
             console.error('Error saving changes:', err);
         } finally {
@@ -128,11 +98,11 @@ const UserManagementTable = () => {
         }
     };
 
-    const visibleFields = (level: number) => {
-        if (level === 100) return ['email', 'phone', 'address', 'active'];
-        if (level === 101) return ['email', 'phone', 'address'];
-        return ['email'];
-    };
+    // const visibleFields = (level: number) => {
+    //     if (level === 100) return ['email', 'phone', 'address', 'active'];
+    //     if (level === 101) return ['email', 'phone', 'address'];
+    //     return ['email'];
+    // };
 
     const handleToggle = (userId: string) => {
         setUsers((prev) =>
@@ -141,7 +111,15 @@ const UserManagementTable = () => {
             )
         );
 
-        setChanges((prev) => ({ ...prev, [userId]: true }));
+        setChanges((prev) => {
+            // If userId already exists in the changes array, remove it
+            if (prev.includes(userId)) {
+                return prev.filter(id => id !== userId);
+            } else {
+                // Otherwise, add it
+                return [...prev, userId];
+            }
+        });
     };
 
     const handleSearch = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -207,35 +185,35 @@ const UserManagementTable = () => {
 
             {!filteredUsers.length && users.map((u) => (
                 <><Typography variant="h6" align="center" gutterBottom>
-                Kehilla members
+                    Kehilla members
                 </Typography>
 
-            
-                <UserRow key={u.id}>
-                    <Box>
-                        <Typography variant="subtitle1">
-                            {u.first_name} {u.last_name}
-                        </Typography>
-                        <Typography variant="body2" color="text.secondary">
-                            {u.email} | {u.phone}
-                        </Typography>
-                        <Typography variant="body2" color="text.secondary">
-                            {u.address}
-                        </Typography>
-                        {user.level === 100 && (
-                            <Typography variant="caption" color="text.disabled">
-                                ID: {u.id}
+
+                    <UserRow key={u.id}>
+                        <Box>
+                            <Typography variant="subtitle1">
+                                {u.first_name} {u.last_name}
                             </Typography>
+                            <Typography variant="body2" color="text.secondary">
+                                {u.email} | {u.phone}
+                            </Typography>
+                            <Typography variant="body2" color="text.secondary">
+                                {u.address}
+                            </Typography>
+                            {user.level === 100 && (
+                                <Typography variant="caption" color="text.disabled">
+                                    ID: {u.id}
+                                </Typography>
+                            )}
+                        </Box>
+                        {user.level === 100 && (
+                            <Switch
+                                checked={!!u.active}
+                                onChange={() => handleToggle(u.id)}
+                                color="primary"
+                            />
                         )}
-                    </Box>
-                    {user.level === 100 && (
-                        <Switch
-                            checked={!!u.active}
-                            onChange={() => handleToggle(u.id)}
-                            color="primary"
-                        />
-                    )}
-                </UserRow>
+                    </UserRow>
                 </>
             ))}
 
