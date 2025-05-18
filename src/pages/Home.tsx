@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import '../App.css';
-import { Button, CardContent, Typography, Grid, Paper, styled, Box, Tabs, Tab } from '@mui/material';
+import { Button, CardContent, Typography, Grid, Paper, styled, Box, Tabs, Tab, useMediaQuery } from '@mui/material';
 import Campaign from '../components/Campaign';
 import { Clock, Award, PlusCircle, List } from 'lucide-react';
 import Lesson from '../components/Lessons/Lesson';
@@ -18,7 +18,7 @@ import PublicMessages from '../components/PublicMessages';
 import EventForm from '../components/Events/EventForm';
 import { Masonry } from '@mui/lab';
 import DonationCard from '../components/DonationCard';
-import Syn from '../assets/20.jpg';
+import Syn from '../assets/21.jpg';
 import Payments from '../components/Payments/Payments';
 import WhatsappButton from '../components/WhatsappButton';
 import UserManagementTable from '../components/UserManagementTable';
@@ -65,6 +65,8 @@ const Home: React.FC = () => {
   const [isInsertingCampaign, setIsInsertingCampaign] = useState(false);
   const [activeTab, setActiveTab] = useState(0);
 
+  const isMobile = useMediaQuery('(max-width:600px)');
+
   const handleChange = (_: React.SyntheticEvent, newValue: number) => {
     setActiveTab(newValue);
   };
@@ -94,7 +96,7 @@ const Home: React.FC = () => {
             backgroundSize: 'cover',
             backgroundPosition: 'center',
             backgroundRepeat: 'no-repeat',
-            filter: 'blur(8px)',
+            filter: 'blur(5px)',
             zIndex: 0,
             pointerEvents: 'none', // allows interaction with page content
           },
@@ -149,14 +151,14 @@ const Home: React.FC = () => {
             {(activeTab === 0) && (
               <>
 
-                <Grid size={{ xs: 12, md: 4, lg: 12 }} sx={{ display: 'flex', flexDirection: 'column', gap: '3%', p: 5 }}>
+                <Grid size={{ xs: 12, md: 4, lg: 12 }} sx={{ display: 'flex', flexDirection: 'column', gap: '3%', p: isMobile ? 0 : 5 }}>
                   <Events />
                   {/* </Grid>
 
             <Grid size={{ xs: 12, md: 4, lg: 5 }}> */}
                   <DashboardSection>
                     <SectionTitleWithIcon variant="h5" mb={2}>🎉 Share an Event</SectionTitleWithIcon>
-                    <CardContent>
+                    <CardContent >
                       <EventForm />
                     </CardContent>
                   </DashboardSection>

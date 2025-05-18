@@ -35,7 +35,7 @@ const FloatingActions = () => {
   return (
     <SpeedDial
       ariaLabel="Navigation actions"
-      sx={{ position: 'fixed', bottom: 30, right: 30 }}
+      sx={{ position: 'fixed', bottom: 40, right: 30 }}
       icon={<SpeedDialIcon />}
     >
       {actions.map((action) => (

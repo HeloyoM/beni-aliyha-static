@@ -14,6 +14,7 @@ import { FinalCTASection } from './FinalCTASection';
 import LocationMap from './LocationMap';
 import WhatsappButton from './WhatsappButton';
 import { postGuestMessage } from '../api/message';
+import DonationCard from './DonationCard';
 
 const GuestSection = styled(Box)(({ theme }) => ({
     height: '100vh',
@@ -65,7 +66,7 @@ const GuestPage: React.FC = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [success, setSuccess] = useState(false);
-   
+
     const location = useLocation();
 
     useEffect(() => {
@@ -289,6 +290,12 @@ const GuestPage: React.FC = () => {
 
 
 
+
+
+
+
+
+
                 <GuestSection id="text-content" >
                     <Box sx={{ py: 6, px: 2, maxWidth: '900px', mx: 'auto' }}>
 
@@ -334,6 +341,11 @@ const GuestPage: React.FC = () => {
                         </ContentBox>
                     </Box>
                 </GuestSection>
+
+
+
+
+
 
 
 
@@ -411,6 +423,10 @@ const GuestPage: React.FC = () => {
 
 
 
+
+
+
+
                 <GuestSection id="people">
                     <Box sx={{ py: 6, px: 2 }}>
                         <Typography variant="h4" gutterBottom textAlign="center">
@@ -465,9 +481,17 @@ const GuestPage: React.FC = () => {
 
 
 
+
+
+
+
+
                 <GuestSection id="testi">
                     <TestimonialsCarousel />
                 </GuestSection>
+
+
+
 
 
 
@@ -523,7 +547,8 @@ const GuestPage: React.FC = () => {
                                 this is a place where you can truly feel at home. 🏡
                             </Typography>
 
-                            {/* <WhatsappButton /> */}
+                            <DonationCard />
+
                         </motion.div>
 
                         <Grid container spacing={4} mt={4}>
@@ -585,6 +610,12 @@ const GuestPage: React.FC = () => {
 
 
 
+
+
+
+
+
+
                 <GuestSection id="cta">
                     <FinalCTASection />
                 </GuestSection>
@@ -594,9 +625,25 @@ const GuestPage: React.FC = () => {
 
 
 
+
+
+
+
+
+
+
+
                 <GuestSection id="location">
                     <LocationMap />
                 </GuestSection>
+
+
+
+
+
+
+
+
 
 
 

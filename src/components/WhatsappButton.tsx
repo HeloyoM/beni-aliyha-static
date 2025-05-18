@@ -16,7 +16,7 @@ const WhatsappButton: React.FC = () => {
 const styles: { [key: string]: React.CSSProperties } = {
     container: {
         position: 'fixed',
-        bottom: '20px',
+        bottom: '40px',
         left: '20px',
         backgroundColor: '#25D366',
         borderRadius: '50%',
