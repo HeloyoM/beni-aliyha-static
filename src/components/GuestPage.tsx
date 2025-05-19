@@ -1,6 +1,6 @@
 
 import React, { useCallback, useEffect, useState } from 'react';
-import { Fade, Box, Typography, Grid, Card, CardMedia, CardContent, Button, TextField, Dialog, DialogContent, DialogTitle, IconButton, ImageList, ImageListItem, ImageListItemBar, Paper, Snackbar, Accordion, AccordionSummary, AccordionDetails, Container } from '@mui/material';
+import { Fade, Box, Typography, Grid, Card, CardMedia, CardContent, Button, TextField, Dialog, DialogContent, DialogTitle, IconButton, ImageList, ImageListItem, ImageListItemBar, Paper, Snackbar, Accordion, AccordionSummary, AccordionDetails, Container, useMediaQuery } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import '../App.css';
 import { useLocation } from 'react-router-dom';
@@ -67,6 +67,8 @@ const GuestPage: React.FC = () => {
     const [error, setError] = useState<string | null>(null);
     const [success, setSuccess] = useState(false);
 
+    const isMobile = useMediaQuery('(max-width:600px)');
+    
     const location = useLocation();
 
     useEffect(() => {
@@ -434,7 +436,7 @@ const GuestPage: React.FC = () => {
                         </Typography>
 
                         <Grid container spacing={4} justifyContent="center">
-                            <Grid>
+                            <Grid >
                                 <Card sx={{ p: 2 }}>
                                     <CardContent>
                                         <Typography variant="body1" fontStyle="italic">
@@ -460,7 +462,7 @@ const GuestPage: React.FC = () => {
                                 </Card>
                             </Grid>
 
-                            <Grid>
+                            {!isMobile && <Grid>
                                 <Card sx={{ p: 2 }}>
                                     <CardContent>
                                         <Typography variant="body1" fontStyle="italic">
@@ -471,7 +473,7 @@ const GuestPage: React.FC = () => {
                                         </Typography>
                                     </CardContent>
                                 </Card>
-                            </Grid>
+                            </Grid>}
                         </Grid>
                     </Box>
 
@@ -555,7 +557,7 @@ const GuestPage: React.FC = () => {
                             {[
                                 { icon: '🌱', title: 'Family-Oriented', text: 'Activities and values that nurture every age.' },
                                 { icon: '🤝', title: 'Supportive Network', text: 'A community that supports you from day one.' },
-                                { icon: '📚', title: 'Great Education', text: 'Access to inspiring schools and programs.' },
+                                !isMobile ? { icon: '📚', title: 'Great Education', text: 'Access to inspiring schools and programs.' } : {},
                             ].map((item, i) => (
                                 <Grid key={i}>
                                     <motion.div
@@ -591,7 +593,7 @@ const GuestPage: React.FC = () => {
                         </Grid>
 
 
-                        <motion.div
+                        {!isMobile && <motion.div
                             initial={{ opacity: 0 }}
                             whileInView={{ opacity: 1 }}
                             transition={{ delay: 0.5 }}
@@ -602,7 +604,7 @@ const GuestPage: React.FC = () => {
                                     See Life in the Community
                                 </Button>
                             </Box>
-                        </motion.div>
+                        </motion.div>}
                     </Container>
                 </GuestSection>
 

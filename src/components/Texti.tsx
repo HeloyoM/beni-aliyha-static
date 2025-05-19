@@ -22,14 +22,14 @@ const testimonials = [
 
 export default function TestimonialsCarousel() {
     return (
-        <Box sx={{ py: 8, px: 2, textAlign: 'center', backgroundColor: '#f5f5f5' }}>
+        <Box sx={{ py: 6, px: 2, width: '85vw', textAlign: 'center', backgroundColor: '#f5f5f5' }}>
             <motion.div
                 initial={{ x: -30, opacity: 0 }}
                 whileInView={{ x: 0, opacity: 1 }}
                 transition={{ duration: 0.7 }}
                 viewport={{ once: true }}
             >
-                <Typography variant="h4" gutterBottom>
+                <Typography variant="h4" gutterBottom textAlign="center">
                     What Families Are Saying
                 </Typography>
                 <Typography variant="subtitle1" mb={4}>
@@ -98,6 +98,7 @@ export default function TestimonialsCarousel() {
                     sx={{ mt: 4 }}
                     href="/downloads/testimonials.pdf"
                     target="_blank"
+                    disabled
                 >
                     Download Stories as PDF
                 </Button>

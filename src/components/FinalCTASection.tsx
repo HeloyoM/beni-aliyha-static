@@ -45,6 +45,7 @@ export const FinalCTASection = () => {
                         variant="outlined"
                         color="primary"
                         size="large"
+                        disabled
                         href="/path-to-pdf"
                     >
                         Download Info PDF
