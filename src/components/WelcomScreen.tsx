@@ -117,7 +117,7 @@ const WelcomeScreen = () => {
             <Box sx={{ position: 'relative', zIndex: 2, textAlign: 'center' }}>
                 <WelcomeText variant="h1">Welcome</WelcomeText>
 
-                <AppNameText variant="h2">Beni-Aliyah</AppNameText>
+                <AppNameText variant="h2">Bnei-Aliyah</AppNameText>
 
 
                 {!authMode && (
