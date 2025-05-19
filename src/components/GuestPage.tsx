@@ -312,7 +312,7 @@ const GuestPage: React.FC = () => {
                         </Typography>
 
                         <ContentBox>
-                            <Grid container spacing={4}>
+                            <Grid container spacing={8}>
                                 <Grid >
                                     <Box sx={{ p: 2, bgcolor: '#f5f5f5', borderRadius: 2, height: '100%' }}>
                                         <Typography variant="h6" gutterBottom>🏠 Affordable Housing</Typography>
@@ -547,7 +547,7 @@ const GuestPage: React.FC = () => {
                                 this is a place where you can truly feel at home. 🏡
                             </Typography>
 
-                            <DonationCard />
+                            {/* <DonationCard /> */}
 
                         </motion.div>
 
@@ -723,6 +723,7 @@ const GuestPage: React.FC = () => {
                                             variant="contained"
                                             color="primary"
                                             size="large"
+                                            disabled
                                             endIcon={<Send />}
                                             component={motion.button}
                                             whileHover={{ scale: 1.05 }}
