@@ -122,7 +122,7 @@ const WelcomeScreen = () => {
 
                 {!authMode && (
                     <Box>
-                        <StyledButton onClick={handleLoginClick}>Login</StyledButton>
+                        {/* <StyledButton onClick={handleLoginClick}>Login</StyledButton> */}
                         {/* <StyledButton onClick={handleRegisterClick}>Register</StyledButton> */}
                         <StyledButton onClick={handleGuestClick}>Enter as Guest</StyledButton>
                     </Box>
@@ -137,9 +137,9 @@ const WelcomeScreen = () => {
                         exit={{ y: 100, opacity: 0 }}
                         transition={{ duration: 0.4 }}
                     >
-                        <AuthForm mode={authMode} onClose={closeForm} />
+                        {/* <AuthForm mode={authMode} onClose={closeForm} /> */}
                     </motion.div>
-                )}
+                )}  
 
             </Box>
 

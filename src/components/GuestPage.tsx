@@ -1,18 +1,18 @@
-// GuestPage.tsx
+
 import React, { useCallback, useEffect, useState } from 'react';
 import { Fade, Box, Typography, Grid, Card, CardMedia, CardContent, Button, TextField, Dialog, DialogContent, DialogTitle, IconButton, ImageList, ImageListItem, ImageListItemBar, Paper, Snackbar, Accordion, AccordionSummary, AccordionDetails, Container } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import '../App.css';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import StarBorderIcon from '@mui/icons-material/StarBorder';
 import { PlayCircle, XCircle, Send, Expand } from 'lucide-react';
 import TestimonialsCarousel from './Texti';
 import { motion } from 'framer-motion';
-import bgVideoUp from '../assets/videos/2.mp4';
-import bgVideoDown from '../assets/videos/3.mp4';
+// import bgVideoUp from '../assets/videos/2.mp4';
+// import bgVideoDown from '../assets/videos/3.mp4';
 import { FinalCTASection } from './FinalCTASection';
 import LocationMap from './LocationMap';
-import WhatsappButton from './WhatsappButton';
+// import WhatsappButton from './WhatsappButton';
 import { postGuestMessage } from '../api/message';
 import DonationCard from './DonationCard';
 
@@ -79,11 +79,8 @@ const GuestPage: React.FC = () => {
     }, [location]);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        console.log(e.target.name, e.target.value)
         setForm({ ...form, [e.target.name]: e.target.value });
     };
-
-
 
     const handleSubmit = async () => {
         try {
