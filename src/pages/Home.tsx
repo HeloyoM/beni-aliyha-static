@@ -18,7 +18,7 @@ import PublicMessages from '../components/PublicMessages';
 import EventForm from '../components/Events/EventForm';
 import { Masonry } from '@mui/lab';
 import DonationCard from '../components/DonationCard';
-import Syn from '../assets/21.jpg';
+// import Syn from '../assets/21.jpg';
 import Payments from '../components/Payments/Payments';
 import WhatsappButton from '../components/WhatsappButton';
 import UserManagementTable from '../components/UserManagementTable';
@@ -92,7 +92,7 @@ const Home: React.FC = () => {
             left: 0,
             right: 0,
             bottom: 0,
-            backgroundImage: `url(${Syn})`,
+            // backgroundImage: `url(${Syn})`,
             backgroundSize: 'cover',
             backgroundPosition: 'center',
             backgroundRepeat: 'no-repeat',
