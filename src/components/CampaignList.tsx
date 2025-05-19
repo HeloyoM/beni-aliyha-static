@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { Table, TableBody, TableHead, TableRow, TableCell, Paper, Typography, CircularProgress, Alert, Tooltip, IconButton, Button, Dialog, DialogTitle, DialogContent, DialogActions, Collapse } from '@mui/material';
+import { Table, TableBody, TableHead, TableRow, TableCell, Paper, Typography, CircularProgress, Alert, Tooltip, IconButton, Button, Dialog, DialogTitle, DialogContent, DialogActions, Collapse, LinearProgress } from '@mui/material';
 import { TextField, Box, Grid, Select, MenuItem, FormControl, InputLabel, FormHelperText, Divider } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { format } from 'date-fns';
@@ -9,6 +9,8 @@ import { getCampaignMembers, getCampaigns, joinCampaign } from '../api/campaign'
 import { useAppUser } from '../context/AppUser.context';
 import { MessageCircle } from 'lucide-react';
 import { motion } from 'framer-motion';
+import ICampaign from '../interfaces/Cmapaign.interface';
+import ICampaignMember from '../interfaces/ICampaignMember.interface';
 
 // Styled components for enhanced UI
 const StyledPaper = styled(Paper)(({ theme }) => ({
@@ -42,17 +44,17 @@ const StyledTableCell = styled(TableCell)(({ theme }) => ({
 const CampaignList = () => {
     const [openModal, setOpenModal] = useState(false);
     const [selectedCampaign, setSelectedCampaign] = useState<any | null>(null);
-    const [campaigns, setCampaigns] = useState<any[]>([]);
+    const [campaigns, setCampaigns] = useState<ICampaign[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
-    const [members, setMembers] = useState<any[]>([]); // State to store members
+    const [members, setMembers] = useState<ICampaignMember[]>([]); // State to store members
     const [joinCampaignLoading, setJoinCampaignLoading] = useState(false); // Track join campaign loading
     const [joinCampaignSuccess, setJoinCampaignSuccess] = useState(false); // Track join campaign success
     const [participationType, setParticipationType] = useState('');  // State for participation type
     const [openJoinDialog, setOpenJoinDialog] = useState(false); // State to open Join Campaign Dialog.
     const [joinComment, setJoinComment] = useState('');
     const [openCommentDialog, setOpenCommentDialog] = useState<{ open: boolean; comment: string }>({ open: false, comment: '' }); // State for comment dialog
-
+    console.log({ members })
     const navigate = useNavigate();
     const token = localStorage.getItem('token'); // Get token from localStorage
 
@@ -158,6 +160,14 @@ const CampaignList = () => {
             setJoinCampaignLoading(false);
         }
     };
+
+    const getTotalDonated = (campaignId: string) => {
+        // const campaignMembers = members.filter(member => member.campaign_id === campaignId);
+        return members.reduce((sum, member) => sum + (member.donated_amount || 0), 0);
+    };
+
+    console.log({ campaigns })
+
     if (loading) {
         return (
             <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '200px' }}>
@@ -190,13 +200,7 @@ const CampaignList = () => {
                 <Typography variant="h4" component="h2" gutterBottom style={{ color: '#1a5235' }}>
                     Campaigns
                 </Typography>
-                {/* <TextField
-                    placeholder="Search campaigns..."
-                    variant="outlined"
-                    size="small"
-                    sx={{ mb: 2 }}
-                    onChange={handleFilterTable}
-                /> */}
+
                 <Table>
                     <TableHead>
                         <TableRow>
@@ -214,20 +218,30 @@ const CampaignList = () => {
                                 onClick={() => handleSelectCampaign(campaign.id)}
                                 key={campaign.id}
                                 sx={{ "&:hover": { backgroundColor: 'lightgrey', cursor: 'pointer' } }}>
-                                <StyledTableCell>{campaign.campaign_name}</StyledTableCell>
-                                <StyledTableCell>{campaign.type}
-                                    {/* <Box display="flex">
-                                        <Event fontSize="small" sx={{ mr: 1, color: 'primary.main' }} />
-                                        {campaign.type}
-                                    </Box> */}
-                                </StyledTableCell>
+                                <StyledTableCell>{campaign.name}</StyledTableCell>
+                                <StyledTableCell>{campaign.type}</StyledTableCell>
                                 <StyledTableCell>{format(new Date(campaign.dueDate), 'PPP')}</StyledTableCell>
                                 <StyledTableCell>{campaign.description}</StyledTableCell>
                                 <StyledTableCell sx={{
-                                    backgroundColor: campaign.active === 1 ? '#e8f5e9' : 'inherit',
+                                    backgroundColor: campaign.active ? '#e8f5e9' : 'inherit',
                                     '&:hover': { backgroundColor: '#f1f1f1' }
-                                }}>{campaign.active === 1 ? 'yes' : 'no'}</StyledTableCell>
-                                <StyledTableCell>{campaign.created_at}</StyledTableCell>
+                                }}>{campaign.active ? 'yes' : 'no'}</StyledTableCell>
+                                <StyledTableCell sx={{ width: 'fit-content' }}>{campaign.created_at}</StyledTableCell>
+                                {campaign.type.toLowerCase() === 'donate' && <StyledTableCell>
+                                    <LinearProgress
+                                        variant="determinate"
+                                        value={
+                                            Math.min(
+                                                100,
+                                                (getTotalDonated(campaign.id) / campaign.goal_amount) * 100
+                                            )
+                                        }
+                                        sx={{ height: 10, borderRadius: 5 }}
+                                    />
+                                    {/* <Typography variant="caption" display="block" textAlign="right" mt={1}>
+                                        {`$${getTotalDonated(campaign.id)} of $${campaign.goal_amount}`}
+                                    </Typography> */}
+                                </StyledTableCell>}
                             </TableRow>
                         ))}
                     </TableBody>

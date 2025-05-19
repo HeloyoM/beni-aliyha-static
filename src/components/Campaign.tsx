@@ -8,7 +8,8 @@ import {
     MenuItem,
     FormControl,
     InputLabel,
-    FormHelperText
+    FormHelperText,
+    useMediaQuery
 } from '@mui/material';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
@@ -22,22 +23,11 @@ const newCampaignSchema = yup.object({
     name: yup.string().required('Campaign Name is required'),
     type: yup.string().required('Campaign Type is required'),
     dueDate: yup.date().required('Due Date is required').min(new Date(), 'Due Date cannot be in the past'),
-    description: yup.string().required('Description is required'),
+    description: yup.string().required('Description is required')
 });
 
-
-// const FormCard = styled('div')(({ theme }) => ({
-//     background: theme.palette.background.paper,
-//     padding: theme.spacing(4),
-//     borderRadius: theme.shape.borderRadius * 2,
-//     boxShadow: theme.shadows[3],
-//     maxWidth: 800,
-//     margin: 'auto',
-//     marginTop: theme.spacing(4),
-// }));
-
 interface campaignTypes {
-    id: string
+    id: number
     name: string
 }
 
@@ -46,6 +36,10 @@ const Campaign = () => {
     const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
     const [success, setSuccess] = useState(false);
+    const [isDonation, setIsDonation] = useState(false);
+
+    const isMobile = useMediaQuery('(max-width:600px)');
+
 
     useEffect(() => {
         const fetchTypes = async () => {
@@ -77,6 +71,7 @@ const Campaign = () => {
             type: 0,
             dueDate: dayjs(), // Initialize with current date
             description: '',
+            goal_amount: '',
         },
         validationSchema: newCampaignSchema,
         onSubmit: async (values) => {
@@ -102,19 +97,35 @@ const Campaign = () => {
         },
     });
 
+    useEffect(() => {
+        const selectedType = campaignTypes.find(t => t.id === formik.values.type);
+        setIsDonation(selectedType?.name.toLowerCase() === 'donate');
+    }, [formik.values.type, campaignTypes]);
+
+    const handleDateChange = (date: any) => {
+        formik.setFieldValue('dueDate', date);
+    };
+    console.log({ campaignTypes })
     return (
         <>
             <form onSubmit={formik.handleSubmit}>
 
                 <Grid container spacing={2}>
                     <Grid size={12}>
-                        <AppDatePicker
-                            selected={formik.values.dueDate}
-                            onChange={(date: Dayjs | null) => {
-                                if (date) {
-                                    formik.setFieldValue('dueDate', date);
-                                }
-                            }} />
+                        {isMobile ? (<TextField
+                            sx={{ width: 'auto', height: 55 }}
+                            type="date"
+                            name="dueDate"
+                            value={formik.values.dueDate}
+                            onChange={(date) => handleDateChange(date)}
+                        />)
+                            : (<AppDatePicker
+                                selected={formik.values.dueDate}
+                                onChange={(date: Dayjs | null) => {
+                                    if (date) {
+                                        formik.setFieldValue('dueDate', date);
+                                    }
+                                }} />)}
                     </Grid>
                     <Grid size={6}>
                         <TextField
@@ -161,6 +172,20 @@ const Campaign = () => {
                                 <FormHelperText error style={{ color: '#d32f2f' }}>
                                     {formik.errors.type}
                                 </FormHelperText>
+                            )}
+
+                            {isDonation && (
+                                <TextField
+                                    fullWidth
+                                    id="goal_amount"
+                                    name="goal_amount"
+                                    label="Goal Amount"
+                                    type="number"
+                                    value={formik.values.goal_amount || ''}
+                                    onChange={formik.handleChange}
+                                    error={formik.touched.goal_amount && Boolean(formik.errors.goal_amount)}
+                                    helperText={formik.touched.goal_amount && formik.errors.goal_amount}
+                                />
                             )}
                         </FormControl>
                     </Grid>

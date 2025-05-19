@@ -1,5 +1,5 @@
 import { CalOptions, HDate, HebrewDateEvent, Location } from '@hebcal/core';
-import { Alert, Button, Grid, Paper, styled, TextField, Typography } from '@mui/material';
+import { Alert, Button, Grid, Paper, styled, TextField, Typography, useMediaQuery } from '@mui/material';
 import { useState } from 'react';
 import { DayPicker } from "react-day-picker";
 import 'react-day-picker/dist/style.css';
@@ -32,6 +32,8 @@ const Lesson = ({ lessons, setLessons }: Props) => {
     const [loading, setLoading] = useState(false);
     const [success, setSuccess] = useState(false);
     const [newLesson, setNewLesson] = useState<Partial<ILesson>>(initLessonState());
+
+    const isMobile = useMediaQuery('(max-width:600px)');
 
     const { setIsInsertingLesson, isInsertingLesson } = useLessons();
     const { canEditLessons } = useAppUser();
@@ -124,10 +126,19 @@ const Lesson = ({ lessons, setLessons }: Props) => {
 
                     <Grid container spacing={2}>
                         <Grid size={12}>
-                            <MyDatePicker
-                                selected={selectedDate}
+                            {isMobile ? (<TextField
+                                label='birthday'
+                                sx={{ width: 'auto', height: 55 }}
+                                type="date"
+                                name="birthday"
+                                value={selectedDate}
+                                InputLabelProps={{ shrink: true }}
                                 onChange={handleDateChange}
-                            />
+                            />)
+                                : (<MyDatePicker
+                                    selected={selectedDate}
+                                    onChange={handleDateChange}
+                                />)}
                         </Grid>
                         <Grid size={6}>
                             <TextField
