@@ -22,6 +22,7 @@ import DonationCard from '../components/DonationCard';
 import Payments from '../components/Payments/Payments';
 import WhatsappButton from '../components/WhatsappButton';
 import UserManagementTable from '../components/UserManagementTable';
+import SpecialEvent from '../components/SpecialEvent';
 
 // Styled components for consistent styling
 const DashboardSection = styled(Paper)(({ theme }) => ({
@@ -144,14 +145,17 @@ const Home: React.FC = () => {
             <Tab label="Campaigns" sx={{ color: 'white' }} />
             <Tab label="Payments" sx={{ color: 'white' }} />
             <Tab label="Kehilla" sx={{ color: 'white' }} />
-            {user.level === 101 || user.level === 100 && <Tab label="Admin" />}
+            {user.level === 101 || user.level === 100 && <Tab label="Admin" sx={{ color: 'blue' }}/>}
           </Tabs>
 
           <Masonry columns={{ xs: 1, sm: 2, md: 3, lg: 2 }} spacing={2} sx={{ margin: 'auto auto' }}>
+           
+           
             {(activeTab === 0) && (
               <>
 
                 <Grid size={{ xs: 12, md: 4, lg: 12 }} sx={{ display: 'flex', flexDirection: 'column', gap: '3%', p: isMobile ? 0 : 5 }}>
+              
                   <Events />
 
                   <DashboardSection>
@@ -160,6 +164,7 @@ const Home: React.FC = () => {
                       <EventForm />
                     </CardContent>
                   </DashboardSection>
+
                 </Grid>
 
                 <Grid size={{ xs: 12, sm: 6, md: 4 }}>
@@ -168,6 +173,10 @@ const Home: React.FC = () => {
 
                 <Grid size={{ xs: 12, sm: 6, md: 4 }}>
                   <DonationCard />
+                </Grid>
+                
+                <Grid size={{ xs: 12, sm: 6, md: 4 }}>
+                  <SpecialEvent />
                 </Grid>
               </>
             )}

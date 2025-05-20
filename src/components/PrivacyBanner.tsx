@@ -25,6 +25,7 @@ const PrivacyBanner = () => {
     if (!show) {
         return <Footer />
     }
+
     return (
         <Slide direction="up" in={show} mountOnEnter unmountOnExit>
             <Paper
@@ -45,7 +46,7 @@ const PrivacyBanner = () => {
             >
                 <Typography variant="body2" sx={{ mr: 2 }}>
                     We use cookies and collect usage data to improve your experience. Read our{' '}
-                    <a style={{textDecoration: 'underline', color: 'blue', cursor: 'pointer'}} onClick={() => openTab()} target="_blank" rel="noopener noreferrer">
+                    <a style={{ textDecoration: 'underline', color: 'blue', cursor: 'pointer' }} onClick={() => openTab()} target="_blank" rel="noopener noreferrer">
                         Privacy Policy
                     </a>.
                 </Typography>

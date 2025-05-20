@@ -1,7 +1,22 @@
-import { Box, Button, Typography } from "@mui/material";
+import { Box, Button, styled, Typography } from "@mui/material";
 import Grid2 from '@mui/material/Grid';
 import Paths from "../enum/Paths.enum";
 import { useMediaQuery } from '@mui/material';
+
+const ReportButton = styled(Button)(({ theme }) => ({
+    width: 22,
+    height: 22,
+    position: 'absolute',
+    bottom: 2,
+    right: 40,
+    alignItems: 'center',
+    display: 'flex',
+    '&:hover': {
+        transform: 'translateY(-2px)',
+        boxShadow: theme.shadows[4],
+        backgroundColor: '#e3f2fd'
+    },
+}))
 
 const Footer = () => {
     const isMobile = useMediaQuery('(max-width:600px)');
@@ -33,9 +48,9 @@ const Footer = () => {
                     <a style={{ textDecoration: 'underline', color: 'blue', cursor: 'pointer', marginLeft: 6 }} onClick={() => openTab()}>Privacy Policy</a>
                 </Typography>
 
-                {!isMobile && <Button variant="outlined" sx={{ width: 22, height: 22, position: 'absolute', bottom: 2, right: 40, alignItems: 'center', display: 'flex' }}>
+                {!isMobile && <ReportButton variant="outlined">
                     Report
-                </Button>}
+                </ReportButton>}
             </Grid2>
         </Box>
     )

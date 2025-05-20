@@ -217,7 +217,8 @@ const Scheduler = () => {
                         ) : (
                             <span style={{ marginLeft: '8px' }}>{selectedSchedule.mincha_time || 'N/A'}</span>
                         )}
-                        מנחה
+                        <span>{' '}מנחה</span>
+
                     </Typography>
                     <Typography variant="body2">
                         Shacharis:
@@ -240,7 +241,7 @@ const Scheduler = () => {
                         ) : (
                             <span style={{ marginLeft: '8px' }}>{selectedSchedule.shacharis_time || 'N/A'}</span>
                         )}
-                        שחרית
+                        <span>{' '}שחרית</span>
                     </Typography>
                     <Typography variant="body2">
                         Maariv:
@@ -262,7 +263,7 @@ const Scheduler = () => {
                         ) : (
                             <span style={{ marginLeft: '8px' }}>{selectedSchedule.maariv_time || 'N/A'}</span>
                         )}
-                        מעריב
+                       <span>{' '}מעריב</span>
                     </Typography>
 
                     {error && (
