@@ -1,5 +1,6 @@
 import React, { createContext, useState, useEffect, useContext, useMemo } from 'react';
 import IUser from '../interfaces/User.interface';
+import LogRocket from 'logrocket';
 
 interface AppUserContextProps {
     user: IUser;
@@ -72,7 +73,13 @@ const AppUserProvider: React.FC<{ children: React.ReactNode }> = ({ children }) 
     useEffect(() => {
         const storedUser = localStorage.getItem('user');
         if (storedUser) {
-            setUser(JSON.parse(storedUser));
+            const userObj = JSON.parse(storedUser)
+            setUser(userObj);
+
+            LogRocket.identify('meir-juli/bnei', {
+                name: `${userObj.first_name} ${userObj.last_name}`,
+                email: userObj.email,
+            });
         }
     }, [allowedResources]);
 
