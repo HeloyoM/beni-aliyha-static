@@ -243,10 +243,11 @@ const GuestPage: React.FC = () => {
                     <Typography variant="h5" gutterBottom>See What Life Looks Like Here 🎥</Typography>
 
                     <Grid container spacing={4} justifyContent="center" style={{ width: '100%', padding: '16px' }}>
-                        <Card
+                        {isMobile && <Card
                             sx={{
-                                width: '100%',
-                                minWidth: '482px',
+                                // width: '100%',
+                                height: '100vw',
+                                minWidth: '350px',
                                 boxShadow: '0 8px 16px rgba(0,0,0,0.2)',
                                 transition: 'transform 0.3s ease, box-shadow 0.3s ease',
                                 '&:hover': {
@@ -261,7 +262,7 @@ const GuestPage: React.FC = () => {
                             onClick={() => handleVideoClick(videoData[0].src)}
                         >
 
-                            <CardMedia
+                            {/* <CardMedia
                                 component="iframe"
                                 src={`https://img.youtube.com/vi/${videoData[0].src.split('embed/')[1]}/hqdefault.jpg`} // Get thumbnail
                                 title={videoData[0].title}
@@ -271,7 +272,7 @@ const GuestPage: React.FC = () => {
                                     aspectRatio: '12/9',
                                     width: '100%',
                                 }}
-                            />
+                            /> */}
 
 
                             <PlayButton sx={{ color: 'black' }} onClick={() => handleVideoClick(videoData[0].src)}>
@@ -289,8 +290,8 @@ const GuestPage: React.FC = () => {
                             </CardContent>
 
 
-                        </Card>
-                        {/* {videoData.map((video, index) => (
+                        </Card>}
+                        {!isMobile && videoData.map((video, index) => (
                             <Grid key={index} style={{ display: 'flex', justifyContent: 'center' }}>
                               
                                 <Card
@@ -340,7 +341,7 @@ const GuestPage: React.FC = () => {
 
                                 </Card>
                             </Grid>
-                        ))} */}
+                        ))}
                     </Grid>
 
 
@@ -780,7 +781,7 @@ const GuestPage: React.FC = () => {
                                             variant="contained"
                                             color="primary"
                                             size="large"
-                                            disabled
+                                            // disabled
                                             endIcon={<Send />}
                                             component={motion.button}
                                             whileHover={{ scale: 1.05 }}
