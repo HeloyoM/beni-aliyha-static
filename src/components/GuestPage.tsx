@@ -68,7 +68,7 @@ const GuestPage: React.FC = () => {
     const [success, setSuccess] = useState(false);
 
     const isMobile = useMediaQuery('(max-width:600px)');
-    
+
     const location = useLocation();
 
     useEffect(() => {
@@ -114,6 +114,12 @@ const GuestPage: React.FC = () => {
         setOpenDialog({ open: false, src: '' });
     }, []);
 
+    const cards = [
+        { icon: '🌱', title: 'Family-Oriented', text: 'Activities and values that nurture every age.' },
+        { icon: '🤝', title: 'Supportive Network', text: 'A community that supports you from day one.' },
+    ]
+
+    if (!isMobile) cards.push({ icon: '📚', title: 'Great Education', text: 'Access to inspiring schools and programs.' })
 
     return (
         <>
@@ -237,8 +243,56 @@ const GuestPage: React.FC = () => {
                     <Typography variant="h5" gutterBottom>See What Life Looks Like Here 🎥</Typography>
 
                     <Grid container spacing={4} justifyContent="center" style={{ width: '100%', padding: '16px' }}>
-                        {videoData.map((video, index) => (
+                        <Card
+                            sx={{
+                                width: '100%',
+                                minWidth: '482px',
+                                boxShadow: '0 8px 16px rgba(0,0,0,0.2)',
+                                transition: 'transform 0.3s ease, box-shadow 0.3s ease',
+                                '&:hover': {
+                                    transform: 'scale(1.03)',
+                                    boxShadow: '0 16px 32px rgba(0,0,0,0.3)',
+                                },
+                                // height: isMobile ? '50vw' : 'auto',
+                                borderRadius: '12px',
+                                overflow: 'hidden',
+                                position: 'relative', // Needed for absolute positioning of button
+                            }}
+                            onClick={() => handleVideoClick(videoData[0].src)}
+                        >
+
+                            <CardMedia
+                                component="iframe"
+                                src={`https://img.youtube.com/vi/${videoData[0].src.split('embed/')[1]}/hqdefault.jpg`} // Get thumbnail
+                                title={videoData[0].title}
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                                allowFullScreen
+                                style={{
+                                    aspectRatio: '12/9',
+                                    width: '100%',
+                                }}
+                            />
+
+
+                            <PlayButton sx={{ color: 'black' }} onClick={() => handleVideoClick(videoData[0].src)}>
+                                <PlayCircle style={{ fontSize: 'inherit' }} />
+                            </PlayButton>
+
+
+                            <CardContent>
+                                <Typography variant="h6" component="div" align="center" style={{ marginTop: '8px' }}>
+                                    {videoData[0].title}
+                                </Typography>
+                                <Typography variant="body2" color="text.secondary" align="center">
+                                    {videoData[0].caption}
+                                </Typography>
+                            </CardContent>
+
+
+                        </Card>
+                        {/* {videoData.map((video, index) => (
                             <Grid key={index} style={{ display: 'flex', justifyContent: 'center' }}>
+                              
                                 <Card
                                     sx={{
                                         width: '100%',
@@ -255,6 +309,7 @@ const GuestPage: React.FC = () => {
                                     }}
                                     onClick={() => handleVideoClick(video.src)}
                                 >
+
                                     <CardMedia
                                         component="iframe"
                                         src={`https://img.youtube.com/vi/${video.src.split('embed/')[1]}/hqdefault.jpg`} // Get thumbnail
@@ -267,9 +322,11 @@ const GuestPage: React.FC = () => {
                                         }}
                                     />
 
+
                                     <PlayButton onClick={() => handleVideoClick(video.src)}>
                                         <PlayCircle style={{ fontSize: 'inherit' }} />
                                     </PlayButton>
+
 
                                     <CardContent>
                                         <Typography variant="h6" component="div" align="center" style={{ marginTop: '8px' }}>
@@ -279,9 +336,11 @@ const GuestPage: React.FC = () => {
                                             {video.caption}
                                         </Typography>
                                     </CardContent>
+
+
                                 </Card>
                             </Grid>
-                        ))}
+                        ))} */}
                     </Grid>
 
 
@@ -327,19 +386,19 @@ const GuestPage: React.FC = () => {
                                         <Typography>From Shabbat meals to carpools, you’re never alone — we’re here for each other.</Typography>
                                     </Box>
                                 </Grid>
-                                <Grid >
+                                {!isMobile && <Grid >
                                     <Box sx={{ p: 2, bgcolor: '#f5f5f5', borderRadius: 2, height: '100%' }}>
                                         <Typography variant="h6" gutterBottom>🎓 Great Education</Typography>
                                         <Typography>Top-tier schools with supportive teachers and values-based learning in English and Hebrew.</Typography>
                                     </Box>
-                                </Grid>
+                                </Grid>}
                             </Grid>
 
-                            <Box sx={{ textAlign: 'center', mt: 5 }}>
+                            {!isMobile && <Box sx={{ textAlign: 'center', mt: 5 }}>
                                 <Button variant="contained" size="large" color="primary" href="#contact-us">
                                     Let’s Talk About Your Future in Israel 🇮🇱
                                 </Button>
-                            </Box>
+                            </Box>}
                         </ContentBox>
                     </Box>
                 </GuestSection>
@@ -554,11 +613,7 @@ const GuestPage: React.FC = () => {
                         </motion.div>
 
                         <Grid container spacing={4} mt={4}>
-                            {[
-                                { icon: '🌱', title: 'Family-Oriented', text: 'Activities and values that nurture every age.' },
-                                { icon: '🤝', title: 'Supportive Network', text: 'A community that supports you from day one.' },
-                                !isMobile ? { icon: '📚', title: 'Great Education', text: 'Access to inspiring schools and programs.' } : {},
-                            ].map((item, i) => (
+                            {cards.map((item, i) => (
                                 <Grid key={i}>
                                     <motion.div
                                         initial={{ opacity: 0, y: 40 }}

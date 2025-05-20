@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Box, Button, Typography, styled } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-// import AuthForm from './AuthForm';
+import AuthForm from './AuthForm';
 // import bgVideoUp from '../assets/videos/2.mp4';
 import { motion } from 'framer-motion';
 
@@ -122,7 +122,7 @@ const WelcomeScreen = () => {
 
                 {!authMode && (
                     <Box>
-                        {/* <StyledButton onClick={handleLoginClick}>Login</StyledButton> */}
+                        <StyledButton onClick={handleLoginClick}>Login</StyledButton>
                         {/* <StyledButton onClick={handleRegisterClick}>Register</StyledButton> */}
                         <StyledButton onClick={handleGuestClick}>Enter as Guest</StyledButton>
                     </Box>
@@ -137,7 +137,7 @@ const WelcomeScreen = () => {
                         exit={{ y: 100, opacity: 0 }}
                         transition={{ duration: 0.4 }}
                     >
-                        {/* <AuthForm mode={authMode} onClose={closeForm} /> */}
+                        <AuthForm mode={authMode} onClose={closeForm} />
                     </motion.div>
                 )}
 
