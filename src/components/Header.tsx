@@ -126,7 +126,7 @@ const Header = () => {
                 style={{
                     margin: 'auto auto',
                     fontSize: '22px'
-                }}>Website name
+                }}>Beni-Aliyha
             </Typography>
 
             {/* {!openMenu && <MenuIcon onClick={openMenuModal} className="menu-btn" />}

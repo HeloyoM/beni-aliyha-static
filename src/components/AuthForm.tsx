@@ -1,19 +1,22 @@
-import React, { useContext, useEffect, useState } from 'react';
-import { Alert, TextField, Button, Grid, Paper, Typography, Link, Box } from '@mui/material';
+import { useEffect, useState } from 'react';
+import { Alert, TextField, Button, Grid, Paper, Typography } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
 import { login, register } from '../api/auth';
-import AppUserContext from '../context/AppUserContext';
+import { useAppUser } from '../context/AppUser.context';
+import dayjs, { Dayjs } from 'dayjs';
+import Paths from '../enum/Paths.enum';
 
-// Validation schema using yup
+// Register schema
 const validationSchema = yup.object({
     first_name: yup.string().required('First Name is required'),
     last_name: yup.string().required('Last Name is required'),
     email: yup.string().email('Invalid email address').required('Email is required'),
     password: yup.string().min(4, 'Password must be at least 4 characters').required('Password is required'),
     phone: yup.string().matches(/^[0-9]{10}$/, 'Phone number must be 10 digits'),
-    address: yup.string()
+    address: yup.string(),
+    birthday: yup.date(),
 });
 
 // Login schema
@@ -22,63 +25,72 @@ const loginValidationSchema = yup.object({
     password: yup.string().required('Password is required'),
 });
 
-const AuthForm = () => {
-    const [isLogin, setIsLogin] = useState(true); // State to toggle between login and register
-    const [error, setError] = useState<string | null>(null); // State to hold error messages
+
+type Props = {
+    mode: 'login' | 'register' | null
+    onClose: () => void
+}
+
+const AuthForm = ({ mode, onClose }: Props) => {
+    const [isLogin, setIsLogin] = useState<boolean | null>(null);
+    const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
+
+
+    useEffect(() => {
+        if (mode) {
+            setIsLogin(mode === 'login' ? true : false)
+            return
+        }
+    }, [mode])
+
     const navigate = useNavigate();
 
-    const { updateUserContext } = useContext(AppUserContext)
+    const { updateUserContext, updateAllowedResources } = useAppUser();
 
     useEffect(() => {
         const token = localStorage.getItem('token')
 
         if (token) {
-            navigate('/home')
+            navigate(Paths.DASHBOARD)
+        } else {
+            document.title = isLogin ? 'login' : 'register'
         }
 
-    }, [])
+    }, [isLogin])
 
-    // Function to handle form submission (Login and Register)
     const handleSubmit = async (values: any) => {
         setLoading(true);
-        setError(null); // Clear previous errors
-
+        setError(null);
         try {
-            // Simulate API call (replace with your actual API endpoint)
+
             const response = isLogin ? await login(values) : await register(values)
 
             const data = response.data as any;
 
             if (response.status >= 200 && response.status < 300) {
-                // Handle successful login/registration
-                console.log(data); // Log the response
-                if (isLogin) {
-                    // Store token and refresh token
-                    localStorage.setItem('token', data.token);
-                    localStorage.setItem('refreshToken', data.refreshToken);
+                console.log(data);
 
-                    updateUserContext(data.user);
-                    
-                    navigate('/home'); // Redirect to profile page
-                } else {
-                    setIsLogin(true); // Switch to login after successful registration
-                    formik.resetForm();
-                }
+                localStorage.setItem('token', data.token);
+                localStorage.setItem('refreshToken', data.refreshToken);
+
+                updateUserContext(data.user);
+                updateAllowedResources(data.allowedResources);
+                formik.resetForm();
+                navigate(Paths.DASHBOARD);
+
 
             } else {
-                // Handle error responses from the server
-                setError(data.message || 'An error occurred'); // Display server message
+                setError(data.message || 'An error occurred');
             }
         } catch (error: any) {
-            // Handle network errors or other exceptions
             setError(error.response?.data?.message || error.message || 'Failed to connect to the server');
         } finally {
             setLoading(false);
         }
     };
 
-    // Formik hook for form management
+
     const formik = useFormik({
         initialValues: {
             first_name: '',
@@ -87,24 +99,44 @@ const AuthForm = () => {
             password: '',
             phone: '',
             address: '',
+            birthday: null
         },
         validationSchema: isLogin ? loginValidationSchema : validationSchema,
         onSubmit: handleSubmit,
     });
-console.log({isLogin})
+
+
     return (
-        <Grid container justifyContent="center" alignItems="center" style={{ minHeight: '50vh', backgroundColor: 'inherit' }}>
-            <Grid /*item xs={12} sm={8} md={6} lg={4} */>
+        <Grid
+            container
+            justifyContent="center"
+            alignItems="center"
+            style={{
+                minHeight: '50vh',
+                backgroundColor: 'inherit'
+            }}
+        >
+
+            <Grid size={{ xs: 10, sm: 8, md: 6, lg: 12 }}>
+
+
                 <Paper elevation={3} style={{ padding: 20, borderRadius: 16 }}>
+
+                    <Button onClick={onClose} style={{ cursor: 'pointer' }}>Back</Button>
+
+
                     <Typography variant="h4" align="center" style={{ marginBottom: 20, color: '#1a5235' }}>
-                        {isLogin ? 'Login' : 'Register'}
+                        {mode?.toUpperCase()}
                     </Typography>
+
 
                     {error && (
                         <Alert severity="error" style={{ marginBottom: 10 }}>
                             {error}
                         </Alert>
                     )}
+
+
 
                     <form onSubmit={formik.handleSubmit}>
                         {!isLogin && (
@@ -186,6 +218,17 @@ console.log({isLogin})
                                     style={{ marginBottom: 15, backgroundColor: '#fff' }}
                                     InputProps={{ style: { borderRadius: 8, borderColor: '#81c784' } }}
                                 />
+
+                                <TextField
+                                    label='birthday'
+                                    sx={{ width: 'auto', height: 55 }}
+                                    type="date"
+                                    name="birthday"
+                                    InputLabelProps={{ shrink: true }}
+                                    value={formik.values.birthday}
+                                    onChange={formik.handleChange}
+                                />
+
                             </>
                         )}
                         <Button
@@ -198,20 +241,6 @@ console.log({isLogin})
                         >
                             {loading ? 'Loading...' : isLogin ? 'Login' : 'Register'}
                         </Button>
-                        <Box mt={2} textAlign="center">
-                            <Link
-                                href="#"
-                                onClick={() => {
-                                    setIsLogin(!isLogin);
-                                    formik.resetForm(); // Reset form when switching
-                                    setError(null);
-                                }}
-                                variant="body2"
-                                style={{ color: '#1a5235' }}
-                            >
-                                {isLogin ? 'Create an account' : 'Already have an account? Login'}
-                            </Link>
-                        </Box>
                     </form>
                 </Paper>
             </Grid>

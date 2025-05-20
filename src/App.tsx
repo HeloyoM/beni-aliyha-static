@@ -1,82 +1,70 @@
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation, useNavigate } from 'react-router-dom';
-import { Typography } from '@mui/material';
 import Home from './pages/Home';
-import Header from './components/Header';
-import { jwtDecode } from 'jwt-decode'; // Import jwt-decode
-import ScreenWrapper from './components/ScreenWrapper';
-import AppUserContext from './context/AppUserContext';
+import { AppUserProvider, useAppUser } from './context/AppUser.context';
 import AppServerMsgContext from "./context/AppServerMsg";
 import './App.css';
 import UserProfile from './components/UserProfile';
 import WelcomeScreen from './components/WelcomScreen';
 import CampaignList from './components/CampaignList';
-import Messages from './components/Messages';
+import Messages from './components/Message/Messages';
 import { profile } from './api/auth';
-
-// Helper function to check token expiration
-const isTokenExpired = (token: string | null) => {
-  if (!token) return true;
-  try {
-    const decoded: any = jwtDecode(token);
-    console.log({ decoded })
-    if (!decoded.exp) return true;
-    const currentTime = Date.now() / 1000;
-    return decoded.exp < currentTime;
-  } catch (error) {
-    console.error("Error decoding token:", error);
-    return true;
-  }
-};
+import GuestPage from './components/GuestPage';
+import FloatingActions from './components/FloatingActions';
+import { isTokenExpired } from './utils/isTokenExpired';
+import Paths from './enum/Paths.enum';
+import NotFound from './pages/NotFound';
+import PrivacyBanner from './components/PrivacyBanner';
+import Footer from './components/Footer';
 
 const App: React.FC = () => {
-  const [crrUser, setUser] = React.useState<any>(null);
-  const [serverMsg, setServerMsg] = React.useState('');
+  const [serverMsg, setServerMsg] = useState('');
 
-  const updateUserContext = (user: any) => { setUser(user) }
   const updateServerMsgContext = (msg: any) => { setServerMsg(msg) }
 
   return (
     <AppServerMsgContext.Provider value={{ updateServerMsgContext, serverMsg }}>
-      <AppUserContext.Provider value={{ updateUserContext, user: crrUser }}>
+      <AppUserProvider>
         <Router>
-          <AppContent setUser={setUser} />
+          <AppContent />
+          <PrivacyBanner />
         </Router>
-      </AppUserContext.Provider>
+      </AppUserProvider>
     </AppServerMsgContext.Provider>
   )
 }
 
 export default App;
 
-type Props = {
-  setUser: React.Dispatch<any>
-}
-const AppContent = ({ setUser }: Props) => {
+const AppContent = () => {
   const navigate = useNavigate();
-  const location = useLocation(); // Use useLocation to get the current route
+  const location = useLocation();
+
+  const { updateUserContext, logout, updateAllowedResources } = useAppUser();
+
   // Determine whether to show the Header and ScreenWrapper
-  const shouldShowWrapper = location.pathname !== '/';
+  const shouldShowHeader = location.pathname !== Paths.ON_BOARDING && location.pathname !== Paths.GUEST;
 
-  const token = localStorage.getItem('token')
+  const token = localStorage.getItem('token');
 
-  // Function to handle logout
   const handleLogout = useCallback(() => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('refreshToken');
-    setUser(null);
+    logout()
     navigate('/');
   }, [navigate]);
 
   useEffect(() => {
+    if (location.pathname === Paths.GUEST) return
+
     if (token && !isTokenExpired(token)) {
-      console.log(token, isTokenExpired(token))
+
       try {
         const fetchUserProfile = async () => {
           const response = await profile();
 
           const data = response.data as any;
-          setUser(data.user)
+
+          updateUserContext(data.user);
+          updateAllowedResources(data.allowedResources);
         }
 
         fetchUserProfile();
@@ -94,28 +82,17 @@ const AppContent = ({ setUser }: Props) => {
 
   return (
     <>
-      {shouldShowWrapper && (
-        <ScreenWrapper>
-          <Header />
-        </ScreenWrapper>
-      )}
+      {shouldShowHeader && (<FloatingActions />)}
 
       <Routes>
-        <Route path="/" element={<WelcomeScreen />} />
-        <Route path="/home" element={<Home />} />
-        <Route path="/campaings" element={<CampaignList />} />
-        <Route path="/messages" element={<Messages />} />
-        <Route path="/profile" element={<UserProfile />} />
-        <Route path="*" element={<NotFound />} />
+        <Route path={Paths.ON_BOARDING} element={<WelcomeScreen />} />
+        <Route path={Paths.DASHBOARD} element={<Home />} />
+        <Route path={Paths.CAMPAIGNS} element={<CampaignList />} />
+        <Route path={Paths.MESSAGES} element={<Messages />} />
+        <Route path={Paths.PROFILE} element={<UserProfile />} />
+        <Route path={Paths.GUEST} element={<GuestPage />} />
+        <Route path={Paths.NOT_FOUND} element={<NotFound />} />
       </Routes>
     </>
-  )
-}
-
-export const NotFound: React.FC = () => {
-  return (
-    <Typography variant="h3" align="center" gutterBottom>
-      Not found
-    </Typography>
   )
 }

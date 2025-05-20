@@ -1,33 +1,42 @@
-import React, { useContext, useEffect, useRef, useState } from 'react';
+import React, { useState } from 'react';
 import '../App.css';
-import { Button, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, InputLabel, MenuItem, Select, TextField } from '@mui/material';
-import Footer from '../components/Footer';
+import { Button, CardContent, Typography, Grid, Paper, styled, Box, Tabs, Tab, useMediaQuery } from '@mui/material';
 import Campaign from '../components/Campaign';
-import { CardContent, Typography, Grid, Paper, styled } from '@mui/material';
-import { Cake, Clock, Tv, Calendar as CalendarIcon, List } from 'lucide-react';
-import { HDate, HebrewCalendar, Location } from '@hebcal/core';
-import AppUserContext from '../context/AppUserContext';
-import { insertSchedule } from '../api/schedule';
-
-const now = new HDate();
-const year = now.getFullYear();
-const today = new Date();
-
-const events = HebrewCalendar.calendar({
-  year: year,
-  isHebrewYear: true,
-  il: true,     // אם אתה בארץ, תשנה ל-false
-  sedrot: true,
-  candlelighting: true,
-  location: Location.lookup('Tel Aviv')
-});
+import { Clock, Award, PlusCircle, List } from 'lucide-react';
+import Lesson from '../components/Lessons/Lesson';
+import Scheduler from '../components/Scheduler';
+import CandlelightingTimes from '../components/CandleLightingTimes';
+import LessonsList from '../components/Lessons/LessonsList';
+import useLessons from '../components/Lessons/useLessons';
+import Birthdays from '../components/Birthdays';
+import 'react-day-picker/dist/style.css';
+import { motion } from 'framer-motion';
+import GuestMessages from '../components/GuestsMessages';
+import { useAppUser } from '../context/AppUser.context';
+import Events from '../components/Events/Events';
+import PublicMessages from '../components/PublicMessages';
+import EventForm from '../components/Events/EventForm';
+import { Masonry } from '@mui/lab';
+import DonationCard from '../components/DonationCard';
+// import Syn from '../assets/21.jpg';
+import Payments from '../components/Payments/Payments';
+import WhatsappButton from '../components/WhatsappButton';
+import UserManagementTable from '../components/UserManagementTable';
+import SpecialEvent from '../components/SpecialEvent';
 
 // Styled components for consistent styling
 const DashboardSection = styled(Paper)(({ theme }) => ({
-  padding: theme.spacing(2),
-  borderRadius: theme.shape.borderRadius,
-  marginBottom: theme.spacing(3),
-  boxShadow: theme.shadows[1],
+  padding: theme.spacing(3),
+  borderRadius: theme.shape.borderRadius * 2,
+  marginBottom: theme.spacing(2),
+  backgroundColor: theme.palette.background.default,
+  boxShadow: theme.shadows[2],
+  transition: 'transform 0.3s ease, box-shadow 0.3s ease',
+  '&:hover': {
+    transform: 'translateY(-2px)',
+    boxShadow: theme.shadows[4],
+    backgroundColor: '#e3f2fd'
+  },
 }));
 
 const SectionTitle = styled(Typography)(({ theme }) => ({
@@ -40,396 +49,259 @@ const SectionTitle = styled(Typography)(({ theme }) => ({
   gap: theme.spacing(1),
 }));
 
-interface ParashaType {
-  date: string | undefined
-  hebrewDate: string
-  event: string
-  emoji?: string | null
-}
-
-interface ScheduleEntry {
-  id: number;
-  greg_date: string;
-  hebrew_date: string;
-  mincha_time: string | null;
-  shacharis_time: string | null;
-  maariv_time: string | null;
-}
+const SectionTitleWithIcon = styled(SectionTitle)(({ theme }) => ({
+  fontSize: theme.typography.h6.fontSize,
+  fontWeight: 600,
+  marginBottom: theme.spacing(2),
+  paddingBottom: theme.spacing(1),
+  borderBottom: `2px solid ${theme.palette.primary.light}`,
+  display: 'flex',
+  alignItems: 'center',
+  gap: theme.spacing(1),
+  color: theme.palette.primary.dark,
+}));
 
 
 const Home: React.FC = () => {
-  const [sedarot, setSedarot] = useState<ParashaType[]>([]);
-  const [candlelighting, setCandlelighting] = useState<ParashaType[]>([])
-  const [selectedParasha, setSelectedParasha] = React.useState<ParashaType>();
+  const [isInsertingCampaign, setIsInsertingCampaign] = useState(false);
+  const [activeTab, setActiveTab] = useState(0);
 
-  const [scheduleData, setScheduleData] = useState<ScheduleEntry[]>([]);
-  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
-  const [editingItem, setEditingItem] = useState<ScheduleEntry | null>(null);
-  const [editedData, setEditedData] = useState<Partial<ScheduleEntry>>({});
+  const isMobile = useMediaQuery('(max-width:600px)');
 
-  const { user } = useContext(AppUserContext);
-
-  // Refs for time inputs
-  const minchaRef = useRef<HTMLInputElement | any>(null);
-  const shacharisRef = useRef<HTMLInputElement | any>(null);
-  const maarivRef = useRef<HTMLInputElement | any>(null);
-
-  // Fetch initial data and set states
-  useEffect(() => {
-    const year = new HDate().getFullYear();
-    const events = HebrewCalendar.calendar({
-      year: year,
-      isHebrewYear: true,
-      il: true,
-      sedrot: true,
-      candlelighting: true,
-      location: Location.lookup('Jerusalem')
-    });
-
-    const candles = events
-      .filter(ev => ev.getCategories().includes('candles') && ev.getDate().greg() >= today)
-      .map(ev => {
-        const hdate = ev.getDate();
-        return {
-          date: hdate.greg().toLocaleDateString(),
-          hebrewDate: hdate.renderGematriya(),
-          event: ev.render('he'),
-          emoji: ev.getEmoji()
-        };
-      });
-    setCandlelighting(candles);
-
-    const parashot: ParashaType[] = events
-      .filter(ev => ev.getCategories().includes('parashat') && ev.getDate().greg() >= today)
-      .map(ev => {
-        const hdate = ev.getDate();
-        return {
-          date: hdate.greg().toLocaleDateString(),
-          hebrewDate: hdate.renderGematriya(),
-          event: ev.render('he'),
-          emoji: ev.getEmoji()
-        };
-      });
-
-    setSedarot(parashot);
-
-    setSelectedParasha(parashot[0] || { date: undefined, event: '', hebrewDate: '' });
-
-    // Initialize schedule data (replace with your actual data fetching)
-    const initialScheduleData: ScheduleEntry[] = [{
-      id: 1,
-      greg_date: parashot[0].date!,
-      hebrew_date: parashot[0].hebrewDate!,
-      mincha_time: '19:30',
-      shacharis_time: '07:00',
-      maariv_time: '21:00'
-    }];
-
-    setScheduleData(initialScheduleData);
-  }, [today]);
-
-  console.log({ sedarot })
-
-  const handleSelectedParash = (name: string) => {
-    const par = sedarot.find(p => p.event.trim() === name.trim())
-
-    if (par) {
-      setSelectedParasha(par)
-    }
-  }
-
-  const handleSaveEdit = async () => {
-    try {
-      if (!selectedParasha) return
-
-      const hDate = new HDate(new Date());
-      const hebrewDateString = hDate.toString();
-
-      const payload = {
-        mincha_time: editedData.mincha_time!,
-        maariv_time: editedData.maariv_time!,
-        shacharis_time: editedData.shacharis_time!,
-        greg_date: selectedParasha.date!,
-        hebrew_date: selectedParasha.hebrewDate!
-      }
-
-      const response = await insertSchedule(payload)
-
-      const data = response.data as any;
-      console.log({ data })
-      // Update the data in the state
-      setScheduleData(scheduleData.map(item =>
-        item.id === editingItem?.id ? { ...item, ...editedData, hebrew_date: hebrewDateString } : item
-      ));
-
-      handleCloseEdit();
-
-    } catch (error: any) {
-      console.error("Error saving edit:", error);
-    }
+  const handleChange = (_: React.SyntheticEvent, newValue: number) => {
+    setActiveTab(newValue);
   };
 
-  const handleCloseEdit = () => {
-    setIsEditDialogOpen(false);
-  };
+  const { lessons, setLessons } = useLessons();
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    setEditedData({ ...editedData, [e.target.name]: e.target.value });
-  };
-
-  const handleEdit = (item: ScheduleEntry) => {
-    setEditingItem(item);
-    setEditedData({
-      mincha_time: item.mincha_time,
-      shacharis_time: item.shacharis_time,
-      maariv_time: item.maariv_time
-    })
-    setIsEditDialogOpen(true);
-  };
-
-  const canEdit = user && (user.level === 100 || user.level === 101);
+  const { user } = useAppUser();
 
   return (
-    <div style={{ padding: '20px' }}>
-
-      <Typography variant="h4" gutterBottom style={{ marginTop: '20px' }}>
-        Home
-      </Typography>
-
-      <Grid container spacing={3}>
-
-        <Grid size={6}>
-          <DashboardSection >
-            <SectionTitle><Clock size={20} /> Time of Lessons</SectionTitle>
-            <CardContent>
-              <Typography variant="body1">Display the most important information prominently.</Typography>
-              <Typography variant="body2"> Perhaps show the full week schedule here.</Typography>
-            </CardContent>
-          </DashboardSection>
-        </Grid>
 
 
-        <Grid size={6}>
-          <DashboardSection style={{ backgroundColor: '#e0f7fa' }}>
-            {candlelighting.length &&
-              <Typography sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
-                Candle Lighting:
-                <Typography fontWeight="bold"> {candlelighting[0].event}</Typography>
-                {candlelighting[0].emoji}
-              </Typography>}
-            {sedarot.length &&
-              <Typography sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
-                Parashat:
-                <Typography fontWeight="bold"> {sedarot[0].event}</Typography>
-              </Typography>}
-            {user && user.level === 100 && selectedParasha &&
-              <FormControl fullWidth>
-                <InputLabel id="parasha-select-label">Parasha</InputLabel>
-                <Select
-                  labelId="parasha-select-label"
-                  id="parasha-select"
-                  name="parasha"
-                  defaultValue={sedarot[0].event}
-                  value={selectedParasha.event}
-                  onChange={(e) => handleSelectedParash(e.target.value)}
-                >
-                  {sedarot.map((option) => (
-                    <MenuItem key={option.event} value={option.event}>
-                      {option.event}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-            }
-            <SectionTitle fontWeight="bold"><CalendarIcon size={20} />זמני התפילות</SectionTitle>
+    <Box sx={{ padding: '20px' }}>
 
-            <CardContent sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
-              <div onClick={() => {
-                if (canEdit) {
-                  handleEdit(scheduleData.find(item => item.greg_date === editedData.greg_date) || scheduleData[0]);
-                  setIsEditDialogOpen(true)
-                }
-              }}
-                style={{ cursor: canEdit ? 'pointer' : 'default' }}
-              >
-                <Typography variant="body2">
-                  Mincha:
-                  <input
-                    type="text"
-                    style={{
-                      width: '50px',
-                      marginLeft: '8px',
-                      cursor: canEdit ? 'pointer' : 'default',
-                      textAlign: 'center',
-                      border: 'none',
-                      borderBottom: canEdit ? '1px solid #000' : 'none',
-                      outline: 'none',
+      <Box
+        sx={{
+          position: 'relative',
+          width: '100%',
+          minHeight: '100vh',
+          '&::before': {
+            content: '""',
+            position: 'fixed', // ✅ fix the background in place
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            // backgroundImage: `url(${Syn})`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            backgroundRepeat: 'no-repeat',
+            filter: 'blur(5px)',
+            zIndex: 0,
+            pointerEvents: 'none', // allows interaction with page content
+          },
+          '&::after': {
+            content: '""',
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: 'rgba(0,0,0,0.1)',
+            zIndex: 0,
+            pointerEvents: 'none',
+          }
+        }}
+      >
+        <Box sx={{ position: 'relative', zIndex: 1, color: '#fff', p: 4 }}>
+
+          <Grid size={{ xs: 6, sm: 6, md: 4, xl: 6, lg: 10 }}>
+            <DashboardSection style={{ backgroundColor: '#e0f7fa', maxWidth: '450px', margin: 'auto auto' }}>
+              <CardContent sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
+
+                <CandlelightingTimes />
+
+                <Scheduler />
+
+              </CardContent>
+            </DashboardSection>
+          </Grid>
+
+
+          <Tabs
+            value={activeTab}
+            onChange={handleChange}
+            variant="scrollable"
+            scrollButtons="auto"
+            textColor="secondary"
+            indicatorColor="primary"
+            sx={{ mb: 3 }}
+          >
+            {/* <Tab label="All" /> */}
+            <Tab label="Community" sx={{ color: 'white' }} />
+            <Tab label="Messages" sx={{ color: 'white' }} />
+            <Tab label="Lessons" sx={{ color: 'white' }} />
+            <Tab label="Campaigns" sx={{ color: 'white' }} />
+            <Tab label="Payments" sx={{ color: 'white' }} />
+            <Tab label="Kehilla" sx={{ color: 'white' }} />
+            {user.level === 101 || user.level === 100 && <Tab label="Admin" sx={{ color: 'blue' }}/>}
+          </Tabs>
+
+          <Masonry columns={{ xs: 1, sm: 2, md: 3, lg: 2 }} spacing={2} sx={{ margin: 'auto auto' }}>
+           
+           
+            {(activeTab === 0) && (
+              <>
+
+                <Grid size={{ xs: 12, md: 4, lg: 12 }} sx={{ display: 'flex', flexDirection: 'column', gap: '3%', p: isMobile ? 0 : 5 }}>
+              
+                  <Events />
+
+                  <DashboardSection>
+                    <SectionTitleWithIcon variant="h5" mb={2}>🎉 Share an Event</SectionTitleWithIcon>
+                    <CardContent >
+                      <EventForm />
+                    </CardContent>
+                  </DashboardSection>
+
+                </Grid>
+
+                <Grid size={{ xs: 12, sm: 6, md: 4 }}>
+                  <Birthdays />
+                </Grid>
+
+                <Grid size={{ xs: 12, sm: 6, md: 4 }}>
+                  <DonationCard />
+                </Grid>
+                
+                <Grid size={{ xs: 12, sm: 6, md: 4 }}>
+                  <SpecialEvent />
+                </Grid>
+              </>
+            )}
+
+
+            {(activeTab === 1) && (
+              <Grid size={{ xs: 12, md: 4 }}>
+                <DashboardSection>
+                  <SectionTitleWithIcon variant="h5"><List size={20} />Messages from the Community</SectionTitleWithIcon>
+                  <CardContent>
+                    <PublicMessages />
+                  </CardContent>
+                </DashboardSection>
+              </Grid>
+            )}
+
+
+            {(activeTab === 2) && (
+              <Grid size={{ xs: 6, sm: 6, md: 4, xl: 6 }}  >
+                <DashboardSection>
+
+                  <SectionTitleWithIcon><Clock size={20} /> Time of Lessons</SectionTitleWithIcon>
+
+                  <CardContent style={{ maxHeight: '300px', overflowY: 'auto', padding: '15px' }}>
+
+                    <LessonsList lessons={lessons} />
+
+                  </CardContent>
+
+                  <Lesson lessons={lessons} setLessons={setLessons} />
+
+                </DashboardSection>
+              </Grid>
+            )}
+
+
+
+            {(activeTab === 3) && (
+              <Grid size={{ xs: 12, sm: 6, md: 4 }}>
+
+                <DashboardSection>
+                  <SectionTitleWithIcon variant="h5"><Award size={20} />Campaigns</SectionTitleWithIcon>
+                  <Button
+                    variant="outlined"
+                    onClick={() => setIsInsertingCampaign(!isInsertingCampaign)}
+                    sx={{
+                      marginTop: '10px',
+                      '&:hover': {
+                        backgroundColor: '#e3f2fd',
+                        color: '#1976d2',
+                      },
+                      '&:focus': {
+                        boxShadow: '0 0 5px 2px rgba(0, 123, 255, 0.5)',
+                      }
                     }}
-                    ref={minchaRef}
-                    value={editedData.mincha_time || ''}
-                    readOnly={!canEdit}
-                  />
-                </Typography>
+                  >
+                    {isInsertingCampaign ? 'Cancel' : 'Start New Campaign'} <PlusCircle size={16} style={{ marginLeft: '5px' }} />
+                  </Button>
 
-                <Typography variant="body2">
-                  Shacharis:
-                  <input
-                    type="text"
-                    style={{
-                      width: '50px',
-                      marginLeft: '8px',
-                      cursor: canEdit ? 'pointer' : 'default',
-                      textAlign: 'center',
-                      border: 'none',
-                      borderBottom: canEdit ? '1px solid #000' : 'none',
-                      outline: 'none',
-                    }}
-                    ref={shacharisRef}
-                    value={editedData.shacharis_time || ''}
-                    readOnly={!canEdit}
-                  />
-                </Typography>
-                <Typography variant="body2">
-                  Maariv:
-                  <input
-                    type="text"
-                    style={{
-                      width: '50px',
-                      marginLeft: '8px',
-                      cursor: canEdit ? 'pointer' : 'default',
-                      textAlign: 'center',
-                      border: 'none',
-                      borderBottom: canEdit ? '1px solid #000' : 'none',
-                      outline: 'none',
-                    }}
-                    ref={maarivRef}
-                    value={editedData.maariv_time || ''}
-                    readOnly={!canEdit}
-                  />
-                </Typography>
-                <Typography variant="body2" style={{ marginTop: 16 }}>
-                  Display upcoming events, appointments, etc.
-                </Typography>
-              </div>
-            </CardContent>
-          </DashboardSection>
-        </Grid>
+                  {isInsertingCampaign && (
+                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5 }}>
+                      <Paper style={{ padding: '15px', marginTop: '10px', backgroundColor: '#f9f9f9' }}>
+                        <Typography variant="h6" style={{ marginBottom: '10px' }}>Insert New Campaign</Typography>
 
-        <Grid size={6}>
-          <DashboardSection>
-            <SectionTitle><Tv size={20} /> Ads</SectionTitle>
-            <CardContent>
-              {/* Ads content here */}
-              <Typography variant="body2">Display promotional content or advertisements.</Typography>
-            </CardContent>
-          </DashboardSection>
-        </Grid>
-        <Grid size={4}>
-          <DashboardSection>
-            <SectionTitle><Cake size={20} /> Birthdays</SectionTitle>
-            <CardContent>
-              {/* Birthdays content here */}
-              <Typography variant="body2">Show upcoming birthdays of students or staff.</Typography>
-            </CardContent>
-          </DashboardSection>
-        </Grid>
-        <Grid size={3}>
-          <DashboardSection>
-            <SectionTitle><Clock size={20} /> Time of Lessons</SectionTitle>
-            <CardContent>
-              {/* Time of lessons content here */}
-              <Typography variant="body2">Display today's or the week's lesson schedule.</Typography>
-            </CardContent>
-          </DashboardSection>
-        </Grid>
+                        <Campaign />
 
+                      </Paper>
+                    </motion.div>
+                  )}
 
-        <Grid size={12}>
-          <DashboardSection>
-            <SectionTitle><List size={20} />To-Do List</SectionTitle>
-            <CardContent>
-              <Typography variant="body2">Display user's to-do list.</Typography>
-            </CardContent>
-          </DashboardSection>
-        </Grid>
-
-        {/* Edit Dialog */}
-        <Dialog open={isEditDialogOpen} onClose={handleCloseEdit}>
-          <DialogTitle>Edit Schedule Item</DialogTitle>
-          <DialogContent>
-            <Grid container spacing={2}>
-              <Grid>
-                {/* <TextField
-                  fullWidth
-                  label="Gregorian Date"
-                  name="gregorian_date"
-                  value={editedData.greg_date || ''}
-                  onChange={handleInputChange}
-                  type="date"
-                /> */}
+                </DashboardSection>
               </Grid>
-              <Grid>
-                <TextField
-                  label="Mincha Time"
-                  name="mincha_time"
-                  value={editedData.mincha_time || ''}
-                  onChange={handleInputChange}
-                  type="time"
-                />
+
+            )}
+
+
+
+            {(activeTab === 4) && (
+              <Grid size={{ /*xs: 6, sm: 6, md: 4, xl: 12, lg: 6*/xs: 12, md: 4, lg: 12, xl: 10 }}>
+                <DashboardSection>
+                  <SectionTitleWithIcon variant="h5"><Award size={20} />Payments</SectionTitleWithIcon>
+                  <CardContent>
+                    <Payments />
+                  </CardContent>
+                </DashboardSection>
               </Grid>
-              <Grid>
+            )}
 
+
+
+            {(activeTab === 5) && (
+              <Grid size={{ xs: 6, sm: 6, md: 4, xl: 12, lg: 6 }}>
+                <DashboardSection>
+                  <SectionTitleWithIcon variant="h5"><Award size={20} />Members</SectionTitleWithIcon>
+                  <CardContent>
+                    <UserManagementTable />
+                  </CardContent>
+                </DashboardSection>
               </Grid>
-              <Grid>
+            )}
 
+
+            {(activeTab === 6) && (
+              <Grid size={{ xs: 6, sm: 6, md: 4, xl: 12, lg: 6 }}>
+                <DashboardSection>
+                  <CardContent>
+                    <GuestMessages />
+                  </CardContent>
+                </DashboardSection>
               </Grid>
-              <Grid>
-                <TextField
-                  fullWidth
-                  label="Shacharis Time"
-                  name="shacharis_time"
-                  value={editedData.shacharis_time || ''}
-                  onChange={handleInputChange}
-                  type="time"
-                />
-              </Grid>
-              <Grid>
-                <TextField
-                  fullWidth
-                  label="Maariv Time"
-                  name="maariv_time"
-                  value={editedData.maariv_time || ''}
-                  onChange={handleInputChange}
-                  type="time"
-                />
-              </Grid>
-              <Grid >
+            )}
+            <WhatsappButton />
+          </Masonry>
 
-              </Grid>
-            </Grid>
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={handleCloseEdit}>Cancel</Button>
-            <Button onClick={handleSaveEdit} variant="contained" color="primary">
-              Save
-            </Button>
-          </DialogActions>
-        </Dialog>
-      </Grid>
-    </div>
+
+          {/* <Grid container spacing={3} sx={{ mt: 15 }}>
+
+      </Grid> */}
+
+        </Box >
+      </Box>
+    </Box>
 
 
 
-
-    // <React.Fragment>
-    //   <Box>
-
-    //     <Campaign />
-
-    //   </Box>
-
-    //   <Footer />
-    // </React.Fragment>
   )
 }
 

@@ -1,12 +1,12 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { TextField, Button, Grid, Paper, Typography, Box } from '@mui/material';
+import { TextField, Button, Grid, Paper, Typography, Box, Divider, Stack } from '@mui/material';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
 import { Alert } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { profile, updatePassword } from '../api/auth';
 import { updateProfile } from '../api/user';
-import AppUserContext from '../context/AppUserContext';
+import { useAppUser } from '../context/AppUser.context';
 
 // Validation schema for updating phone and address
 const updateProfileSchema = yup.object({
@@ -29,7 +29,7 @@ const UserProfile = () => {
     const [resetSuccess, setResetSuccess] = useState(false);
     const navigate = useNavigate();
 
-    const { user } = useContext(AppUserContext)
+    const { user } = useAppUser();
 
     const token = localStorage.getItem('token');
 
@@ -43,7 +43,7 @@ const UserProfile = () => {
             setLoading(true);
             setError(null);
             try {
-                if(user === null){
+                if (user === null) {
                     const response = await profile()
                     const data = response.data as any
                     setUserData(data.user);
@@ -134,20 +134,44 @@ const UserProfile = () => {
     }
 
     return (
-        <Grid container justifyContent="center" alignItems="center" style={{ minHeight: '100vh', backgroundColor: '#f0f4c3' }}>
-            <Grid >
-                <Paper elevation={3} style={{ padding: 20, borderRadius: 16 }}>
-                    <Typography variant="h4" align="center" style={{ marginBottom: 20, color: '#1a5235' }}>
+        <Grid
+            container
+            justifyContent="center"
+            alignItems="center"
+            style={{
+                minHeight: '100vh',
+                background: 'linear-gradient(to right, #e3f2fd, #e8f5e9)',
+                padding: 20,
+            }}
+        >
+            <Grid size={{ xs: 12, sm: 10, md: 8, lg: 6 }}>
+                <Paper
+                    elevation={4}
+                    sx={{
+                        borderRadius: 4,
+                        padding: 4,
+                        boxShadow: '0px 6px 20px rgba(0,0,0,0.1)',
+                    }}
+                >
+                    <Typography variant="h4" align="center" mb={3} color="primary">
                         User Profile
                     </Typography>
 
-                    <Typography variant="h6" style={{ color: '#1a5235' }}>Personal Details:</Typography>
-                    <Typography>First Name: {userData.first_name}</Typography>
-                    <Typography>Last Name: {userData.last_name}</Typography>
-                    <Typography>Email: {userData.email}</Typography>
+                    <Box mb={4}>
+                        <Typography variant="h6" gutterBottom color="text.secondary">
+                            Personal Details
+                        </Typography>
+                        <Typography><strong>First Name:</strong> {userData.first_name}</Typography>
+                        <Typography><strong>Last Name:</strong> {userData.last_name}</Typography>
+                        <Typography><strong>Email:</strong> {userData.email}</Typography>
+                    </Box>
+
+                    <Divider sx={{ my: 3 }} />
 
                     <Box mt={4}>
-                        <Typography variant="h6" style={{ color: '#1a5235' }}>Update Profile:</Typography>
+                        <Typography variant="h6" gutterBottom color="text.secondary">
+                            Update Profile
+                        </Typography>
                         <form onSubmit={updateProfileFormik.handleSubmit}>
                             <TextField
                                 fullWidth
@@ -186,46 +210,52 @@ const UserProfile = () => {
                         </form>
                     </Box>
 
+                    <Divider sx={{ my: 3 }} />
+
                     <Box mt={4}>
-                        <Typography variant="h6" style={{ color: '#1a5235' }}>Update Password:</Typography>
+                        <Typography variant="h6" gutterBottom color="text.secondary">
+                            Change Password
+                        </Typography>
                         <form onSubmit={resetPasswordFormik.handleSubmit}>
-                            <TextField
-                                fullWidth
-                                id="newPassword"
-                                name="newPassword"
-                                label="New Password"
-                                type="password"
-                                value={resetPasswordFormik.values.newPassword}
-                                onChange={resetPasswordFormik.handleChange}
-                                error={resetPasswordFormik.touched.newPassword && Boolean(resetPasswordFormik.errors.newPassword)}
-                                helperText={resetPasswordFormik.touched.newPassword && resetPasswordFormik.errors.newPassword}
-                                style={{ marginBottom: 15, backgroundColor: '#fff' }}
-                                InputProps={{ style: { borderRadius: 8, borderColor: '#81c784' } }}
-                            />
-                            <TextField
-                                fullWidth
-                                id="confirmPassword"
-                                name="confirmPassword"
-                                label="Confirm New Password"
-                                type="password"
-                                value={resetPasswordFormik.values.confirmPassword}
-                                onChange={resetPasswordFormik.handleChange}
-                                error={resetPasswordFormik.touched.confirmPassword && Boolean(resetPasswordFormik.errors.confirmPassword)}
-                                helperText={resetPasswordFormik.touched.confirmPassword && resetPasswordFormik.errors.confirmPassword}
-                                style={{ marginBottom: 15, backgroundColor: '#fff' }}
-                                InputProps={{ style: { borderRadius: 8, borderColor: '#81c784' } }}
-                            />
-                            <Button
-                                type="submit"
-                                fullWidth
-                                variant="contained"
-                                color="primary"
-                                disabled={resetLoading}
-                                style={{ marginTop: 20, backgroundColor: '#4caf50', color: '#fff', borderRadius: 8 }}
-                            >
-                                {resetLoading ? 'Resetting...' : 'Update Password'}
-                            </Button>
-                            {resetSuccess && <p style={{ color: 'green' }}>Password reset successfully!</p>}
+                            <Stack spacing={2}>
+                                <TextField
+                                    fullWidth
+                                    id="newPassword"
+                                    name="newPassword"
+                                    label="New Password"
+                                    type="password"
+                                    value={resetPasswordFormik.values.newPassword}
+                                    onChange={resetPasswordFormik.handleChange}
+                                    error={resetPasswordFormik.touched.newPassword && Boolean(resetPasswordFormik.errors.newPassword)}
+                                    helperText={resetPasswordFormik.touched.newPassword && resetPasswordFormik.errors.newPassword}
+                                    style={{ marginBottom: 15, backgroundColor: '#fff' }}
+                                    InputProps={{ style: { borderRadius: 8, borderColor: '#81c784' } }}
+                                />
+                                <TextField
+                                    fullWidth
+                                    id="confirmPassword"
+                                    name="confirmPassword"
+                                    label="Confirm New Password"
+                                    type="password"
+                                    value={resetPasswordFormik.values.confirmPassword}
+                                    onChange={resetPasswordFormik.handleChange}
+                                    error={resetPasswordFormik.touched.confirmPassword && Boolean(resetPasswordFormik.errors.confirmPassword)}
+                                    helperText={resetPasswordFormik.touched.confirmPassword && resetPasswordFormik.errors.confirmPassword}
+                                    style={{ marginBottom: 15, backgroundColor: '#fff' }}
+                                    InputProps={{ style: { borderRadius: 8, borderColor: '#81c784' } }}
+                                />
+                                <Button
+                                    type="submit"
+                                    fullWidth
+                                    variant="contained"
+                                    color="primary"
+                                    disabled={resetLoading}
+                                    style={{ marginTop: 20, backgroundColor: '#4caf50', color: '#fff', borderRadius: 8 }}
+                                >
+                                    {resetLoading ? 'Resetting...' : 'Update Password'}
+                                </Button>
+                                {resetSuccess && <p style={{ color: 'green' }}>Password reset successfully!</p>}
+                            </Stack>
                         </form>
                     </Box>
                 </Paper>
