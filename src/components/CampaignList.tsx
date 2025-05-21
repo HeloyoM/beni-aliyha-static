@@ -12,6 +12,7 @@ import { motion } from 'framer-motion';
 import ICampaign from '../interfaces/Cmapaign.interface';
 import ICampaignMember from '../interfaces/ICampaignMember.interface';
 import Paths from '../enum/Paths.enum';
+import { useTranslation } from 'react-i18next';
 
 // Styled components for enhanced UI
 const StyledPaper = styled(Paper)(({ theme }) => ({
@@ -56,6 +57,8 @@ const CampaignList = () => {
     const [joinComment, setJoinComment] = useState('');
     const [openCommentDialog, setOpenCommentDialog] = useState<{ open: boolean; comment: string }>({ open: false, comment: '' }); // State for comment dialog
 
+    const { t } = useTranslation();
+
     const navigate = useNavigate();
     const token = localStorage.getItem('token');
 
@@ -81,7 +84,7 @@ const CampaignList = () => {
                 setCampaigns(data);
                 setLoading(false);
             } catch (err: any) {
-                setError(err.message || 'An error occurred while fetching campaigns.');
+                setError(err.message || t('campaign.campaign_list.error'));
                 setLoading(false);
             }
         };
@@ -93,22 +96,22 @@ const CampaignList = () => {
         setOpenModal(false);
         setSelectedCampaign(null); // Reset selected campaign
         setMembers([]); // Clear members
-        document.title = "Campaigns"
+        document.title = t('campaign.campaign_list.title')
     };
 
     const handleSelectCampaign = async (campaignId: string) => {
         const campaign = campaigns.find(c => c.id === campaignId);
         if (campaign) {
             setSelectedCampaign(campaign);
-            setOpenModal(true); // Open the dialog
-            setLoading(true); //start loading
+            setOpenModal(true);
+            setLoading(true);
             try {
                 const response = await getCampaignMembers(campaignId);
                 const membersData = response.data as any;
                 setMembers(membersData);
                 setLoading(false);
             } catch (error) {
-                setError("Failed to load members")
+                setError(t('campaign.campaign_list.failed_load_members'))
                 setLoading(false)
             }
 
@@ -117,7 +120,7 @@ const CampaignList = () => {
 
     useEffect(() => {
         if (openModal && selectedCampaign) {
-            document.title = `Members of ${selectedCampaign.campaign_name}`;
+            document.title = t('campaign.campaign_list.title_members_of', { campaignName: selectedCampaign.campaign_name });
         }
 
         return () => {
@@ -128,7 +131,7 @@ const CampaignList = () => {
 
     const handleJoinCampaign = async () => {
         if (!participationType) {
-            setError('Please select a participation type.');
+            setError(t('campaign.campaign_list.joining_modal.select_participation_type'));
             return;
         }
 
@@ -147,7 +150,7 @@ const CampaignList = () => {
             const data = response.data as any;
 
             if (response.status < 200 || response.status >= 300) {
-                throw new Error(data?.message || 'Failed to join campaign');
+                throw new Error(data?.message || t('campaign.campaign_list.joining_modal.failed_join'));
             }
             setJoinCampaignSuccess(true);
             setOpenJoinDialog(false); // Close dialog on success
@@ -159,7 +162,7 @@ const CampaignList = () => {
 
             setMembers(membersData);
         } catch (err: any) {
-            setError(err.message || 'An error occurred while joining the campaign.');
+            setError(err.message || t('campaign.campaign_list.joining_modal.error'));
         } finally {
             setJoinCampaignLoading(false);
         }
@@ -169,8 +172,6 @@ const CampaignList = () => {
         // const campaignMembers = members.filter(member => member.campaign_id === campaignId);
         return members.reduce((sum, member) => sum + (member.donated_amount || 0), 0);
     };
-
-    console.log({ campaigns })
 
     if (loading) {
         return (
@@ -192,7 +193,7 @@ const CampaignList = () => {
         return (
             <StyledPaper>
                 <Typography variant="body1" color="text.secondary" align="center">
-                    No campaigns found.
+                    {t('campaign.campaign_list.no_campaigns')}
                 </Typography>
             </StyledPaper>
         );
@@ -202,18 +203,18 @@ const CampaignList = () => {
         <>
             <StyledPaper sx={{ marginTop: '4%' }}>
                 <Typography variant="h4" component="h2" gutterBottom style={{ color: '#1a5235' }}>
-                    Campaigns
+                    {t('campaign.campaign_list.title')}
                 </Typography>
 
                 <Table>
                     <TableHead>
                         <TableRow>
-                            <StyledTableHeadCell>Name</StyledTableHeadCell>
-                            <StyledTableHeadCell>Type</StyledTableHeadCell>
-                            <StyledTableHeadCell>Due Date</StyledTableHeadCell>
-                            <StyledTableHeadCell>Description</StyledTableHeadCell>
-                            <StyledTableHeadCell>Active</StyledTableHeadCell>
-                            <StyledTableHeadCell>Created At</StyledTableHeadCell>
+                            <StyledTableHeadCell>{t('campaign.campaign_list.table.name')}</StyledTableHeadCell>
+                            <StyledTableHeadCell>{t('campaign.campaign_list.table.type')}</StyledTableHeadCell>
+                            <StyledTableHeadCell>{t('campaign.campaign_list.table.due')}</StyledTableHeadCell>
+                            <StyledTableHeadCell>{t('campaign.campaign_list.table.description')}</StyledTableHeadCell>
+                            <StyledTableHeadCell>{t('campaign.campaign_list.table.active')}</StyledTableHeadCell>
+                            <StyledTableHeadCell>{t('campaign.campaign_list.table.created_at')}</StyledTableHeadCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
@@ -264,7 +265,7 @@ const CampaignList = () => {
                         ) : members.length > 0 ? (
                             <>
                                 <Typography variant="h6" gutterBottom>
-                                    Members List
+                                    {t('campaign.campaign_list.members_modal')}
                                 </Typography>
 
                                 <Divider sx={{ mb: 2 }} />
@@ -273,12 +274,12 @@ const CampaignList = () => {
                                     <Table size="small">
                                         <TableHead>
                                             <TableRow>
-                                                <StyledTableHeadCell>Joined At</StyledTableHeadCell>
-                                                <StyledTableHeadCell>Status</StyledTableHeadCell>
-                                                <StyledTableHeadCell>name</StyledTableHeadCell>
-                                                <StyledTableHeadCell>phone number</StyledTableHeadCell>
-                                                <StyledTableHeadCell>email</StyledTableHeadCell>
-                                                <StyledTableHeadCell>Comment</StyledTableHeadCell>
+                                                <StyledTableHeadCell>{t('campaign.campaign_list.table.joined_at')}</StyledTableHeadCell>
+                                                <StyledTableHeadCell>{t('campaign.campaign_list.table.status')}</StyledTableHeadCell>
+                                                <StyledTableHeadCell>{t('campaign.campaign_list.table.name')}</StyledTableHeadCell>
+                                                <StyledTableHeadCell>{t('campaign.campaign_list.table.phone_number')}</StyledTableHeadCell>
+                                                <StyledTableHeadCell>{t('campaign.campaign_list.table.email')}</StyledTableHeadCell>
+                                                <StyledTableHeadCell>{t('campaign.campaign_list.table.comment')}</StyledTableHeadCell>
                                             </TableRow>
                                         </TableHead>
                                         <TableBody>
@@ -301,7 +302,7 @@ const CampaignList = () => {
                                                                 </Tooltip>
                                                             ) : (
                                                                 <Typography variant="caption" color="text.secondary">
-                                                                    No comment
+                                                                    {t('campaign.campaign_list.members_modal.no_comments')}
                                                                 </Typography>
                                                             )}
                                                         </StyledTableCell>
@@ -316,7 +317,7 @@ const CampaignList = () => {
                                             onClick={() => setOpenJoinDialog(true)} // Open Join Campaign Dialog
                                             style={{ marginTop: 20, backgroundColor: '#4caf50', color: '#fff', borderRadius: 8 }}
                                         >
-                                            Join a Campaign
+                                            {t('campaign.campaign_list.members_modal.button.join_campaign')}
                                         </Button>}
                                     </Table>
 
@@ -325,7 +326,7 @@ const CampaignList = () => {
                         ) : (
                             <Box textAlign="center" mt={2}>
                                 <Typography variant="body1" color="text.secondary">
-                                    No members found for this campaign.
+                                    {t('campaign.campaign_list.members_modal.no_members')}
                                 </Typography>
                                 <Button
                                     variant="contained"
@@ -333,24 +334,24 @@ const CampaignList = () => {
                                     onClick={() => setOpenJoinDialog(true)}
                                     sx={{ mt: 2, borderRadius: 2 }}
                                 >
-                                    Join Campaign
+                                    {t('campaign.campaign_list.members_modal.button.join_campaign')}
                                 </Button>
                             </Box>
                         )}
                     </DialogContent>
                     <DialogActions>
-                        <Button onClick={handleCloseModal}>Close</Button>
+                        <Button onClick={handleCloseModal}>{t('campaign.campaign_list.members_modal.button.close')}</Button>
                     </DialogActions>
                 </Dialog>
             </motion.div>
-            {/* Join Campaign Dialog */}
+
             <Dialog open={openJoinDialog} onClose={() => setOpenJoinDialog(false)}>
-                <DialogTitle>Join a Campaign</DialogTitle>
+                <DialogTitle>{t('campaign.campaign_list.members_modal.button.join_campaign')}</DialogTitle>
                 <DialogContent>
                     {error && <Collapse in={!!error}><Alert severity="error">{error}</Alert></Collapse>}
-                    {joinCampaignSuccess && <Alert severity="success">Successfully joined the campaign!</Alert>}
+                    {joinCampaignSuccess && <Alert severity="success">{t('campaign.campaign_list.joining_modal.success')}</Alert>}
                     <FormControl fullWidth margin="normal">
-                        <InputLabel id="participation-type-label">Participation Type</InputLabel>
+                        <InputLabel id="participation-type-label">{t('campaign.campaign_list.joining_modal.participation_type_label')}</InputLabel>
                         <Select
                             labelId="participation-type-label"
                             id="participation-type"
@@ -358,14 +359,14 @@ const CampaignList = () => {
                             onChange={(e) => setParticipationType(e.target.value as string)}
                             label="Participation Type"
                         >
-                            <MenuItem value="participant">Participant</MenuItem>
-                            <MenuItem value="volunteer">Volunteer</MenuItem>
+                            <MenuItem value="participant">{t('campaign.campaign_list.joining_modal.participation_types.participant')}</MenuItem>
+                            <MenuItem value="volunteer">{t('campaign.campaign_list.joining_modal.participation_types.volunteer')}</MenuItem>
                         </Select>
                     </FormControl>
                     <TextField
                         fullWidth
                         id="join-comment"
-                        label="Additional Information (Optional)"
+                        label={t('campaign.campaign_list.joining_modal.additional_info')}
                         multiline
                         rows={3}
                         value={joinComment}
@@ -374,14 +375,14 @@ const CampaignList = () => {
                     />
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={() => setOpenJoinDialog(false)}>Cancel</Button>
+                    <Button onClick={() => setOpenJoinDialog(false)}>{t('campaign.campaign_list.joining_modal.button.cancel')}</Button>
                     <Button
                         onClick={handleJoinCampaign}
                         disabled={joinCampaignLoading || !participationType}
                         variant="contained"
                         color="primary"
                     >
-                        {joinCampaignLoading ? <CircularProgress size={20} /> : 'Join'}
+                        {joinCampaignLoading ? <CircularProgress size={20} /> : t('campaign.campaign_list.joining_modal.button.join')}
                     </Button>
                 </DialogActions>
             </Dialog>

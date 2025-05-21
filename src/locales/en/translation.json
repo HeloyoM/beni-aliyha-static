@@ -191,5 +191,87 @@
       "message_label": "Message",
       "send_message_button": "Send Message"
     }
+  },
+  "campaign": {
+    "campaign_form": {
+      "name_label": "Campaign Name",
+      "type_label": "Campaign Type",
+      "due_date": "Due Date",
+      "description": "Description",
+      "goal_amount_label": "Goal Amount",
+      "failed_fetch_types": "Failed to fetch campaign types",
+      "failed_create": "Failed to create campaign",
+      "generic": "Failed to connect to the server",
+      "success": "Campaign created successfully!",
+      "button": {
+        "creating": "Creating...",
+        "create_campaign": "Create Campaign"
+      },
+      "validation": {
+        "nameRequired": "Campaign Name is required",
+        "typeRequired": "Campaign Type is required",
+        "dueDateRequired": "Due Date is required",
+        "dueDateInPast": "Due Date cannot be in the past",
+        "descriptionRequired": "Description is required"
+      },
+      "campaignTypes": {
+        "donate": "Donate"
+      }
+    },
+    "campaign_list": {
+      "title": "Campaigns",
+      "title_members_of": "Members of {{campaignName}}",
+      "loading": "Loading...",
+      "error": "An error occurred while fetching campaigns.",
+      "no_campaigns": "No campaigns found.",
+      "failed_load_members": "Failed to load members",
+      "table": {
+        "name": "Name",
+        "type": "Type",
+        "due": "Due Date",
+        "description": "Description",
+        "active": "Active",
+        "created_at": "Created At",
+        "progress": "Progress"
+      },
+      "status": {
+        "yes": "Yes",
+        "no": "No"
+      },
+      "members_modal": {
+        "title": "Members List",
+        "no_members": "No members found for this campaign.",
+        "table": {
+          "joined_at": "Joined At",
+          "status": "Status",
+          "name": "Name",
+          "phone_number": "Phone Number",
+          "email": "Email",
+          "comment": "Comment"
+        },
+        "no_comments": "No comment",
+        "button": {
+          "join_campaign": "Join a Campaign",
+          "close": "Close"
+        }
+      },
+      "joining_modal": {
+        "select_participation_type": "Please select a participation type.",
+        "success": "Successfully joined the campaign!",
+        "failed_join": "Failed to join campaign",
+        "error": "An error occurred while joining the campaign.",
+        "title": "Join a Campaign",
+        "participation_type_label": "Participation Type",
+        "participation_types": {
+          "participant": "Participant",
+          "volunteer": "Volunteer"
+        },
+        "additional_info": "Additional Information (Optional)",
+        "button": {
+          "cancel": "Cancel",
+          "join": "Join"
+        }
+      }
+    }
   }
 }

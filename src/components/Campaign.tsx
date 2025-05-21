@@ -17,6 +17,7 @@ import dayjs, { Dayjs } from 'dayjs';
 import { createCampaign, getCampaignTypes } from '../api/campaign';
 import 'react-day-picker/dist/style.css';
 import AppDatePicker from './AppDatePicker';
+import { useTranslation } from 'react-i18next';
 
 // Validation schema using yup
 const newCampaignSchema = yup.object({
@@ -39,6 +40,7 @@ const Campaign = () => {
     const [isDonation, setIsDonation] = useState(false);
 
     const isMobile = useMediaQuery('(max-width:600px)');
+    const { t } = useTranslation();
 
 
     useEffect(() => {
@@ -54,7 +56,7 @@ const Campaign = () => {
                     setCampaignTypes(data.types)
 
                 } catch (error: any) {
-                    setError(error.response?.data?.message || 'Failed to fetch campaign types');
+                    setError(error.response?.data?.message || t('campaign.campaign_form.failed_fetch_types'));
                 } finally {
                     setLoading(false);
                 }
@@ -86,11 +88,11 @@ const Campaign = () => {
                     setSuccess(true);
                     formik.resetForm(); // Clear the form
                 } else {
-                    setError(data.message || 'Failed to create campaign');
+                    setError(data.message || t('campaign.campaign_form.failed_create'));
                 }
             } catch (error: any) {
                 // Handle network errors or other exceptions
-                setError(error.message || 'Failed to connect to the server');
+                setError(error.message || t('campaign.campaign_form.generic'));
             } finally {
                 setLoading(false);
             }
@@ -105,7 +107,7 @@ const Campaign = () => {
     const handleDateChange = (date: any) => {
         formik.setFieldValue('dueDate', date);
     };
-    console.log({ campaignTypes })
+
     return (
         <>
             <form onSubmit={formik.handleSubmit}>
@@ -132,7 +134,7 @@ const Campaign = () => {
                             fullWidth
                             id="name"
                             name="name"
-                            label="Campaign Name"
+                            label={t('campaign.campaign_form.name_label')}
                             value={formik.values.name}
                             onChange={formik.handleChange}
                             error={formik.touched.name && Boolean(formik.errors.name)}
@@ -150,7 +152,7 @@ const Campaign = () => {
                         >
 
                             <InputLabel id="type-label" style={{ color: formik.touched.type && formik.errors.type ? '#d32f2f' : '#000' }}>
-                                Campaign Type
+                                {t('campaign.campaign_form.type_label')}
                             </InputLabel>
 
                             <Select
@@ -179,7 +181,7 @@ const Campaign = () => {
                                     fullWidth
                                     id="goal_amount"
                                     name="goal_amount"
-                                    label="Goal Amount"
+                                    label={t('campaign.campaign_form.goal_amount_label')}
                                     type="number"
                                     value={formik.values.goal_amount || ''}
                                     onChange={formik.handleChange}
@@ -195,7 +197,7 @@ const Campaign = () => {
                             fullWidth
                             id="description"
                             name="description"
-                            label="Description"
+                            label={t('campaign.campaign_form.description')}
                             multiline
                             rows={4}
                             value={formik.values.description}
@@ -214,7 +216,7 @@ const Campaign = () => {
                 )}
                 {success && (
                     <Alert severity="success" style={{ marginBottom: 10 }}>
-                        Campaign created successfully!
+                        {t('campaign.campaign_form.success')}
                     </Alert>
                 )}
 
@@ -227,7 +229,7 @@ const Campaign = () => {
                     disabled={loading}
                     style={{ marginTop: '15px' }}
                 >
-                    {loading ? 'Creating...' : 'Create Campaign'}
+                    {loading ? t('campaign.campaign_form.button.creating') : t('campaign.campaign_form.button.create_campaign')}
                 </Button>
 
             </form>

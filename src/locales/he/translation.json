@@ -203,5 +203,91 @@
             "message_label": "הודעה",
             "send_message_button": "שלח הודעה"
         }
+    },
+    "campaign": {
+        "campaign_form": {
+            "name_label": "שם קמפיין",
+            "type_label": "סוג קמפיין",
+            "due_date": "תאריך יעד",
+            "description": "תיאור",
+            "goal_amount_label": "סכום יעד",
+            "failed_fetch_types": "נכשלה שליפת סוגי הקמפיינים",
+            "failed_create": "נכשלה יצירת הקמפיין",
+            "generic": "נכשלה ההתחברות לשרת",
+            "success": "הקמפיין נוצר בהצלחה!",
+            "button": {
+                "creating": "יוצר...",
+                "createCampaign": "צור קמפיין"
+            },
+            "validation": {
+                "nameRequired": "שם הקמפיין נדרש",
+                "typeRequired": "סוג הקמפיין נדרש",
+                "dueDateRequired": "תאריך יעד נדרש",
+                "dueDateInPast": "תאריך יעד לא יכול להיות בעבר",
+                "descriptionRequired": "תיאור נדרש"
+            },
+            "campaignTypes": {
+                "donate": "תרומה"
+            }
+        },
+        "campaign_list": {
+            "title": "קמפיינים",
+            "title_members_of": "חברים של {{campaignName}}",
+            "loading": "טוען...",
+            "error": "אירעה שגיאה בעת שליפת קמפיינים.",
+            "no_campaigns": "לא נמצאו קמפיינים.",
+            "failed_load_members": "נכשלה טעינת חברים",
+            "table": {
+                "name": "שם",
+                "type": "סוג",
+                "dueDate": "תאריך יעד",
+                "description": "תיאור",
+                "active": "פעיל",
+                "createdAt": "נוצר ב",
+                "progress": "התקדמות"
+            },
+            "status": {
+                "yes": "כן",
+                "no": "לא"
+            },
+            "members_modal": {
+                "title": "רשימת חברים",
+                "no_members": "לא נמצאו חברים לקמפיין זה.",
+                "table": {
+                    "joined_at": "הצטרף ב",
+                    "status": "סטטוס",
+                    "name": "שם",
+                    "phone_number": "מספר טלפון",
+                    "email": "אימייל",
+                    "comment": "הערה"
+                },
+                "no_comments": "אין הערה",
+                "button": {
+                    "join_campaign": "הצטרף לקמפיין",
+                    "close": "סגור"
+                }
+            },
+            "joining_modal": {
+                "select_participation_type": "אנא בחר/י סוג השתתפות.",
+                "success": "הצטרפת בהצלחה לקמפיין!",
+                "failed_join": "נכשלה ההצטרפות לקמפיין",
+                "error": "אירעה שגיאה בעת ההצטרפות לקמפיין.",
+                "title": "הצטרף לקמפיין",
+                "participation_type_label": "סוג השתתפות",
+                "participation_types": {
+                    "participant": "משתתף",
+                    "volunteer": "מתנדב"
+                },
+                "additional_info": "מידע נוסף (אופציונלי)",
+                "button": {
+                    "cancel": "ביטול",
+                    "join": "הצטרף"
+                }
+            },
+            "commentDialog": {
+                "title": "הערת חבר",
+                "closeButton": "סגור"
+            }
+        }
     }
 }
