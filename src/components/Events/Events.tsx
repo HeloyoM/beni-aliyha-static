@@ -6,6 +6,8 @@ import { getCommunityEvents, getEventsTypes } from "../../api/events";
 import EventForm from "./EventForm";
 import { PartyMode } from '@mui/icons-material';
 import React from "react";
+import { useTranslation } from 'react-i18next';
+
 interface CommunityEvent {
     id: string;
     description: string;
@@ -26,7 +28,8 @@ export const Events = () => {
     const [events, setEvents] = useState<CommunityEvent[]>([]);
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
-    const [success, setSuccess] = useState(false);
+
+    const { t } = useTranslation();
 
     const fetchEvents = async () => {
         setLoading(true);
@@ -82,10 +85,10 @@ export const Events = () => {
             >
                 <PartyMode sx={{ fontSize: 48, color: 'grey.500', mb: 1 }} />
                 <Typography variant="h6" color="text.secondary" gutterBottom>
-                    No happy events yet.
+                    {t('events.no_events')}
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
-                    Be the first to share something wonderful with the community!
+                     {t('events.default_message')}
                 </Typography>
             </Box>
         )

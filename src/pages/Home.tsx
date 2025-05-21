@@ -23,6 +23,7 @@ import Payments from '../components/Payments/Payments';
 import WhatsappButton from '../components/WhatsappButton';
 import UserManagementTable from '../components/UserManagementTable';
 import SpecialEvent from '../components/SpecialEvent';
+import { useTranslation } from 'react-i18next';
 
 // Styled components for consistent styling
 const DashboardSection = styled(Paper)(({ theme }) => ({
@@ -67,6 +68,8 @@ const Home: React.FC = () => {
   const [activeTab, setActiveTab] = useState(0);
 
   const isMobile = useMediaQuery('(max-width:600px)');
+
+  const { t } = useTranslation();
 
   const handleChange = (_: React.SyntheticEvent, newValue: number) => {
     setActiveTab(newValue);
@@ -116,10 +119,12 @@ const Home: React.FC = () => {
       >
         <Box sx={{ position: 'relative', zIndex: 1, color: '#fff', p: 4 }}>
 
+
+
           <Grid size={{ xs: 6, sm: 6, md: 4, xl: 6, lg: 10 }}>
             <DashboardSection style={{ backgroundColor: '#e0f7fa', maxWidth: '450px', margin: 'auto auto' }}>
               <CardContent sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
-
+                <h1>{t('welcome')}</h1>
                 <CandlelightingTimes />
 
                 <Scheduler />

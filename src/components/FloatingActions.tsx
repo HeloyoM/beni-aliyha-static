@@ -1,7 +1,8 @@
 import { SpeedDial, SpeedDialAction, SpeedDialIcon } from '@mui/material';
-import { Home, PersonStanding, LogOut, Presentation, Mail } from 'lucide-react';
+import { Home, PersonStanding, LogOut, Presentation, Mail, Languages } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { logout } from '../api/auth';
+import LanguageToggle from './LanguageToggle';
 
 const FloatingActions = () => {
   const navigate = useNavigate();
@@ -30,6 +31,7 @@ const FloatingActions = () => {
     { icon: <Mail size={20} />, name: 'Messages', onClick: () => navigate('/messages') },
     { icon: <Presentation size={20} />, name: 'Campaigns', onClick: () => navigate('/campaings') },
     { icon: <LogOut size={20} />, name: 'Logout', onClick: handleLogout },
+    { icon: <LanguageToggle />, name: 'Lang', onlick: () => { } }
   ];
 
   return (

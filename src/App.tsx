@@ -17,6 +17,7 @@ import NotFound from './pages/NotFound';
 import PrivacyBanner from './components/PrivacyBanner';
 import Footer from './components/Footer';
 
+
 const App: React.FC = () => {
   const [serverMsg, setServerMsg] = useState('');
 

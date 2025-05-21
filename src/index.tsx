@@ -4,6 +4,7 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import LogRocket from 'logrocket';
+import './i18n';
 
 LogRocket.init('meir-juli/bnei');
 

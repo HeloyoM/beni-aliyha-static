@@ -1,0 +1,26 @@
+{
+  "welcome": "Welcome to the community!",
+  "share_event": "Share an Event",
+  "start_campaign": "Start New Campaign",
+  "events": {
+    "no_events": "No happy events yet.",
+    "default_message": "Be the first to share something wonderful with the community!",
+    "select_type": "Select Event Type",
+    "description_label": "What's the event?",
+    "published": "Event published successfully!",
+    "publish_error": "Failed to publish the event.",
+    "submit_button": "Publish Event",
+    "no_permission": "You don’t have permission to publish events",
+    "no_permission_subtitle": "If you believe this is a mistake or you’d like to request permission, please contact the administrator.",
+    "baby_boy": "New Baby Boy",
+    "baby_girl": "New Baby Girl",
+    "wedding": "Wedding",
+    "engagement": "Engagement",
+    "graduation": "Graduation",
+    "new_job": "New Job",
+    "housewarming": "Housewarming",
+    "birthday": "Birthday",
+    "anniversary": "Anniversary",
+    "bar_mitzvah": "Bar Mitzvah"
+  }
+}

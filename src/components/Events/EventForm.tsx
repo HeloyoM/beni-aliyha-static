@@ -9,6 +9,7 @@ import { eventIcons } from './eventIcons';
 import { Star } from 'lucide-react';
 import { getAllUsers } from '../../api/user';
 import IUser from '../../interfaces/User.interface';
+import { useTranslation } from 'react-i18next';
 
 type EventType = {
     id: number;
@@ -24,6 +25,8 @@ const EventForm = () => {
     const [error, setError] = useState<string | null>(null);
     const [success, setSuccess] = useState(false);
     const [users, setUsers] = useState<IUser[]>([]);
+
+    const { t } = useTranslation();
 
     const { canPublishMessages } = useAppUser();
 
@@ -101,7 +104,7 @@ const EventForm = () => {
                 formik.resetForm();
             }
         } catch (err) {
-            console.error('Failed to post an event');
+            console.error(t('events.publish_error'));
         }
     }
 
@@ -115,7 +118,7 @@ const EventForm = () => {
         },
         onSubmit: submitEvent,
     });
-
+    console.log({ eventTypes })
     return (
         canPublishMessages ? (
 
@@ -125,7 +128,7 @@ const EventForm = () => {
                     <form onSubmit={formik.handleSubmit}>
 
                         <InputLabel id="type-label" style={{ color: formik.touched.type && formik.errors.type ? '#d32f2f' : '#000' }}>
-                            Select Event Type
+                            {t('events.select_type')}
                         </InputLabel>
 
                         <Select
@@ -138,25 +141,25 @@ const EventForm = () => {
                             onBlur={formik.handleBlur}
                             sx={{ m: '3%', borderColor: formik.touched.type && formik.errors.type ? '#d32f2f' : '#81c784' }}
                         >
-                            {eventTypes.map((t) => (
-                                <MenuItem key={t.id} value={t.id}>
+                            {eventTypes.map((et) => (
+                                <MenuItem key={et.id} value={et.id}>
                                     <ListItemIcon>
                                         <Avatar
-                                            src={t.icon}
-                                            sx={{ width: 24, height: 24, bgcolor: t.color }}
-                                            alt={t.name}
+                                            src={et.icon}
+                                            sx={{ width: 24, height: 24, bgcolor: et.color }}
+                                            alt={et.name}
                                         >
-                                            {eventIcons[t.icon] || <Star />}
+                                            {eventIcons[et.icon] || <Star />}
                                         </Avatar>
                                     </ListItemIcon>
-                                    <ListItemText primary={t.name} />
+                                    <ListItemText primary={t(`events.${et.name}`)} />
                                 </MenuItem>
                             ))}
                         </Select>
 
 
                         <TextField
-                            label="What's the event?"
+                            label={t('events.description_label')}
                             fullWidth
                             name="description"
                             multiline
@@ -174,10 +177,6 @@ const EventForm = () => {
                             value={formik.values.greg_date}
                             onChange={formik.handleChange}
                         />
-
-                        {/* <InputLabel id="member-label" style={{ color: formik.touched.type && formik.errors.type ? '#d32f2f' : '#000' }}>
-                                member
-                            </InputLabel> */}
 
                         <Select
                             labelId="member-label"
@@ -204,12 +203,12 @@ const EventForm = () => {
                         )}
                         {success && (
                             <Alert severity="success" style={{ marginBottom: 10 }}>
-                                Event published successfully!
+                                {t('events.published')}
                             </Alert>
                         )}
 
                         <Button type="submit" disabled={loading} variant="contained" color="primary">
-                            Publish Event
+                            {t('events.submit_button')}
                         </Button>
 
                     </form>
@@ -219,25 +218,25 @@ const EventForm = () => {
         ) : (
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.4 }}>
 
-            <Box
-                sx={{
-                    mt: 4,
-                    p: 3,
-                    borderRadius: 2,
-                    backgroundColor: '#fff3e0',
-                    border: '1px solid #ffcc80',
-                    textAlign: 'center',
-                    maxWidth: 500,
-                    mx: 'auto',
-                }}
-            >
-                <Typography variant="h6" color="warning.main" gutterBottom>
-                    You don’t have permission to publish events
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                    If you believe this is a mistake or you’d like to request permission, please contact the administrator.
-                </Typography>
-            </Box>
+                <Box
+                    sx={{
+                        mt: 4,
+                        p: 3,
+                        borderRadius: 2,
+                        backgroundColor: '#fff3e0',
+                        border: '1px solid #ffcc80',
+                        textAlign: 'center',
+                        maxWidth: 500,
+                        mx: 'auto',
+                    }}
+                >
+                    <Typography variant="h6" color="warning.main" gutterBottom>
+                        {t('events.no_permission')}
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                        {t('events.no_permission_subtitle')}
+                    </Typography>
+                </Box>
             </motion.div>
         )
     )
