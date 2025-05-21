@@ -22,5 +22,30 @@
     "birthday": "Birthday",
     "anniversary": "Anniversary",
     "bar_mitzvah": "Bar Mitzvah"
+  },
+  "lesson": {
+    "create_new": "Create New Lesson",
+    "cancel": "Cancel",
+    "insert_new": "Insert New Lesson",
+    "date_label": "Date",
+    "start_time": "Start Time (HH:MM)",
+    "end_time": "End Time (HH:MM)",
+    "topic": "Topic",
+    "description": "Description",
+    "teacher": "By",
+    "fill_all": "Please fill in all required fields.",
+    "created": "Lesson created successfully!",
+    "creating": "Creating...",
+    "create": "Create Lesson",
+    "clear": "Clear",
+    "pick_day": "Pick a day.",
+    "selected_day": "Selected: {{date}}",
+    "no_lessons": "No lessons scheduled.",
+    "lesson_title": "Lesson",
+    "date": "Date",
+    "time": "Time",
+    "duration": "{{hours}}h {{minutes}}m",
+    "by": "by:",
+    "by_teacher": "by: {{teacher}}"
   }
 }

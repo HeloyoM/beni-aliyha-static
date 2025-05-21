@@ -76,7 +76,7 @@ const Home: React.FC = () => {
   };
 
   const { lessons, setLessons } = useLessons();
-
+  console.log({ lessons })
   const { user } = useAppUser();
 
   return (

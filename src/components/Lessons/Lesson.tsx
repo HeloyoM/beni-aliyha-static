@@ -10,6 +10,7 @@ import { createLesson } from '../../api/lesson';
 import { useAppUser } from '../../context/AppUser.context';
 import { PlusCircle } from 'lucide-react';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 function initLessonState() {
     return {
@@ -33,6 +34,8 @@ const Lesson = ({ lessons, setLessons }: Props) => {
     const [success, setSuccess] = useState(false);
     const [newLesson, setNewLesson] = useState<Partial<ILesson>>(initLessonState());
 
+    const { t } = useTranslation();
+
     const isMobile = useMediaQuery('(max-width:600px)');
 
     const { setIsInsertingLesson, isInsertingLesson } = useLessons();
@@ -54,7 +57,7 @@ const Lesson = ({ lessons, setLessons }: Props) => {
             !newLesson.end_time ||
             !newLesson.topic
         ) {
-            alert('Please fill in all required fields.');
+            alert(t('lesson.fill_all'));
             return;
         }
 
@@ -130,7 +133,7 @@ const Lesson = ({ lessons, setLessons }: Props) => {
                     }
                 }}
             >
-                {isInsertingLesson ? 'Cancel' : 'Create New Lesson'} <PlusCircle size={16} style={{ marginLeft: '5px' }} />
+                {isInsertingLesson ? t('lesson.cancel') : t('lesson.create_new')} <PlusCircle size={16} style={{ marginLeft: '5px' }} />
             </Button>
 
             {isInsertingLesson && (
@@ -141,12 +144,9 @@ const Lesson = ({ lessons, setLessons }: Props) => {
                     <Grid container spacing={2}>
                         <Grid size={12}>
                             {isMobile ? (<TextField
-                                label='birthday'
                                 sx={{ width: 'auto', height: 55 }}
                                 type="date"
-                                name="birthday"
                                 value={selectedDate}
-                                InputLabelProps={{ shrink: true }}
                                 onChange={handleDateChange}
                             />)
                                 : (<MyDatePicker
@@ -157,7 +157,7 @@ const Lesson = ({ lessons, setLessons }: Props) => {
                         <Grid size={6}>
                             <TextField
                                 fullWidth
-                                label="Start Time (HH:MM)"
+                                label={t('lesson.start_time')}
                                 name="start_time"
                                 value={newLesson.start_time || ''}
                                 onChange={handleNewLessonInputChange}
@@ -167,7 +167,7 @@ const Lesson = ({ lessons, setLessons }: Props) => {
                         <Grid size={6}>
                             <TextField
                                 fullWidth
-                                label="End Time (HH:MM)"
+                                label={t('lesson.end_time')}
                                 name="end_time"
                                 value={newLesson.end_time || ''}
                                 onChange={handleNewLessonInputChange}
@@ -177,7 +177,7 @@ const Lesson = ({ lessons, setLessons }: Props) => {
                         <Grid size={12}>
                             <TextField
                                 fullWidth
-                                label="Topic"
+                                label={t('lesson.topic')}
                                 name="topic"
                                 value={newLesson.topic || ''}
                                 onChange={handleNewLessonInputChange}
@@ -187,7 +187,7 @@ const Lesson = ({ lessons, setLessons }: Props) => {
                         <Grid size={12}>
                             <TextField
                                 fullWidth
-                                label="Description"
+                                label={t('lesson.description')}
                                 name="description"
                                 value={newLesson.description || ''}
                                 onChange={handleNewLessonInputChange}
@@ -198,7 +198,7 @@ const Lesson = ({ lessons, setLessons }: Props) => {
                         <Grid size={6}>
                             <TextField
                                 fullWidth
-                                label="by"
+                                label={t('lesson.by')}
                                 name="teacher"
                                 value={newLesson.teacher || ''}
                                 onChange={handleNewLessonInputChange}
@@ -217,7 +217,7 @@ const Lesson = ({ lessons, setLessons }: Props) => {
                     {
                         success && (
                             <Alert severity="success" style={{ marginBottom: 10 }}>
-                                Lesson created successfully!
+                                {t('lesson.created')}
                             </Alert>
                         )
                     }
@@ -228,7 +228,7 @@ const Lesson = ({ lessons, setLessons }: Props) => {
                         onClick={handleInsertLesson}
                         style={{ marginTop: '15px' }}
                     >
-                        {loading ? 'Creating...' : 'Create Lesson'}
+                        {loading ? t('lesson.creating') : t('lesson.create')}
                     </Button>
 
                 </Paper>
@@ -320,6 +320,7 @@ type DateProps = {
     selected: any
 }
 function MyDatePicker({ onChange, selected }: DateProps) {
+    const { t } = useTranslation();
 
     return (
         <StyledDayPicker
@@ -329,10 +330,10 @@ function MyDatePicker({ onChange, selected }: DateProps) {
             footer={
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                     <Typography variant="caption" color="textSecondary">
-                        {selected ? `Selected: ${selected}` : "Pick a day."}
+                        {selected ? t('lesson.selected_day', { date: selected }) : t('lesson.pick_day')}
                     </Typography>
                     <Button variant="text" onClick={() => onChange(null)}>
-                        Clear
+                        {t('lesson.clear')}
                     </Button>
                 </div>
             }

@@ -2,12 +2,15 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Typography } from '@mui/material';
 import ILesson from '../../interfaces/ILesson.interface';
 import useLessons from './useLessons';
+import { useTranslation } from 'react-i18next';
 
 type Props = {
     lessons: ILesson[]
 }
 const LessonsList = ({ lessons }: Props) => {
     const { isInsertingLesson } = useLessons();
+
+    const { t } = useTranslation();
 
     // Helper function to calculate duration
     const getDuration = (startTime: string, endTime: string) => {
@@ -66,7 +69,7 @@ const LessonsList = ({ lessons }: Props) => {
                                         animate={{ opacity: 1, y: 0 }}
                                         exit={{ opacity: 0, y: 10 }}
                                     >
-                                        <Typography variant="h6" style={{ color: isNextLesson ? '#fff' : '#ff6f00', marginBottom: '10px' }}>Lesson</Typography>
+                                        <Typography variant="h6" style={{ color: isNextLesson ? '#fff' : '#ff6f00', marginBottom: '10px' }}>{t('lesson.lesson_title')}</Typography>
 
                                     </motion.div>
                                 )}
@@ -82,10 +85,10 @@ const LessonsList = ({ lessons }: Props) => {
                             </Typography>
                             <div style={{ display: 'flex', gap: '15px', alignItems: 'center' }}>
                                 <Typography variant="body2" style={{ color: isNextLesson ? '#fff' : '#7f8c8d' }}>
-                                    Date: {lesson.greg_date}
+                                    {t('lesson.date')}: {lesson.greg_date}
                                 </Typography>
                                 <Typography variant="body2" style={{ color: isNextLesson ? '#fff' : '#7f8c8d' }}>
-                                    Time: {lesson.start_time} - {lesson.end_time}
+                                    {t('lesson.time')}: {lesson.start_time} - {lesson.end_time}
                                 </Typography>
                                 <Typography
                                     variant="body2"
@@ -110,7 +113,7 @@ const LessonsList = ({ lessons }: Props) => {
                                         color: isNextLesson ? '#fff' : '#2c3e50',
                                     }}
                                 >
-                                    by: {lesson.teacher}
+                                    {t('lesson.by_teacher', { teacher: lesson.teacher })}
                                 </Typography>
                             )}
                         </motion.div>

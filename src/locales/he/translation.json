@@ -30,5 +30,29 @@
         "birthday": "יום הולדת",
         "anniversary": "ייארצייט",
         "bar_mitzvah": "בר מצוה"
+    },
+    "lesson": {
+        "create_new": "צור שיעור חדש",
+        "cancel": "ביטול",
+        "insert_new": "הוסף שיעור חדש",
+        "date_label": "תאריך",
+        "start_time": "שעת התחלה (שעה:דקה)",
+        "end_time": "שעת סיום (שעה:דקה)",
+        "topic": "נושא",
+        "description": "תיאור",
+        "teacher": "על ידי",
+        "fill_all": "אנא מלא את כל השדות החיוניים.",
+        "created": "השיעור נוצר בהצלחה!",
+        "creating": "יוצר...",
+        "create": "צור שיעור",
+        "clear": "נקה",
+        "pick_day": "בחר תאריך.",
+        "selected_day": "נבחר: {{date}}",
+        "no_lessons": "אין שיעורים מתוכננים.",
+        "lesson_title": "שיעור",
+        "date": "תאריך",
+        "time": "שעה",
+        "duration": "{{hours}}ש {{minutes}}ד",
+        "by": "מאת:"
     }
 }

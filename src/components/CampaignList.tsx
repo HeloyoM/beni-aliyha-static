@@ -11,6 +11,7 @@ import { MessageCircle } from 'lucide-react';
 import { motion } from 'framer-motion';
 import ICampaign from '../interfaces/Cmapaign.interface';
 import ICampaignMember from '../interfaces/ICampaignMember.interface';
+import Paths from '../enum/Paths.enum';
 
 // Styled components for enhanced UI
 const StyledPaper = styled(Paper)(({ theme }) => ({
@@ -54,19 +55,22 @@ const CampaignList = () => {
     const [openJoinDialog, setOpenJoinDialog] = useState(false); // State to open Join Campaign Dialog.
     const [joinComment, setJoinComment] = useState('');
     const [openCommentDialog, setOpenCommentDialog] = useState<{ open: boolean; comment: string }>({ open: false, comment: '' }); // State for comment dialog
-    console.log({ members })
+
     const navigate = useNavigate();
-    const token = localStorage.getItem('token'); // Get token from localStorage
+    const token = localStorage.getItem('token');
 
     const { user } = useAppUser();
 
     useEffect(() => {
+
+        if (!token) {
+            navigate(Paths.ON_BOARDING);
+            return;
+        }
+
         const fetchCampaigns = async () => {
             try {
-                if (!token) {
-                    navigate('/'); // Redirect to login if no token
-                    return;
-                }
+
                 const response = await getCampaigns()
 
                 const data = response.data as any
