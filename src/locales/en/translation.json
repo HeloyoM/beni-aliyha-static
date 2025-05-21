@@ -107,5 +107,27 @@
       },
       "success": "Payment updated successfully!"
     }
+  },
+  "home": {
+    "tabs": {
+      "community": "Community",
+      "messages": "Messages",
+      "lessons": "Lessons",
+      "campaigns": "Campaigns",
+      "payments": "Payments",
+      "kehilla": "Kehilla",
+      "admin": "Admin"
+    },
+    "sections": {
+      "share_event": "🎉 Share an Event",
+      "public_messages": "Messages from the Community",
+      "lessons_title": "⏰ Time of Lessons",
+      "campaigns_title": "🎖️ Campaigns",
+      "insert_campaign": "Insert New Campaign",
+      "start_campaign": "Start New Campaign",
+      "cancel_campaign": "Cancel",
+      "payments_title": "💰 Payments",
+      "members_title": "🧑‍🤝‍🧑 Members"
+    }
   }
 }

@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import { Button } from '@mui/material';
+import { Languages } from 'lucide-react';
 
 const LanguageToggle = () => {
     const { i18n } = useTranslation();
@@ -11,9 +11,9 @@ const LanguageToggle = () => {
     };
 
     return (
-        <Button onClick={toggleLanguage} variant="outlined">
+        <Languages onClick={toggleLanguage}>
             {i18n.language === 'en' ? 'עברית' : 'English'}
-        </Button>
+        </Languages>
     );
 };
 

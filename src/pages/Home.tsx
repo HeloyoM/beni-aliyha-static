@@ -76,7 +76,7 @@ const Home: React.FC = () => {
   };
 
   const { lessons, setLessons } = useLessons();
-  console.log({ lessons })
+
   const { user } = useAppUser();
 
   return (
@@ -150,13 +150,13 @@ const Home: React.FC = () => {
             }}
           >
             {/* <Tab label="All" /> */}
-            <Tab label="Community" sx={{ color: 'white', }} />
-            <Tab label="Messages" sx={{ color: 'white' }} />
-            <Tab label="Lessons" sx={{ color: 'white' }} />
-            <Tab label="Campaigns" sx={{ color: 'white' }} />
-            <Tab label="Payments" sx={{ color: 'white' }} />
-            <Tab label="Kehilla" sx={{ color: 'white' }} />
-            {user.level === 101 || user.level === 100 && <Tab label="Admin" sx={{ color: 'blue' }} />}
+            <Tab label={t('home.tabs.community')} sx={{ color: 'white', }} />
+            <Tab label={t('home.tabs.messages')} sx={{ color: 'white' }} />
+            <Tab label={t('home.tabs.lessons')} sx={{ color: 'white' }} />
+            <Tab label={t('home.tabs.campaigns')} sx={{ color: 'white' }} />
+            <Tab label={t('home.tabs.payments')} sx={{ color: 'white' }} />
+            <Tab label={t('home.tabs.kehilla')} sx={{ color: 'white' }} />
+            {user.level === 101 || user.level === 100 && <Tab label={t('home.tabs.admin')} sx={{ color: 'blue' }} />}
           </Tabs>
 
           <Masonry columns={{ xs: 1, sm: 2, md: 3, lg: 2 }} spacing={2} sx={{ margin: 'auto auto' }}>
@@ -170,7 +170,7 @@ const Home: React.FC = () => {
                   <Events />
 
                   <DashboardSection>
-                    <SectionTitleWithIcon variant="h5" mb={2}>🎉 Share an Event</SectionTitleWithIcon>
+                    <SectionTitleWithIcon variant="h5" mb={2}>{t('home.sections.share_event')}</SectionTitleWithIcon>
                     <CardContent >
                       <EventForm />
                     </CardContent>
@@ -196,7 +196,7 @@ const Home: React.FC = () => {
             {(activeTab === 1) && (
               <Grid size={{ xs: 12, md: 4 }}>
                 <DashboardSection>
-                  <SectionTitleWithIcon variant="h5"><List size={20} />Messages from the Community</SectionTitleWithIcon>
+                  <SectionTitleWithIcon variant="h5"><List size={20} />{t('home.sections.public_messages')}</SectionTitleWithIcon>
                   <CardContent>
                     <PublicMessages />
                   </CardContent>
@@ -209,7 +209,7 @@ const Home: React.FC = () => {
               <Grid size={{ xs: 6, sm: 6, md: 4, xl: 6 }}  >
                 <DashboardSection>
 
-                  <SectionTitleWithIcon><Clock size={20} /> Time of Lessons</SectionTitleWithIcon>
+                  <SectionTitleWithIcon>{t('home.sections.lessons_title')}</SectionTitleWithIcon>
 
                   <CardContent style={{ maxHeight: '300px', overflowY: 'auto', padding: '15px' }}>
 
@@ -229,7 +229,7 @@ const Home: React.FC = () => {
               <Grid size={{ xs: 12, sm: 6, md: 4 }}>
 
                 <DashboardSection>
-                  <SectionTitleWithIcon variant="h5"><Award size={20} />Campaigns</SectionTitleWithIcon>
+                  <SectionTitleWithIcon variant="h5">{t('home.sections.campaigns_title')}</SectionTitleWithIcon>
                   <Button
                     variant="outlined"
                     onClick={() => setIsInsertingCampaign(!isInsertingCampaign)}
@@ -249,13 +249,13 @@ const Home: React.FC = () => {
                       }
                     }}
                   >
-                    {isInsertingCampaign ? 'Cancel' : 'Start New Campaign'} <PlusCircle size={16} style={{ marginLeft: '5px' }} />
+                    {isInsertingCampaign ? t('home.sections.cancel_campaign') : t('home.sections.start_campaign')} <PlusCircle size={16} style={{ marginLeft: '5px' }} />
                   </Button>
 
                   {isInsertingCampaign && (
                     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5 }}>
                       <Paper style={{ padding: '15px', marginTop: '10px', backgroundColor: '#f9f9f9' }}>
-                        <Typography variant="h6" style={{ marginBottom: '10px' }}>Insert New Campaign</Typography>
+                        <Typography variant="h6" style={{ marginBottom: '10px' }}>{t('home.sections.insert_campaign')}</Typography>
 
                         <Campaign />
 
@@ -273,7 +273,7 @@ const Home: React.FC = () => {
             {(activeTab === 4) && (
               <Grid size={{ /*xs: 6, sm: 6, md: 4, xl: 12, lg: 6*/xs: 12, md: 4, lg: 12, xl: 10 }}>
                 <DashboardSection>
-                  <SectionTitleWithIcon variant="h5"><Award size={20} />Payments</SectionTitleWithIcon>
+                  <SectionTitleWithIcon variant="h5">{t('home.sections.payments_title')}</SectionTitleWithIcon>
                   <CardContent>
                     <Payments />
                   </CardContent>
@@ -286,7 +286,7 @@ const Home: React.FC = () => {
             {(activeTab === 5) && (
               <Grid size={{ xs: 6, sm: 6, md: 4, xl: 12, lg: 6 }}>
                 <DashboardSection>
-                  <SectionTitleWithIcon variant="h5"><Award size={20} />Members</SectionTitleWithIcon>
+                  <SectionTitleWithIcon variant="h5">{t('home.sections.members_title')}</SectionTitleWithIcon>
                   <CardContent>
                     <UserManagementTable />
                   </CardContent>
@@ -306,11 +306,6 @@ const Home: React.FC = () => {
             )}
             <WhatsappButton />
           </Masonry>
-
-
-          {/* <Grid container spacing={3} sx={{ mt: 15 }}>
-
-      </Grid> */}
 
         </Box >
       </Box>
