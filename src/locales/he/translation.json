@@ -67,5 +67,57 @@
         "no_replies": "אין תגובות עדיין.",
         "placeholder_reply": "כתוב תגובה...",
         "confirm_delete": "האם אתה בטוח שברצונך למחוק את ההודעה הזו?"
+    },
+    "donate": {
+        "title": "💙 תמכו בקהילה שלנו דרך נדרים פלוס!",
+        "subtitle": "תרומות מאובטחות דרך פלטפורמה ללא מטרת רווח. כל תרומה עוזרת לנו לצמוח!",
+        "button": "תרמו עכשיו"
+    },
+    "payments": {
+        "table": {
+            "title": "סקירת תשלומים",
+            "toggle": {
+                "cards": "כרטיסים",
+                "table": "טבלה"
+            },
+            "empty": "אין תשלומים להצגה.",
+            "history": "היסטוריית תשלומים",
+            "headers": {
+                "user": "משתמש",
+                "description": "תיאור",
+                "amount": "סכום",
+                "due": "תאריך יעד",
+                "status": "סטטוס",
+                "created": "נוצר בתאריך"
+            },
+            "selectStatus": {
+                "paid": "שולם",
+                "pending": "בהמתנה",
+                "overdue": "עבר מועד",
+                "cancelled": "בוטל"
+            },
+            "overdue": "עבר מועד",
+            "no_payments": "לא נמצאו תשלומים"
+        },
+        "create": {
+            "toggle": {
+                "create": "הוספת תשלום חדש",
+                "cancel": "ביטול"
+            },
+            "title": "הוספת תשלום חדש",
+            "description": "תיאור",
+            "custom_description": "תיאור מותאם",
+            "amount": "סכום",
+            "date": "תאריך יעד",
+            "button": {
+                "save": "הוסף תשלום",
+                "saving": "שומר..."
+            },
+            "error": {
+                "missing_fields": "נא למלא את כל השדות",
+                "generic": "שגיאה ביצירת התשלום"
+            },
+            "success": "התשלום נוסף בהצלחה!"
+        }
     }
 }

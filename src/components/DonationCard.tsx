@@ -8,9 +8,12 @@ import {
   useMediaQuery,
 } from '@mui/material';
 import FavoriteIcon from '@mui/icons-material/Favorite';
+import { useTranslation } from 'react-i18next';
 
 const DonationCard: React.FC = () => {
   const isMobile = useMediaQuery('(max-width:600px)');
+
+  const { t } = useTranslation();
 
   return (
     <Box

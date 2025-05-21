@@ -60,5 +60,52 @@
     "no_replies": "No replies yet.",
     "placeholder_reply": "Write a reply...",
     "confirm_delete": "Are you sure you want to delete this message?"
+  },
+  "payments": {
+    "table": {
+      "title": "Payments Overview",
+      "toggle": {
+        "cards": "Cards",
+        "table": "Table"
+      },
+      "empty": "No payments to display.",
+      "history": "Payment History",
+      "headers": {
+        "user": "User",
+        "description": "Description",
+        "amount": "Amount",
+        "due": "Due Date",
+        "status": "Status",
+        "created": "Created"
+      },
+      "status": {
+        "paid": "Paid",
+        "pending": "Pending",
+        "overdue": "Overdue",
+        "cancelled": "Cancelled"
+      },
+      "overdue": "Overdue",
+      "no_payments": "No payments found"
+    },
+    "create": {
+      "toggle": {
+        "create": "Create New Payment",
+        "cancel": "Cancel"
+      },
+      "title": "Add New Payment",
+      "description": "Description",
+      "custom_description": "Custom Description",
+      "amount": "Amount",
+      "date": "Due Date",
+      "button": {
+        "save": "Add Payment",
+        "saving": "Saving..."
+      },
+      "error": {
+        "missing_fields": "Please fill out all fields",
+        "generic": "Failed to create payment"
+      },
+      "success": "Payment updated successfully!"
+    }
   }
 }

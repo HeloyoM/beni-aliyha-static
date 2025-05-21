@@ -9,6 +9,7 @@ import { useState } from 'react';
 import IPayment from '../../interfaces/IPayment.interface';
 import { createPayment } from '../../api/payments';
 import AppDatePicker from '../AppDatePicker';
+import { useTranslation } from 'react-i18next';
 
 const presetDescriptions = ['Cleaning', 'Donate', 'Maintenance', 'Other'];
 
@@ -25,18 +26,19 @@ export default function QuickAddPayment({ setPayments }: Props) {
     const [loading, setLoading] = useState(false);
     const [success, setSuccess] = useState(false);
 
+    const { t } = useTranslation();
 
     const handleSubmit = async () => {
         const finalDescription = descChoice === 'Other' ? customDesc.trim() : descChoice;
 
         if (!finalDescription || !amount || !dueDate) {
-            setError('Please fill out all fields');
+            setError(t('payments.create.missing_fields'));
             return;
         }
 
         setLoading(true);
 
-         const gerg_date = new Date(dueDate)
+        const gerg_date = new Date(dueDate)
 
         const payment = {
             description: finalDescription,
@@ -63,7 +65,7 @@ export default function QuickAddPayment({ setPayments }: Props) {
                 setDueDate(null);
                 setError('');
             } else {
-                setError(data.message || 'Failed to create payment');
+                setError(data.message || t('payments.create.generic'));
             }
 
         } catch (error: any) {
@@ -83,16 +85,16 @@ export default function QuickAddPayment({ setPayments }: Props) {
 
 
             <Typography variant="h6" gutterBottom>
-                Add New Payment
+                {t('payments.create.title')}
             </Typography>
 
 
             <Box display="flex" flexWrap="wrap" gap={2}>
                 <FormControl sx={{ minWidth: 200 }}>
-                    <InputLabel>Description</InputLabel>
+                    <InputLabel>{t('payments.create.description')}</InputLabel>
                     <Select
                         value={descChoice}
-                        label="Description"
+                        label={t('payments.create.description')}
                         onChange={(e) => setDescChoice(e.target.value)}
                     >
                         {presetDescriptions.map((desc) => (
@@ -103,7 +105,7 @@ export default function QuickAddPayment({ setPayments }: Props) {
 
                 {descChoice === 'Other' && (
                     <TextField
-                        label="Custom Description"
+                        label={t('payments.create.custom_description')}
                         value={customDesc}
                         onChange={(e) => setCustomDesc(e.target.value)}
                         fullWidth
@@ -111,14 +113,14 @@ export default function QuickAddPayment({ setPayments }: Props) {
                 )}
 
                 <TextField
-                    label="Amount"
+                    label={t('payments.create.amount')}
                     type="number"
                     value={amount}
                     onChange={(e) => setAmount(e.target.value)}
                     inputProps={{ min: 0 }}
                 />
 
-          
+
                 <AppDatePicker
                     selected={selectedDate}
                     onChange={handleDateChange}
@@ -130,7 +132,7 @@ export default function QuickAddPayment({ setPayments }: Props) {
                 )}
                 {success && (
                     <Alert severity="success" style={{ marginBottom: 10 }}>
-                        Payment updated successfully!
+                        {t('payments.create.success')}
                     </Alert>
                 )}
 
@@ -144,7 +146,7 @@ export default function QuickAddPayment({ setPayments }: Props) {
                     onClick={handleSubmit}
                     disabled={loading}
                 >
-                    {loading ? 'Saving...' : 'Add Payment'}
+                    {loading ? t('payments.create.button.saving') : t('payments.create.button.save')}
                 </Button>
             </Box>
 

@@ -13,6 +13,7 @@ import {
 } from '@mui/material';
 import { format, isBefore } from 'date-fns';
 import IPayment from '../../interfaces/IPayment.interface';
+import { useTranslation } from 'react-i18next';
 
 const getStatusColor = (status: IPayment['status']) => {
     switch (status) {
@@ -41,6 +42,7 @@ const PaymentsTable: React.FC<Props> = ({ payments }) => {
     const isMobile = useMediaQuery('(max-width:600px)');
     const [statusMap, setStatusMap] = useState<Record<string, IPayment['status']>>({});
 
+    const { t } = useTranslation();
 
     const handleStatusChange = (id: string, newStatus: IPayment['status']) => {
         setStatusMap((prev) => ({ ...prev, [id]: newStatus }));
@@ -50,15 +52,15 @@ const PaymentsTable: React.FC<Props> = ({ payments }) => {
     return (
         <Box sx={{ px: isMobile ? 1 : 4, py: 2 }}>
             <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
-                <Typography variant="h5">Payments Overview</Typography>
+                <Typography variant="h5">{t('payments.table.title')}</Typography>
                 <ToggleButtonGroup
                     value={view}
                     exclusive
                     onChange={(_, newView) => newView && setView(newView)}
                     size="small"
                 >
-                    <ToggleButton value="cards">Cards</ToggleButton>
-                    <ToggleButton value="table">Table</ToggleButton>
+                    <ToggleButton value="cards">{t('payments.table.toggle.cards')}</ToggleButton>
+                    <ToggleButton value="table">{t('payments.table.toggle.table')}</ToggleButton>
                 </ToggleButtonGroup>
             </Box>
 
@@ -89,17 +91,17 @@ const PaymentsTable: React.FC<Props> = ({ payments }) => {
                                     </Box>
 
                                     <Typography variant="body2" color="text.secondary">
-                                        User: {p.user.name} ({p.user.email})
+                                        {t('payments.table.headers.user')}: {p.user.name} ({p.user.email})
                                     </Typography>
                                     <Typography variant="body2" color="text.secondary" mt={1}>
-                                        Amount: <strong>₪{p.amount}</strong>
+                                        {t('payments.table.headers.amount')}: <strong>₪{p.amount}</strong>
                                     </Typography>
                                     <Typography variant="body2" color="text.secondary">
-                                        Due: {p.due_date}
+                                        {t('payments.table.headers.due')}: {p.due_date}
                                         {isBefore(p.due_date, new Date()) && ' (Overdue)'}
                                     </Typography>
                                     <Typography variant="caption" color="text.disabled">
-                                        Created: {format(new Date(p.created_at), 'MMM dd, yyyy')}
+                                        {t('payments.table.headers.created')}: {format(new Date(p.created_at), 'MMM dd, yyyy')}
                                     </Typography>
                                 </CardContent>
                             </Card>
@@ -109,7 +111,7 @@ const PaymentsTable: React.FC<Props> = ({ payments }) => {
                     {payments.length === 0 && (
                         <Grid size={{ md: 12 }}>
                             <Typography variant="body1" align="center" color="text.secondary">
-                                No payments to display.
+                                {t('payments.table.toggle.headers.no_payments')}
                             </Typography>
                         </Grid>
                     )}
@@ -119,17 +121,17 @@ const PaymentsTable: React.FC<Props> = ({ payments }) => {
 
                 <TableContainer component={Paper} sx={{ borderRadius: 4, p: 2 }}>
                     <Typography variant="h6" gutterBottom color="primary" sx={{ mb: 2 }}>
-                        Payment History
+                        {t('payments.table.history')}
                     </Typography>
                     <Table size={isMobile ? 'small' : 'medium'}>
                         <TableHead>
                             <TableRow>
-                                <TableCell>User</TableCell>
-                                <TableCell><b>Description</b></TableCell>
-                                <TableCell align="right"><b>Amount</b></TableCell>
-                                <TableCell align="center"><b>Due Date</b></TableCell>
-                                <TableCell align="center"><b>Status</b></TableCell>
-                                <TableCell align="center"><b>Created</b></TableCell>
+                                <TableCell> {t('payments.table.headers.user')}</TableCell>
+                                <TableCell><b> {t('payments.table.headers.description')}</b></TableCell>
+                                <TableCell align="right"><b> {t('payments.table.headers.amount')}</b></TableCell>
+                                <TableCell align="center"><b> {t('payments.table.headers.due')}</b></TableCell>
+                                <TableCell align="center"><b> {t('payments.table.headers.status')}</b></TableCell>
+                                <TableCell align="center"><b> {t('payments.table.headers.created')}</b></TableCell>
                                 <TableCell align="center"></TableCell>
                             </TableRow>
                         </TableHead>
@@ -161,25 +163,25 @@ const PaymentsTable: React.FC<Props> = ({ payments }) => {
                                         {format(new Date(p.created_at), 'MMM dd, yyyy')}
                                     </TableCell>
                                     <TableCell align="center">
-                                    <Select
-                                        size="small"
-                                        value={statusMap[p.id] || p.status}
-                                        onChange={(e) => handleStatusChange(p.id, e.target.value as IPayment['status'])}
-                                        variant="outlined"
-                                        sx={{ minWidth: 100 }}
-                                    >
-                                        <MenuItem value="paid">Paid</MenuItem>
-                                        <MenuItem value="pending">Pending</MenuItem>
-                                        <MenuItem value="overdue">Overdue</MenuItem>
-                                        <MenuItem value="cancelled">Cancelled</MenuItem>
-                                    </Select>
-                                </TableCell>
+                                        <Select
+                                            size="small"
+                                            value={statusMap[p.id] || p.status}
+                                            onChange={(e) => handleStatusChange(p.id, e.target.value as IPayment['status'])}
+                                            variant="outlined"
+                                            sx={{ minWidth: 100 }}
+                                        >
+                                            <MenuItem value="paid">{t('payments.table.status.paid')}</MenuItem>
+                                            <MenuItem value="pending">{t('payments.table.status.pending')}</MenuItem>
+                                            <MenuItem value="overdue">{t('payments.table.status.overdue')}</MenuItem>
+                                            <MenuItem value="cancelled">{t('payments.table.status.cancelled')}</MenuItem>
+                                        </Select>
+                                    </TableCell>
                                 </TableRow>
                             ))}
                             {payments.length === 0 && (
                                 <TableRow>
                                     <TableCell colSpan={5} align="center">
-                                        <Typography variant="body2" color="text.secondary">No payments found</Typography>
+                                        <Typography variant="body2" color="text.secondary">{t('payments.table.no_payments')}</Typography>
                                     </TableCell>
                                 </TableRow>
                             )}
