@@ -15,6 +15,7 @@ import LocationMap from './LocationMap';
 // import WhatsappButton from './WhatsappButton';
 import { postGuestMessage } from '../api/message';
 import DonationCard from './DonationCard';
+import { useTranslation } from 'react-i18next';
 
 const GuestSection = styled(Box)(({ theme }) => ({
     height: '100vh',
@@ -67,6 +68,8 @@ const GuestPage: React.FC = () => {
     const [error, setError] = useState<string | null>(null);
     const [success, setSuccess] = useState(false);
 
+    const { t } = useTranslation();
+
     const isMobile = useMediaQuery('(max-width:600px)');
 
     const location = useLocation();
@@ -115,11 +118,11 @@ const GuestPage: React.FC = () => {
     }, []);
 
     const cards = [
-        { icon: '🌱', title: 'Family-Oriented', text: 'Activities and values that nurture every age.' },
-        { icon: '🤝', title: 'Supportive Network', text: 'A community that supports you from day one.' },
+        { icon: '🌱', title: t('guest.community.family_oriented_title'), text: t('guest.community.family_oriented_text') },
+        { icon: '🤝', title: t('guest.community.supportive_network_title'), text: t('guest.community.supportive_network_text') },
     ]
 
-    if (!isMobile) cards.push({ icon: '📚', title: 'Great Education', text: 'Access to inspiring schools and programs.' })
+    if (!isMobile) cards.push({ icon: '📚', title: t('guest.community.community_great_education_title'), text: t('guest.community.community_great_education_text') })
 
     return (
         <>
@@ -168,10 +171,10 @@ const GuestPage: React.FC = () => {
 
                 <Box sx={{ bgcolor: 'rgba(0, 0, 0, 0.4)', p: 3, borderRadius: 2 }}>
                     <Typography variant="h3" sx={{ fontWeight: 'bold' }}>
-                        Welcome Home to Israel 🇮🇱
+                        {t('guest.title.welcome_home')}
                     </Typography>
                     <Typography variant="h6" sx={{ mt: 2 }}>
-                        Discover a thriving Anglo community where you and your family can thrive.
+                        {t('guest.title.discover_community')}
                     </Typography>
                 </Box>
             </Box>
@@ -240,7 +243,7 @@ const GuestPage: React.FC = () => {
 
                 <GuestSection id="videos" sx={{ justifyContent: 'flex-start', paddingTop: 4 }}>
 
-                    <Typography variant="h5" gutterBottom>See What Life Looks Like Here 🎥</Typography>
+                    <Typography variant="h5" gutterBottom>{t('guest.videos.life_looks_like')}</Typography>
 
                     <Grid container spacing={4} justifyContent="center" style={{ width: '100%', padding: '16px' }}>
                         {isMobile && <Card
@@ -293,7 +296,7 @@ const GuestPage: React.FC = () => {
                         </Card>}
                         {!isMobile && videoData.map((video, index) => (
                             <Grid key={index} style={{ display: 'flex', justifyContent: 'center' }}>
-                              
+
                                 <Card
                                     sx={{
                                         width: '100%',
@@ -362,42 +365,42 @@ const GuestPage: React.FC = () => {
                     <Box sx={{ py: 6, px: 2, maxWidth: '900px', mx: 'auto' }}>
 
                         <Typography variant="h4" component="h2" gutterBottom align="center" sx={{ color: '#0d47a1' }}>
-                            Content
+                            {t('guest.content.content_title')}
                         </Typography>
 
                         <Typography variant="h4" gutterBottom textAlign="center">
-                            Why Move to Israel with Us?
+                            {t('guest.content.why_move_title')}
                         </Typography>
 
                         <Typography variant="subtitle1" textAlign="center" sx={{ mb: 4 }}>
-                            You're not just relocating — you're joining a vibrant, warm, English-speaking community that feels like family.
+                            {t('guest.content.why_move_subtitle')}
                         </Typography>
 
                         <ContentBox>
                             <Grid container spacing={8}>
                                 <Grid >
                                     <Box sx={{ p: 2, bgcolor: '#f5f5f5', borderRadius: 2, height: '100%' }}>
-                                        <Typography variant="h6" gutterBottom>🏠 Affordable Housing</Typography>
-                                        <Typography>Live in a beautiful, green area with space to grow — physically and spiritually.</Typography>
+                                        <Typography variant="h6" gutterBottom>{t('guest.content.affordable_housing_title')}</Typography>
+                                        <Typography>{t('guest.content.affordable_housing_text')}</Typography>
                                     </Box>
                                 </Grid>
                                 <Grid >
                                     <Box sx={{ p: 2, bgcolor: '#f5f5f5', borderRadius: 2, height: '100%' }}>
-                                        <Typography variant="h6" gutterBottom>👨‍👩‍👧‍👦 Community That Cares</Typography>
-                                        <Typography>From Shabbat meals to carpools, you’re never alone — we’re here for each other.</Typography>
+                                        <Typography variant="h6" gutterBottom>{t('guest.content.community_that_cares_title')}</Typography>
+                                        <Typography>{t('guest.content.community_that_cares_text')}</Typography>
                                     </Box>
                                 </Grid>
                                 {!isMobile && <Grid >
                                     <Box sx={{ p: 2, bgcolor: '#f5f5f5', borderRadius: 2, height: '100%' }}>
-                                        <Typography variant="h6" gutterBottom>🎓 Great Education</Typography>
-                                        <Typography>Top-tier schools with supportive teachers and values-based learning in English and Hebrew.</Typography>
+                                        <Typography variant="h6" gutterBottom>{t('guest.content.great_education_title')}</Typography>
+                                        <Typography>{t('guest.content.great_education_text')}</Typography>
                                     </Box>
                                 </Grid>}
                             </Grid>
 
                             {!isMobile && <Box sx={{ textAlign: 'center', mt: 5 }}>
                                 <Button variant="contained" size="large" color="primary" href="#contact-us">
-                                    Let’s Talk About Your Future in Israel 🇮🇱
+                                    {t('guest.content.lets_talk_button')}
                                 </Button>
                             </Box>}
                         </ContentBox>
@@ -418,60 +421,60 @@ const GuestPage: React.FC = () => {
                 <GuestSection id="faq">
                     <Box sx={{ py: 6, px: 2, maxWidth: '800px', mx: 'auto' }}>
                         <Typography variant="h4" gutterBottom textAlign="center">
-                            Frequently Asked Questions
+                            {t('guest.faq.faq_title')}
                         </Typography>
 
                         <Accordion>
                             <AccordionSummary expandIcon={<Expand />}>
-                                <Typography>Is this community religious?</Typography>
+                                <Typography>{t('guest.faq.faq_1_question')}</Typography>
                             </AccordionSummary>
                             <AccordionDetails>
                                 <Typography>
-                                    Yes, it’s a warm, inclusive Modern Orthodox community. There’s room for families across the religious spectrum who value tradition and connection.
+                                    {t('guest.faq.faq_1_answer')}
                                 </Typography>
                             </AccordionDetails>
                         </Accordion>
 
                         <Accordion>
                             <AccordionSummary expandIcon={<Expand />}>
-                                <Typography>Do people speak English?</Typography>
+                                <Typography>{t('guest.faq.faq_2_question')}</Typography>
                             </AccordionSummary>
                             <AccordionDetails>
                                 <Typography>
-                                    Absolutely! Most of the community is English-speaking — from shul to schools to neighbors. You won’t feel like a stranger.
+                                    {t('guest.faq.faq_2_answer')}
                                 </Typography>
                             </AccordionDetails>
                         </Accordion>
 
                         <Accordion>
                             <AccordionSummary expandIcon={<Expand />}>
-                                <Typography>What kind of support is available for new olim?</Typography>
+                                <Typography>{t('guest.faq.faq_3_question')}</Typography>
                             </AccordionSummary>
                             <AccordionDetails>
                                 <Typography>
-                                    Everything from helping you find housing, schools, jobs, to making friends. You’ll be paired with a family and guided by locals who’ve been through it all.
+                                    {t('guest.faq.faq_3_answer')}
                                 </Typography>
                             </AccordionDetails>
                         </Accordion>
 
                         <Accordion>
                             <AccordionSummary expandIcon={<Expand />}>
-                                <Typography>What about schools and education?</Typography>
+                                <Typography>{t('guest.faq.faq_4_question')}</Typography>
                             </AccordionSummary>
                             <AccordionDetails>
                                 <Typography>
-                                    There are excellent schools for all ages — with small classes, bilingual support, and a warm approach that balances Torah and academics.
+                                    {t('guest.faq.faq_4_answer')}
                                 </Typography>
                             </AccordionDetails>
                         </Accordion>
 
                         <Accordion>
                             <AccordionSummary expandIcon={<Expand />}>
-                                <Typography>Can we come visit first?</Typography>
+                                <Typography>{t('guest.faq.faq_5_question')}</Typography>
                             </AccordionSummary>
                             <AccordionDetails>
                                 <Typography>
-                                    Yes! We’d love to host you for a Shabbat or weekday visit. It’s the best way to see if this feels like home. Just reach out and we’ll make it happen.
+                                    {t('guest.faq.faq_5_answer')}
                                 </Typography>
                             </AccordionDetails>
                         </Accordion>
@@ -492,7 +495,7 @@ const GuestPage: React.FC = () => {
                 <GuestSection id="people">
                     <Box sx={{ py: 6, px: 2 }}>
                         <Typography variant="h4" gutterBottom textAlign="center">
-                            What Families Are Saying
+                            {t('guest.testimonials.what_families_are_saying')}
                         </Typography>
 
                         <Grid container spacing={4} justifyContent="center">
@@ -500,10 +503,10 @@ const GuestPage: React.FC = () => {
                                 <Card sx={{ p: 2 }}>
                                     <CardContent>
                                         <Typography variant="body1" fontStyle="italic">
-                                            "We thought moving to Israel would be hard. But this community made it feel like we were coming home. Our kids are thriving."
+                                            {t('guest.testimonials.testimonial1')}
                                         </Typography>
                                         <Typography variant="subtitle2" mt={2} textAlign="right">
-                                            — Sarah R., NJ to Israel
+                                            {t('guest.testimonials.testimonial_1_author')}
                                         </Typography>
                                     </CardContent>
                                 </Card>
@@ -513,10 +516,10 @@ const GuestPage: React.FC = () => {
                                 <Card sx={{ p: 2 }}>
                                     <CardContent>
                                         <Typography variant="body1" fontStyle="italic">
-                                            "I never imagined we’d feel so supported. From day one, we had friends, mentors, and a place at every Shabbat table."
+                                            {t('guest.testimonials.testimonial2')}
                                         </Typography>
                                         <Typography variant="subtitle2" mt={2} textAlign="right">
-                                            — Daniel T., NY to Israel
+                                            {t('guest.testimonials.testimonial_2_author')}
                                         </Typography>
                                     </CardContent>
                                 </Card>
@@ -526,10 +529,10 @@ const GuestPage: React.FC = () => {
                                 <Card sx={{ p: 2 }}>
                                     <CardContent>
                                         <Typography variant="body1" fontStyle="italic">
-                                            "It’s not just a community. It’s a family. Moving here changed our lives — and our children’s future."
+                                            {t('guest.testimonials.testimonial3')}
                                         </Typography>
                                         <Typography variant="subtitle2" mt={2} textAlign="right">
-                                            — Leah M., Chicago to Israel
+                                            {t('guest.testimonials.testimonial_3_author')}
                                         </Typography>
                                     </CardContent>
                                 </Card>
@@ -601,12 +604,10 @@ const GuestPage: React.FC = () => {
                             viewport={{ once: true }}
                         >
                             <Typography variant="h4" gutterBottom textAlign="center" sx={{ color: 'white' }}>
-                                About the Community
+                                {t('guest.community.about_community_title')}
                             </Typography>
                             <Typography variant="body1" textAlign="center" color="white" maxWidth="md" mx="auto">
-                                Our community is built on shared values of family, growth, and connection. Whether you're looking
-                                for meaningful friendships, excellent education, or a slower, more purposeful pace of life —
-                                this is a place where you can truly feel at home. 🏡
+                                {t('guest.community.about_community_text')}
                             </Typography>
 
                             {/* <DonationCard /> */}
@@ -657,7 +658,7 @@ const GuestPage: React.FC = () => {
                         >
                             <Box textAlign="center" mt={6}>
                                 <Button variant="contained" href="#pictures">
-                                    See Life in the Community
+                                    {t('guest.community.life_button')}
                                 </Button>
                             </Box>
                         </motion.div>}
@@ -720,7 +721,7 @@ const GuestPage: React.FC = () => {
                 >
 
                     <Typography variant="h4" component="h2" gutterBottom align="center" sx={{ mb: 4, color: 'white' }}>
-                        Contact Us
+                        {t('guest.contact_us.title')}
                     </Typography>
 
                     <Fade in timeout={1000}>
@@ -736,10 +737,10 @@ const GuestPage: React.FC = () => {
                         >
                             <Box maxWidth="sm" mx="auto" component={Paper} elevation={6} p={4} borderRadius={4}>
                                 <Typography variant="h4" gutterBottom textAlign="center">
-                                    Contact Us
+                                    {t('guest.contact_us.title')}
                                 </Typography>
                                 <Typography variant="body1" textAlign="center" mb={3}>
-                                    Have a question or want to learn more? Send us a message!
+                                    {t('guest.contact_us.subtitle')}
                                 </Typography>
                                 <Box component="form" onSubmit={(e) => {
                                     e.preventDefault();
@@ -748,7 +749,7 @@ const GuestPage: React.FC = () => {
                                     <TextField
                                         fullWidth
                                         margin="normal"
-                                        label="Name"
+                                        label={t('guest.contact_us.name_label')}
                                         name="name"
                                         value={form.name}
                                         onChange={handleChange}
@@ -757,7 +758,7 @@ const GuestPage: React.FC = () => {
                                     <TextField
                                         fullWidth
                                         margin="normal"
-                                        label="Email"
+                                        label={t('guest.contact_us.email_label')}
                                         name="email"
                                         type="email"
                                         value={form.email}
@@ -767,7 +768,7 @@ const GuestPage: React.FC = () => {
                                     <TextField
                                         fullWidth
                                         margin="normal"
-                                        label="Message"
+                                        label={t('guest.contact_us.message_label')}
                                         name="message"
                                         multiline
                                         rows={4}
@@ -781,13 +782,12 @@ const GuestPage: React.FC = () => {
                                             variant="contained"
                                             color="primary"
                                             size="large"
-                                            // disabled
                                             endIcon={<Send />}
                                             component={motion.button}
                                             whileHover={{ scale: 1.05 }}
                                             whileTap={{ scale: 0.95 }}
                                         >
-                                            Send
+                                            {t('guest.contact_us.send_message_button')}
                                         </Button>
                                     </Box>
 
