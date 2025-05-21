@@ -114,7 +114,21 @@ const Lesson = ({ lessons, setLessons }: Props) => {
             <Button
                 variant="outlined"
                 onClick={() => setIsInsertingLesson(!isInsertingLesson)}
-                style={{ marginTop: '10px' }}
+                sx={{
+                    mt: 2,
+                    fontWeight: 600,
+                    borderRadius: 2,
+                    px: 3,
+                    py: 1,
+                    color: 'primary.main',
+                    '&:hover': {
+                        backgroundColor: 'primary.light',
+                        color: 'white',
+                    },
+                    '&:focus': {
+                        boxShadow: '0 0 0 3px rgba(25, 118, 210, 0.3)',
+                    }
+                }}
             >
                 {isInsertingLesson ? 'Cancel' : 'Create New Lesson'} <PlusCircle size={16} style={{ marginLeft: '5px' }} />
             </Button>

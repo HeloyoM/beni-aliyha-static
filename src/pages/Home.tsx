@@ -136,26 +136,32 @@ const Home: React.FC = () => {
             scrollButtons="auto"
             textColor="secondary"
             indicatorColor="primary"
-            sx={{ mb: 3 }}
+            sx={{
+              mb: 3,
+              borderRadius: 2,
+              backgroundColor: 'rgba(0,0,0,0.3)',
+              backdropFilter: 'blur(4px)',
+              px: 1,
+            }}
           >
             {/* <Tab label="All" /> */}
-            <Tab label="Community" sx={{ color: 'white' }} />
+            <Tab label="Community" sx={{ color: 'white', }} />
             <Tab label="Messages" sx={{ color: 'white' }} />
             <Tab label="Lessons" sx={{ color: 'white' }} />
             <Tab label="Campaigns" sx={{ color: 'white' }} />
             <Tab label="Payments" sx={{ color: 'white' }} />
             <Tab label="Kehilla" sx={{ color: 'white' }} />
-            {user.level === 101 || user.level === 100 && <Tab label="Admin" sx={{ color: 'blue' }}/>}
+            {user.level === 101 || user.level === 100 && <Tab label="Admin" sx={{ color: 'blue' }} />}
           </Tabs>
 
           <Masonry columns={{ xs: 1, sm: 2, md: 3, lg: 2 }} spacing={2} sx={{ margin: 'auto auto' }}>
-           
-           
+
+
             {(activeTab === 0) && (
               <>
 
                 <Grid size={{ xs: 12, md: 4, lg: 12 }} sx={{ display: 'flex', flexDirection: 'column', gap: '3%', p: isMobile ? 0 : 5 }}>
-              
+
                   <Events />
 
                   <DashboardSection>
@@ -174,7 +180,7 @@ const Home: React.FC = () => {
                 <Grid size={{ xs: 12, sm: 6, md: 4 }}>
                   <DonationCard />
                 </Grid>
-                
+
                 <Grid size={{ xs: 12, sm: 6, md: 4 }}>
                   <SpecialEvent />
                 </Grid>
@@ -223,13 +229,18 @@ const Home: React.FC = () => {
                     variant="outlined"
                     onClick={() => setIsInsertingCampaign(!isInsertingCampaign)}
                     sx={{
-                      marginTop: '10px',
+                      mt: 2,
+                      fontWeight: 600,
+                      borderRadius: 2,
+                      px: 3,
+                      py: 1,
+                      color: 'primary.main',
                       '&:hover': {
-                        backgroundColor: '#e3f2fd',
-                        color: '#1976d2',
+                        backgroundColor: 'primary.light',
+                        color: 'white',
                       },
                       '&:focus': {
-                        boxShadow: '0 0 5px 2px rgba(0, 123, 255, 0.5)',
+                        boxShadow: '0 0 0 3px rgba(25, 118, 210, 0.3)',
                       }
                     }}
                   >
