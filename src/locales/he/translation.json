@@ -240,10 +240,10 @@
             "table": {
                 "name": "שם",
                 "type": "סוג",
-                "dueDate": "תאריך יעד",
+                "due": "תאריך יעד",
                 "description": "תיאור",
                 "active": "פעיל",
-                "createdAt": "נוצר ב",
+                "created_at": "נוצר ב",
                 "progress": "התקדמות"
             },
             "status": {
