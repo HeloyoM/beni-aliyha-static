@@ -7,12 +7,15 @@ import { getAllPayments, getPayments } from "../../api/payments";
 import { PlusCircle } from "lucide-react";
 import { Button, Card, CardContent, Typography } from "@mui/material";
 import { actionClicked } from "../../api/user";
+import { useTranslation } from "react-i18next";
 
 const Payments = () => {
     const [payments, setPayments] = useState<IPayment[]>([]);
     const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState<boolean>(false);
     const [setIsInsertingPayment, setInsertingPayment] = useState<Boolean>(false);
+
+    const { t } = useTranslation();
 
     const { canEditPayments } = useAppUser();
 
@@ -59,11 +62,11 @@ const Payments = () => {
                 <CardContent>
 
                     <Typography variant="h6" gutterBottom>
-                        💙 Support our Community via Matara!
+                        {t('payments.donate.support')}
                     </Typography>
 
                     <Typography variant="body2" mb={2}>
-                        Secure online donations through a trusted non-profit platform. Every contribution helps us grow!
+                        {t('donation.description')}
                     </Typography>
 
                     <Button
@@ -89,7 +92,7 @@ const Payments = () => {
                             },
                         }}
                     >
-                        Donate Now
+                        {t('donation.button')}
                     </Button>
                 </CardContent>
 

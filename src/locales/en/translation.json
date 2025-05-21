@@ -62,14 +62,16 @@
     "confirm_delete": "Are you sure you want to delete this message?"
   },
   "payments": {
+    "empty": "No payments to display.",
+    "history": "Payment History",
+    "overdue": "Overdue",
+    "no_payments": "No payments found",
     "table": {
       "title": "Payments Overview",
       "toggle": {
         "cards": "Cards",
         "table": "Table"
       },
-      "empty": "No payments to display.",
-      "history": "Payment History",
       "headers": {
         "user": "User",
         "description": "Description",
@@ -83,9 +85,7 @@
         "pending": "Pending",
         "overdue": "Overdue",
         "cancelled": "Cancelled"
-      },
-      "overdue": "Overdue",
-      "no_payments": "No payments found"
+      }
     },
     "create": {
       "toggle": {
@@ -106,6 +106,9 @@
         "generic": "Failed to create payment"
       },
       "success": "Payment updated successfully!"
+    },
+    "donate":{
+      "support": "💙 Support our Community via Matara!"
     }
   },
   "home": {
@@ -285,7 +288,7 @@
     "no_birthdays": "No birthdays today."
   },
   "special_event": {
-      "section_title": "Special Lesson / Event",
-      "button": "Download This Week’s PDF"
-    }
+    "section_title": "Special Lesson / Event",
+    "button": "Download This Week’s PDF"
+  }
 }
