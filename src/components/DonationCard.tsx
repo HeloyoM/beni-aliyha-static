@@ -43,12 +43,11 @@ const DonationCard: React.FC = () => {
             <FavoriteIcon color="error" sx={{ fontSize: 50 }} />
 
             <Typography variant={isMobile ? 'h6' : 'h4'} fontWeight={700}>
-              Make a Difference Today
+             {t('donation.title')}
             </Typography>
 
             <Typography variant="body1" color="text.secondary" sx={{ maxWidth: 450 }}>
-              Your support empowers us to grow our impact, help more families,
-              and strengthen our community. Every contribution matters.
+              {t('donation.description')}
             </Typography>
 
             <Button
@@ -73,11 +72,11 @@ const DonationCard: React.FC = () => {
                 },
               }}
             >
-              Donate Now
+              {t('donation.button')}
             </Button>
 
             <Typography variant="caption" color="text.secondary" mt={2}>
-              Secure donation powered by Matara
+              {t('donation.secure_donation')}
             </Typography>
           </Box>
         </CardContent>

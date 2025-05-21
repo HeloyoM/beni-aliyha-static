@@ -273,5 +273,19 @@
         }
       }
     }
-  }
+  },
+  "donation": {
+    "title": "Make a Difference Today",
+    "description": "Your support empowers us to grow our impact, help more families, and strengthen our community. Every contribution matters.",
+    "button": "Donate Now",
+    "secure_donation": "Secure donation powered by Matara"
+  },
+  "birthdays": {
+    "title": "Birthdays Today",
+    "no_birthdays": "No birthdays today."
+  },
+  "special_event": {
+      "section_title": "Special Lesson / Event",
+      "button": "Download This Week’s PDF"
+    }
 }

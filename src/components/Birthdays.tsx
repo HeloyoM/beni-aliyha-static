@@ -5,10 +5,13 @@ import IUser from "../interfaces/User.interface";
 import { getAllUsers } from "../api/user";
 import dayjs from "dayjs";
 import { format } from 'date-fns';
+import { useTranslation } from "react-i18next";
 
 const Birthdays = () => {
     const [users, setUsers] = useState<IUser[]>([]);
     const [todayBirthdays, setTodayBirthdays] = useState<IUser[]>([]);
+
+    const { t } = useTranslation();
 
     useEffect(() => {
         if (!!users.length) return
@@ -52,7 +55,7 @@ const Birthdays = () => {
         <Card>
             <CardContent>
                 <Typography variant="h6" style={{ display: 'flex', alignItems: 'center', marginBottom: 10 }}>
-                    <Cake style={{ marginRight: 5, height: 20, width: 20 }} /> Birthdays Today
+                    <Cake style={{ marginRight: 5, height: 20, width: 20 }} /> {t('birthdays.title')}
                 </Typography>
                 {todayBirthdays.length > 0 ? (
                     <ul>
@@ -63,7 +66,7 @@ const Birthdays = () => {
                         ))}
                     </ul>
                 ) : (
-                    <Typography variant="body2">No birthdays today.</Typography>
+                    <Typography variant="body2">{t('birthdays.no_birthdays')}</Typography>
                 )}
             </CardContent>
         </Card>

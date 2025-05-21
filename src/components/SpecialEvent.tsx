@@ -12,6 +12,7 @@ import {
 import { Event, AccessTime, Place, School } from '@mui/icons-material';
 import Scp from '../svg/scp.svg';
 import { DownloadIcon, Repeat } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 const SpecialEvent = () => {
     const event = {
@@ -24,6 +25,9 @@ const SpecialEvent = () => {
         repeat: true,
         pdfUrl: '#'
     };
+
+    const { t } = useTranslation();
+
 
     const isMobile = useMediaQuery('(max-width:600px)');
 
@@ -61,7 +65,7 @@ const SpecialEvent = () => {
                     }
                 }}
             >
-                Special Lesson / Event
+                {t('special_event.section_title')}
             </Typography>
 
             <Grid container justifyContent="center" mt={4}>
@@ -161,7 +165,7 @@ const SpecialEvent = () => {
                                     }
                                 }}
                             >
-                                Download This Week’s PDF
+                                {t('special_event.button')}
                             </Button>
                         </CardContent>
                     </Card>
