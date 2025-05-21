@@ -54,5 +54,18 @@
         "time": "שעה",
         "duration": "{{hours}}ש {{minutes}}ד",
         "by": "מאת:"
+    },
+    "messages": {
+        "send_new_message": "שלח הודעה חדשה",
+        "placeholder": "כתוב את ההודעה שלך...",
+        "make_public": "הפוך לפומבי",
+        "send": "שלח",
+        "no_messages": "אין עדיין הודעות",
+        "default_message": "היה הראשון לפרסם משהו משמעותי או מעורר השראה!",
+        "messages_title": "הודעות",
+        "replies_title": "תגובות:",
+        "no_replies": "אין תגובות עדיין.",
+        "placeholder_reply": "כתוב תגובה...",
+        "confirm_delete": "האם אתה בטוח שברצונך למחוק את ההודעה הזו?"
     }
 }

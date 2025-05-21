@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Send } from "lucide-react";
 import { postMessage } from '../../api/message';
 import IMessage from "../../interfaces/IMessage.interface";
+import { useTranslation } from "react-i18next";
 
 const NewMessageForm = styled(Box)(({ theme }) => ({
     margin: theme.spacing(3, 0),
@@ -25,6 +26,8 @@ type Props = {
 const MessageForm = ({ messages, setMessages, setError }: Props) => {
     const [newMessageDescription, setNewMessageDescription] = useState('');
     const [isPublic, setIsPublic] = useState(false);
+
+    const { t } = useTranslation();
 
     const { canPublishMessages } = useAppUser();
 
@@ -59,12 +62,12 @@ const MessageForm = ({ messages, setMessages, setError }: Props) => {
         <NewMessageForm>
 
             <Typography variant="h6" gutterBottom style={{ fontWeight: 600, color: '#1a5235' }}>
-                Send a New Message
+                {t('messages.send_new_message')}
             </Typography>
 
             <TextField
                 fullWidth
-                placeholder="Type your message..."
+                placeholder={t('messages.placeholder')}
                 value={newMessageDescription}
                 onChange={(e) => setNewMessageDescription(e.target.value)}
                 variant="outlined"
@@ -75,7 +78,7 @@ const MessageForm = ({ messages, setMessages, setError }: Props) => {
 
             {canPublishMessages && <FormControlLabel
                 control={<Switch checked={isPublic} onChange={(e) => setIsPublic(e.target.checked)} />}
-                label="Make Public"
+                label={t('messages.make_public')}
             />}
 
             <Box display="flex" justifyContent="flex-end">
@@ -86,7 +89,7 @@ const MessageForm = ({ messages, setMessages, setError }: Props) => {
                     disabled={!newMessageDescription.trim()}
                     startIcon={<Send size={16} />}
                 >
-                    Send
+                    {t('messages.send')}
                 </Button>
             </Box>
 

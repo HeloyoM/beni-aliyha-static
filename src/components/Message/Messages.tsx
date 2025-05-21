@@ -10,6 +10,7 @@ import { useAppUser } from '../../context/AppUser.context';
 import IMessage, { IReply } from '../../interfaces/IMessage.interface';
 import MessageForm from './MessageForm';
 import { ChatBubbleOutline } from '@mui/icons-material';
+import { useTranslation } from 'react-i18next';
 
 // Styled components for enhanced UI
 const MessageContainer = styled(Box)(({ theme }) => ({
@@ -109,6 +110,8 @@ const Messages = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [replyText, setReplyText] = useState<{ [messageId: string]: string }>({});
+
+    const { t } = useTranslation();
 
     // const [socket, setSocket] = useState<Socket | null>(null);
 
@@ -266,11 +269,11 @@ const Messages = () => {
                 <ChatBubbleOutline sx={{ fontSize: 50, color: 'primary.main', mb: 2 }} />
 
                 <Typography variant="h6" color="text.primary" gutterBottom>
-                    No messages yet
+                    {t('messages.no_messages')}
                 </Typography>
 
                 <Typography variant="body1" color="text.secondary" mb={3}>
-                    Be the first to post something meaningful or uplifting!
+                    {t('messages.default_message')}
                 </Typography>
 
                 <MessageForm messages={messages} setError={setError} setMessages={setMessages} />
@@ -281,7 +284,7 @@ const Messages = () => {
     return (
         <Box sx={{ backgroundColor: '#f0f4f8', py: 4, marginTop: '2%', maxWidth: '800px', margin: '0 auto', px: 2 }}>
             <Typography variant="h4" gutterBottom sx={{ color: 'primary.main', fontWeight: 'bold' }}>
-                Messages
+                {t('messages.messages_title')}
             </Typography>
 
             <MessageForm messages={messages} setError={setError} setMessages={setMessages} />
@@ -309,7 +312,7 @@ const Messages = () => {
                         <IconButton
                             aria-label="delete"
                             onClick={() => {
-                                if (window.confirm('Are you sure you want to delete this message?')) {
+                                if (window.confirm(t('messages.confirm_delete'))) {
                                     handleDeleteMessage(message.message_id);
                                 }
                             }}
@@ -341,14 +344,14 @@ const Messages = () => {
                         </Box>
                     ) : (
                         <Typography variant="body2" color="text.secondary" sx={{ mt: 1, fontStyle: 'italic' }}>
-                            No replies yet.
+                            {t('messages.no_replies')}
                         </Typography>
                     )}
 
                     <ReplyForm>
                         <TextField
                             fullWidth
-                            placeholder="Write a reply..."
+                            placeholder={t('messages.placeholder_reply')}
                             value={replyText[message.message_id] || ''}
                             onChange={(e) => handleReplyChange(message.message_id, e.target.value)}
                             variant="outlined"

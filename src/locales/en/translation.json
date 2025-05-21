@@ -47,5 +47,18 @@
     "duration": "{{hours}}h {{minutes}}m",
     "by": "by:",
     "by_teacher": "by: {{teacher}}"
+  },
+  "messages": {
+    "send_new_message": "Send a New Message",
+    "placeholder": "Type your message...",
+    "make_public": "Make Public",
+    "send": "Send",
+    "no_messages": "No messages yet",
+    "default_message": "Be the first to post something meaningful or uplifting!",
+    "messages_title": "Messages",
+    "replies_title": "Replies:",
+    "no_replies": "No replies yet.",
+    "placeholder_reply": "Write a reply...",
+    "confirm_delete": "Are you sure you want to delete this message?"
   }
 }
