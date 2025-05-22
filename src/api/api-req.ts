@@ -1,36 +1,61 @@
 import axios from 'axios'
 import baseUrl from './base-url'
-import { getItem } from '../utils/localStorage'
+import { handleAxiosError } from '../utils/handleAxiosError';
 
 export const POST = async <T>(url: string, body: unknown) => {
 	const config = getRequestConfiguration();
 
-	return await axios.post<T>(`${baseUrl}/${url}`, body, config)
+	try {
+		return await axios.post<T>(`${baseUrl}/${url}`, body, config);
+	} catch (error) {
+		handleAxiosError(error);
+		throw error;
+	}
 }
 
 export const PUT = async <T>(url: string, body?: unknown) => {
 	const config = getRequestConfiguration();
-	return await axios.put<T>(`${baseUrl}/${url}`, body, config)
 
+	try {
+		return await axios.put<T>(`${baseUrl}/${url}`, body, config)
+	} catch (error) {
+		console.log({ error })
+		handleAxiosError(error);
+		throw error;
+	}
 }
 
 export const GET = async <T>(url: string) => {
 	const config = getRequestConfiguration();
 
-	return await axios.get<T>(`${baseUrl}/${url}`, config)
+	try {
+		return await axios.get<T>(`${baseUrl}/${url}`, config)
+	} catch (error) {
+		handleAxiosError(error);
+		throw error;
+	}
 }
 
 export const PATCH = async <T>(url: string, body?: unknown) => {
 	const config = getRequestConfiguration();
 
-	return await axios.patch<T>(`${baseUrl}/${url}`, body, config)
-
+	try {
+		return await axios.patch<T>(`${baseUrl}/${url}`, body, config)
+	} catch (error) {
+		handleAxiosError(error);
+		throw error;
+	}
 }
 
 export const DELETE = async <T>(url: string) => {
 	const config = getRequestConfiguration();
 
-	return await axios.delete<T>(`${baseUrl}/${url}`, config)
+	try {
+		return await axios.delete<T>(`${baseUrl}/${url}`, config)
+	} catch (error) {
+		handleAxiosError(error);
+		throw error;
+	}
 }
 
 const getRequestConfiguration = () => {

@@ -306,5 +306,14 @@
     "special_event": {
         "section_title": "שיעור / אירוע מיוחד",
         "button": "הורד את קובץ ה-PDF השבועי"
+    },
+    "scheduler": {
+        "shacharis_time": "שחרית",
+        "mincha_time": "מנחה",
+        "maariv_time": "מעריב",
+        "success": "זמני התפילות עודכנו!",
+        "button": {
+            "edit": "שנה זמני תפילות"
+        }
     }
 }

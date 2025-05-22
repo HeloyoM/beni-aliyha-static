@@ -16,6 +16,7 @@ import Paths from './enum/Paths.enum';
 import NotFound from './pages/NotFound';
 import PrivacyBanner from './components/PrivacyBanner';
 import LanguageToggle from './components/LanguageToggle';
+import AccessDenied from './components/AccessDenied';
 
 
 const App: React.FC = () => {
@@ -56,32 +57,49 @@ const AppContent = () => {
   }, [navigate]);
 
   useEffect(() => {
-    if (location.pathname === Paths.GUEST) return
+    if (location.pathname === Paths.GUEST) return;
 
-    if (token && !isTokenExpired(token)) {
-
-      try {
-        const fetchUserProfile = async () => {
+    (async () => {
+      if (token && !isTokenExpired(token)) {
+        try {
           const response = await profile();
-
           const data = response.data as any;
 
           updateUserContext(data.user);
           updateAllowedResources(data.allowedResources);
+        } catch (error) {
+          console.error("Error decoding token or fetching profile:", error);
+          handleLogout();
         }
-
-        fetchUserProfile();
-
-      } catch (error) {
-        console.error("Error decoding token on initial load:", error);
-        handleLogout();
-        return;
+      } else {
+        // handleLogout();
       }
-    } else {
-      handleLogout();
-    }
+    })();
 
-  }, [handleLogout]);
+    // if (token && !isTokenExpired(token)) {
+
+    //   try {
+    //     const fetchUserProfile = async () => {
+    //       const response = await profile();
+
+    //       const data = response.data as any;
+
+    //       updateUserContext(data.user);
+    //       updateAllowedResources(data.allowedResources);
+    //     }
+
+    //     fetchUserProfile();
+
+    //   } catch (error) {
+    //     console.error("Error decoding token on initial load:", error);
+    //     handleLogout();
+    //     return;
+    //   }
+    // } else {
+    //   handleLogout();
+    // }
+
+  }, [handleLogout, token, location.pathname]);
 
   return (
     <>
@@ -99,6 +117,7 @@ const AppContent = () => {
         <Route path={Paths.MESSAGES} element={<Messages />} />
         <Route path={Paths.PROFILE} element={<UserProfile />} />
         <Route path={Paths.GUEST} element={<GuestPage />} />
+        <Route path={Paths.ACCESS_DENIED} element={<AccessDenied />} />
         <Route path={Paths.NOT_FOUND} element={<NotFound />} />
       </Routes>
     </>

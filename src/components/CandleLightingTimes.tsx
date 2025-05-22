@@ -1,5 +1,5 @@
 import { HDate, HebrewCalendar, Location } from "@hebcal/core";
-import { CircularProgress, Typography } from "@mui/material";
+import { Box, CircularProgress, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 
 interface ParashaType {
@@ -40,16 +40,15 @@ const CandlelightingTimes = () => {
 
     if (!candlelighting.length) {
         return (
-            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '200px' }}>
-                <CircularProgress size={60} />
-            </div>
+            <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: 180 }}>
+                <CircularProgress size={50} thickness={4} />
+            </Box>
         );
     }
     return (
-        <Typography sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
-            Candle Lighting:
-            <Typography fontWeight="bold"> {candlelighting[0].event}</Typography>
-            {candlelighting[0].emoji}
+        <Typography align="center" sx={{ mt: 2 }}>
+            <strong>Candle Lighting:</strong>{' '}
+            <span>{candlelighting[0].event}</span> {candlelighting[0].emoji}
         </Typography>
     )
 }

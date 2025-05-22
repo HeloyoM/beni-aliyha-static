@@ -122,12 +122,23 @@ const Home: React.FC = () => {
 
 
           <Grid size={{ xs: 6, sm: 6, md: 4, xl: 6, lg: 10 }}>
-            <DashboardSection style={{ backgroundColor: '#e0f7fa', maxWidth: '450px', margin: 'auto auto' }}>
+            <DashboardSection
+              elevation={3}
+              sx={{
+                backgroundColor: '#f0fdfa',
+                borderRadius: 3,
+                maxWidth: 480,
+                margin: 'auto',
+                padding: 3,
+                background: 'rgba(240, 253, 250, 0.8)',
+                backdropFilter: 'blur(6px)',
+                boxShadow: '0 4px 10px rgba(0,0,0,0.1)',
+              }}>
               <CardContent sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
-                <h1>{t('welcome')}</h1>
-                <CandlelightingTimes />
 
                 <Scheduler />
+
+                <CandlelightingTimes />
 
               </CardContent>
             </DashboardSection>

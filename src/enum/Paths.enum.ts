@@ -6,6 +6,7 @@ enum Paths {
     MESSAGES = "/messages",
     CAMPAIGNS = '/campaings',
     PRIVACY = '/documents/privacy.pdf',
+    ACCESS_DENIED = '/access-denied',
     NOT_FOUND = '*'
 }
 

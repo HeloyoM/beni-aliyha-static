@@ -1,9 +1,10 @@
-import { Alert, Button, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, Grid, InputLabel, MenuItem, Select, styled, TextField, Typography } from "@mui/material";
+import { Alert, Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, Grid, InputLabel, MenuItem, Select, Stack, styled, TextField, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useAppUser } from '../context/AppUser.context';
 import { getSchedules, insertSchedule } from "../api/schedule";
 import { HDate, HebrewCalendar, Location } from "@hebcal/core";
 import { CalendarIcon } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 const SectionTitle = styled(Typography)(({ theme }) => ({
     fontSize: theme.typography.h6.fontSize,
@@ -44,6 +45,8 @@ const Scheduler = () => {
     const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [success, setSuccess] = useState(false);
+
+    const { t } = useTranslation();
 
     const { user, canEditSchedules } = useAppUser();
 
@@ -163,6 +166,7 @@ const Scheduler = () => {
 
     const selectedSchedule = selectedParasha ? getScheduleForDate(selectedParasha.date || sedarot[0].date!) : null;
 
+    console.log({ selectedSchedule })
     return (
         <>
 
@@ -174,7 +178,7 @@ const Scheduler = () => {
             )}
 
             {user && canEditSchedules && selectedParasha && (
-                <FormControl>
+                <FormControl fullWidth size="small" sx={{ mt: 2 }}>
                     <InputLabel id="parasha-select-label">Parasha</InputLabel>
                     <Select
                         labelId="parasha-select-label"
@@ -193,105 +197,141 @@ const Scheduler = () => {
                 </FormControl>
             )}
 
-            <SectionTitle fontWeight="bold"><CalendarIcon size={20} />זמני התפילות</SectionTitle>
+            <SectionTitle>
+                <CalendarIcon size={20} />
+                זמני התפילות
+            </SectionTitle>
+
             {selectedSchedule && (
-                <div>
-                    <Typography variant="body2">
-                        Mincha:
-                        {canEditSchedules ? (
-                            <input
-                                type="text"
-                                style={{
-                                    width: '50px',
-                                    marginLeft: '8px',
-                                    textAlign: 'center',
-                                    border: 'none',
-                                    borderBottom: '1px solid #000',
-                                    outline: 'none',
-                                }}
-                                name="mincha_time"
-                                value={editedData.mincha_time || selectedSchedule.mincha_time || ''}
-                                onChange={handleInputChange}
+                <Box>
+                    <Stack spacing={2}>
 
-                            />
-                        ) : (
-                            <span style={{ marginLeft: '8px' }}>{selectedSchedule.mincha_time || 'N/A'}</span>
+                        {['shacharis_time', 'mincha_time', 'maariv_time'].map((key) => (
+                            <><Typography>{t(`scheduler.${key}`)}</Typography>
+                                <TextField
+                                    key={key}
+                                    name={key}
+                                    type="time"
+                                    size="small"
+                                    value={(canEditSchedules ? editedData?.[key as keyof ScheduleEntry] : selectedSchedule?.[key as keyof ScheduleEntry]) || ''}
+                                    onChange={canEditSchedules ? handleInputChange : undefined}
+                                    InputProps={{
+                                        readOnly: !canEditSchedules,
+                                    }}
+                                />
+                            </>
+                        ))}
+
+                        {error && (
+                            <Alert severity="error" sx={{ mt: 2 }}>
+                                {error}
+                            </Alert>
                         )}
-                        <span>{' '}מנחה</span>
-
-                    </Typography>
-                    <Typography variant="body2">
-                        Shacharis:
-                        {canEditSchedules ? (
-                            <input
-                                type="text"
-                                style={{
-                                    width: '50px',
-                                    marginLeft: '8px',
-                                    textAlign: 'center',
-                                    border: 'none',
-                                    borderBottom: '1px solid #000',
-                                    outline: 'none',
-                                }}
-                                name="shacharis_time"
-                                value={editedData.shacharis_time || selectedSchedule.shacharis_time || ''}
-                                onChange={handleInputChange}
-
-                            />
-                        ) : (
-                            <span style={{ marginLeft: '8px' }}>{selectedSchedule.shacharis_time || 'N/A'}</span>
+                        {success && (
+                            <Alert severity="success" sx={{ mt: 2 }}>
+                                {t('scheduler.success')}
+                            </Alert>
                         )}
-                        <span>{' '}שחרית</span>
-                    </Typography>
-                    <Typography variant="body2">
-                        Maariv:
-                        {canEditSchedules ? (
-                            <input
-                                type="text"
-                                style={{
-                                    width: '50px',
-                                    marginLeft: '8px',
-                                    textAlign: 'center',
-                                    border: 'none',
-                                    borderBottom: '1px solid #000',
-                                    outline: 'none',
-                                }}
-                                name="maariv_time"
-                                value={editedData.maariv_time || selectedSchedule.maariv_time || ''}
-                                onChange={handleInputChange}
-                            />
-                        ) : (
-                            <span style={{ marginLeft: '8px' }}>{selectedSchedule.maariv_time || 'N/A'}</span>
+
+                        {canEditSchedules && (
+                            <Button variant="outlined" sx={{ mt: 2 }} onClick={() => handleEdit(selectedSchedule)}>
+                                {t('scheduler.button.edit')}
+                            </Button>
                         )}
-                       <span>{' '}מעריב</span>
-                    </Typography>
+                        {/* <Typography variant="body2">
+                            Mincha:
+                            {canEditSchedules ? (
+                                <input
+                                    type="text"
+                                    style={{
+                                        width: '50px',
+                                        marginLeft: '8px',
+                                        textAlign: 'center',
+                                        border: 'none',
+                                        borderBottom: '1px solid #000',
+                                        outline: 'none',
+                                    }}
+                                    name="mincha_time"
+                                    value={editedData.mincha_time || selectedSchedule.mincha_time || ''}
+                                    onChange={handleInputChange}
 
-                    {error && (
-                        <Alert severity="error" style={{ marginBottom: 10 }}>
-                            {error}
-                        </Alert>
-                    )}
-                    {success && (
-                        <Alert severity="success" style={{ marginBottom: 10 }}>
-                            Schedule created successfully!
-                        </Alert>
-                    )}
+                                />
+                            ) : (
+                                <span style={{ marginLeft: '8px' }}>{selectedSchedule.mincha_time || 'N/A'}</span>
+                            )}
+                            <span>{' '}מנחה</span>
+
+                        </Typography>
+                        <Typography variant="body2">
+                            Shacharis:
+                            {canEditSchedules ? (
+                                <input
+                                    type="text"
+                                    style={{
+                                        width: '50px',
+                                        marginLeft: '8px',
+                                        textAlign: 'center',
+                                        border: 'none',
+                                        borderBottom: '1px solid #000',
+                                        outline: 'none',
+                                    }}
+                                    name="shacharis_time"
+                                    value={editedData.shacharis_time || selectedSchedule.shacharis_time || ''}
+                                    onChange={handleInputChange}
+
+                                />
+                            ) : (
+                                <span style={{ marginLeft: '8px' }}>{selectedSchedule.shacharis_time || 'N/A'}</span>
+                            )}
+                            <span>{' '}שחרית</span>
+                        </Typography>
+                        <Typography variant="body2">
+                            Maariv:
+                            {canEditSchedules ? (
+                                <input
+                                    type="text"
+                                    style={{
+                                        width: '50px',
+                                        marginLeft: '8px',
+                                        textAlign: 'center',
+                                        border: 'none',
+                                        borderBottom: '1px solid #000',
+                                        outline: 'none',
+                                    }}
+                                    name="maariv_time"
+                                    value={editedData.maariv_time || selectedSchedule.maariv_time || ''}
+                                    onChange={handleInputChange}
+                                />
+                            ) : (
+                                <span style={{ marginLeft: '8px' }}>{selectedSchedule.maariv_time || 'N/A'}</span>
+                            )}
+                            <span>{' '}מעריב</span>
+                        </Typography>
+
+                       
 
 
-                    {canEditSchedules && (
-                        <Button style={{ marginTop: 16, cursor: 'pointer' }} onClick={() => {
-                            handleEdit(selectedSchedule);
-                            setIsEditDialogOpen(true);
-                        }}>
-                            Click to edit
-                        </Button>
-                    )}
+                        {canEditSchedules && (
+                            <Button
+                                variant="outlined"
+                                fullWidth
+                                sx={{ mt: 2 }}
+                                onClick={() => {
+                                    handleEdit(selectedSchedule);
+                                    setIsEditDialogOpen(true);
+                                }}
+                            >
+                                Edit Schedule
+                            </Button>
+                        )}
 
-                    {!canEditSchedules && (<Typography variant="body2" style={{ marginTop: 16 }}>
-                        Display upcoming events, appointments, etc.
-                    </Typography>)}
+                        {!canEditSchedules && (<Typography variant="body2" style={{ marginTop: 16 }}>
+                            Display upcoming events, appointments, etc.
+                        </Typography>)} */}
 
-                </div>
+                    </Stack>
+
+                </Box>
             )}
 
             <Dialog open={isEditDialogOpen} onClose={handleCloseEdit}>

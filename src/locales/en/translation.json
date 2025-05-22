@@ -290,5 +290,14 @@
   "special_event": {
     "section_title": "Special Lesson / Event",
     "button": "Download This Week’s PDF"
+  },
+  "scheduler":{
+    "shacharis_time": "Shacharis time",
+    "mincha_time": "Mincha time",
+    "maariv_time": "Maariv time",
+    "success": "Schedule created successfully!",
+    "button":{
+      "edit": "Edit Schedule"
+    }
   }
 }
