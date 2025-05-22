@@ -1,5 +1,5 @@
 import { CalOptions, HDate, HebrewDateEvent, Location } from '@hebcal/core';
-import { Alert, Button, Grid, Paper, styled, TextField, Typography, useMediaQuery } from '@mui/material';
+import { Alert, Button, FormLabel, Grid, Paper, styled, TextField, Typography, useMediaQuery } from '@mui/material';
 import { useState } from 'react';
 import { DayPicker } from "react-day-picker";
 import 'react-day-picker/dist/style.css';
@@ -42,10 +42,10 @@ const Lesson = ({ lessons, setLessons }: Props) => {
     const { canEditLessons } = useAppUser();
 
     const handleDateChange = (date: any) => {
-        setSelectedDate(date);
-        setNewLesson({ ...newLesson, greg_date: date ? date : '' });
+        setSelectedDate(date.target.value);
+        setNewLesson({ ...newLesson, greg_date: date.target.value ? date.target.value : '' });
     };
-
+    console.log({ newLesson })
     const handleNewLessonInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         setNewLesson({ ...newLesson, [e.target.name]: e.target.value });
     };
@@ -109,6 +109,102 @@ const Lesson = ({ lessons, setLessons }: Props) => {
 
     };
 
+    const elem = (<React.Fragment>
+        <Typography variant="h6" style={{ marginBottom: '10px' }}>Insert New Lesson</Typography>
+
+
+        <Grid container spacing={2}>
+            <Grid size={12}>
+                {isMobile ? (<TextField
+                    sx={{ width: 'auto', height: 55 }}
+                    type="date"
+                    value={selectedDate}
+                    onChange={handleDateChange}
+                />)
+                    : (<MyDatePicker
+                        selected={selectedDate}
+                        onChange={handleDateChange}
+                    />)}
+            </Grid>
+            <Grid size={6}>
+                {isMobile && <FormLabel>{t('lesson.start_time')}</FormLabel>}
+                <TextField
+                    label={!isMobile && t('lesson.start_time')}
+                    type="time"
+                    name="start_time"
+                    value={newLesson.start_time || ''}
+                    onChange={handleNewLessonInputChange}
+                />
+            </Grid>
+            <Grid size={6}>
+                {isMobile && <FormLabel>{t('lesson.end_time')}</FormLabel>}
+                <TextField
+                    label={!isMobile && t('lesson.end_time')}
+                    name="end_time"
+                    type="time"
+                    value={newLesson.end_time || ''}
+                    onChange={handleNewLessonInputChange}
+                />
+            </Grid>
+            <Grid size={12}>
+                <TextField
+                    fullWidth
+                    label={t('lesson.topic')}
+                    name="topic"
+                    value={newLesson.topic || ''}
+                    onChange={handleNewLessonInputChange}
+                    required
+                />
+            </Grid>
+            <Grid size={12}>
+                <TextField
+                    fullWidth
+                    label={t('lesson.description')}
+                    name="description"
+                    value={newLesson.description || ''}
+                    onChange={handleNewLessonInputChange}
+                    multiline
+                    rows={3}
+                />
+            </Grid>
+            <Grid size={6}>
+                <TextField
+                    fullWidth
+                    label={t('lesson.by')}
+                    name="teacher"
+                    value={newLesson.teacher || ''}
+                    onChange={handleNewLessonInputChange}
+                />
+            </Grid>
+        </Grid>
+
+        {
+            error && (
+                <Alert severity="error" style={{ marginBottom: 10 }}>
+                    {error}
+                </Alert>
+            )
+        }
+
+        {
+            success && (
+                <Alert severity="success" style={{ marginBottom: 10 }}>
+                    {t('lesson.created')}
+                </Alert>
+            )
+        }
+
+        <Button
+            variant="contained"
+            disabled={loading}
+            onClick={handleInsertLesson}
+            style={{ marginTop: '15px' }}
+        >
+            {loading ? t('lesson.creating') : t('lesson.create')}
+        </Button>
+    </React.Fragment>
+    )
+
     if (!canEditLessons) return <></>
 
     return (
@@ -136,103 +232,11 @@ const Lesson = ({ lessons, setLessons }: Props) => {
                 {isInsertingLesson ? t('lesson.cancel') : t('lesson.create_new')} <PlusCircle size={16} style={{ marginLeft: '5px' }} />
             </Button>
 
-            {isInsertingLesson && (
-                <Paper style={{ padding: '15px', marginTop: '10px', backgroundColor: '#f9f9f9' }}>
-                    <Typography variant="h6" style={{ marginBottom: '10px' }}>Insert New Lesson</Typography>
-
-
-                    <Grid container spacing={2}>
-                        <Grid size={12}>
-                            {isMobile ? (<TextField
-                                sx={{ width: 'auto', height: 55 }}
-                                type="date"
-                                value={selectedDate}
-                                onChange={handleDateChange}
-                            />)
-                                : (<MyDatePicker
-                                    selected={selectedDate}
-                                    onChange={handleDateChange}
-                                />)}
-                        </Grid>
-                        <Grid size={6}>
-                            <TextField
-                                fullWidth
-                                label={t('lesson.start_time')}
-                                name="start_time"
-                                value={newLesson.start_time || ''}
-                                onChange={handleNewLessonInputChange}
-                                required
-                            />
-                        </Grid>
-                        <Grid size={6}>
-                            <TextField
-                                fullWidth
-                                label={t('lesson.end_time')}
-                                name="end_time"
-                                value={newLesson.end_time || ''}
-                                onChange={handleNewLessonInputChange}
-                                required
-                            />
-                        </Grid>
-                        <Grid size={12}>
-                            <TextField
-                                fullWidth
-                                label={t('lesson.topic')}
-                                name="topic"
-                                value={newLesson.topic || ''}
-                                onChange={handleNewLessonInputChange}
-                                required
-                            />
-                        </Grid>
-                        <Grid size={12}>
-                            <TextField
-                                fullWidth
-                                label={t('lesson.description')}
-                                name="description"
-                                value={newLesson.description || ''}
-                                onChange={handleNewLessonInputChange}
-                                multiline
-                                rows={3}
-                            />
-                        </Grid>
-                        <Grid size={6}>
-                            <TextField
-                                fullWidth
-                                label={t('lesson.by')}
-                                name="teacher"
-                                value={newLesson.teacher || ''}
-                                onChange={handleNewLessonInputChange}
-                            />
-                        </Grid>
-                    </Grid>
-
-                    {
-                        error && (
-                            <Alert severity="error" style={{ marginBottom: 10 }}>
-                                {error}
-                            </Alert>
-                        )
-                    }
-
-                    {
-                        success && (
-                            <Alert severity="success" style={{ marginBottom: 10 }}>
-                                {t('lesson.created')}
-                            </Alert>
-                        )
-                    }
-
-                    <Button
-                        variant="contained"
-                        disabled={loading}
-                        onClick={handleInsertLesson}
-                        style={{ marginTop: '15px' }}
-                    >
-                        {loading ? t('lesson.creating') : t('lesson.create')}
-                    </Button>
-
-                </Paper>
-            )}
+            {isInsertingLesson ? isMobile ? (
+                elem
+            ) : <Paper style={{ padding: '15px', marginTop: '10px', backgroundColor: '#f9f9f9' }}>
+                {elem}
+            </Paper> : <></>}
         </>
     )
 }
@@ -319,6 +323,7 @@ type DateProps = {
     onChange: (day: any) => void
     selected: any
 }
+
 function MyDatePicker({ onChange, selected }: DateProps) {
     const { t } = useTranslation();
 

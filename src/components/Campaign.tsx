@@ -9,7 +9,8 @@ import {
     FormControl,
     InputLabel,
     FormHelperText,
-    useMediaQuery
+    useMediaQuery,
+    Paper
 } from '@mui/material';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
@@ -39,7 +40,9 @@ const Campaign = () => {
     const [success, setSuccess] = useState(false);
     const [isDonation, setIsDonation] = useState(false);
 
-    const isMobile = useMediaQuery('(max-width:600px)');
+    const isMobile = useMediaQuery('(max-width:900px)');
+    const showStyledCalendar = useMediaQuery('(max-width:1200px)');
+
     const { t } = useTranslation();
 
 
@@ -66,12 +69,11 @@ const Campaign = () => {
         fetchTypes()
     }, [campaignTypes])
 
-    // Formik hook for form management
     const formik = useFormik({
         initialValues: {
             name: '',
             type: 0,
-            dueDate: dayjs(), // Initialize with current date
+            dueDate: null,
             description: '',
             goal_amount: '',
         },
@@ -86,12 +88,11 @@ const Campaign = () => {
 
                 if (response.status > 200) {
                     setSuccess(true);
-                    formik.resetForm(); // Clear the form
+                    formik.resetForm();
                 } else {
                     setError(data.message || t('campaign.campaign_form.failed_create'));
                 }
             } catch (error: any) {
-                // Handle network errors or other exceptions
                 setError(error.message || t('campaign.campaign_form.generic'));
             } finally {
                 setLoading(false);
@@ -102,138 +103,148 @@ const Campaign = () => {
     useEffect(() => {
         const selectedType = campaignTypes.find(t => t.id === formik.values.type);
         setIsDonation(selectedType?.name.toLowerCase() === 'donate');
-    }, [formik.values.type, campaignTypes]);
+    }, [formik.values.type, campaignTypes])
 
     const handleDateChange = (date: any) => {
         formik.setFieldValue('dueDate', date);
-    };
+    }
 
-    return (
-        <>
-            <form onSubmit={formik.handleSubmit}>
+    const elem = (
+        <form onSubmit={formik.handleSubmit}>
 
-                <Grid container spacing={2}>
-                    <Grid size={12}>
-                        {isMobile ? (<TextField
-                            sx={{ width: 'auto', height: 55 }}
-                            type="date"
-                            name="dueDate"
-                            value={formik.values.dueDate}
-                            onChange={(date) => handleDateChange(date)}
-                        />)
-                            : (<AppDatePicker
-                                selected={formik.values.dueDate}
-                                onChange={(date: Dayjs | null) => {
-                                    if (date) {
-                                        formik.setFieldValue('dueDate', date);
-                                    }
-                                }} />)}
-                    </Grid>
-                    <Grid size={6}>
-                        <TextField
-                            fullWidth
-                            id="name"
-                            name="name"
-                            label={t('campaign.campaign_form.name_label')}
-                            value={formik.values.name}
-                            onChange={formik.handleChange}
-                            error={formik.touched.name && Boolean(formik.errors.name)}
-                            helperText={formik.touched.name && formik.errors.name}
-                            style={{ marginBottom: 15, backgroundColor: '#fff' }}
-                            InputProps={{ style: { borderRadius: 8, borderColor: '#81c784' } }}
-                        />
+            <Grid container spacing={2}>
 
-                    </Grid>
-                    <Grid size={6}>
-                        <FormControl
-                            fullWidth
-                            error={formik.touched.type && Boolean(formik.errors.type)}
-                            style={{ marginBottom: 15, backgroundColor: '#fff', borderRadius: 8 }}
-                        >
 
-                            <InputLabel id="type-label" style={{ color: formik.touched.type && formik.errors.type ? '#d32f2f' : '#000' }}>
-                                {t('campaign.campaign_form.type_label')}
-                            </InputLabel>
+                <Grid size={12}>
 
-                            <Select
-                                labelId="type-label"
-                                id="type"
-                                name="type"
-                                value={formik.values.type}
-                                onChange={formik.handleChange}
-                                onBlur={formik.handleBlur}
-                                style={{ borderRadius: 8, borderColor: formik.touched.type && formik.errors.type ? '#d32f2f' : '#81c784' }}
-                            >
-                                {campaignTypes.map((option) => (
-                                    <MenuItem key={option.id} value={option.id}>
-                                        {option.name}
-                                    </MenuItem>
-                                ))}
-                            </Select>
-                            {formik.touched.type && formik.errors.type && (
-                                <FormHelperText error style={{ color: '#d32f2f' }}>
-                                    {formik.errors.type}
-                                </FormHelperText>
-                            )}
+                    {showStyledCalendar ? (<TextField
+                        sx={{ width: 'auto', height: 55 }}
+                        type="date"
+                        name="dueDate"
+                        value={formik.values.dueDate}
+                        onChange={(date) => handleDateChange(date)}
+                    />) : (<AppDatePicker
+                        selected={formik.values.dueDate}
+                        onChange={(date: Dayjs | null) => {
+                            if (date) {
+                                formik.setFieldValue('dueDate', date);
+                            }
+                        }} />)
+                    }
 
-                            {isDonation && (
-                                <TextField
-                                    fullWidth
-                                    id="goal_amount"
-                                    name="goal_amount"
-                                    label={t('campaign.campaign_form.goal_amount_label')}
-                                    type="number"
-                                    value={formik.values.goal_amount || ''}
-                                    onChange={formik.handleChange}
-                                    error={formik.touched.goal_amount && Boolean(formik.errors.goal_amount)}
-                                    helperText={formik.touched.goal_amount && formik.errors.goal_amount}
-                                />
-                            )}
-                        </FormControl>
-                    </Grid>
-
-                    <Grid size={12}>
-                        <TextField
-                            fullWidth
-                            id="description"
-                            name="description"
-                            label={t('campaign.campaign_form.description')}
-                            multiline
-                            rows={4}
-                            value={formik.values.description}
-                            onChange={formik.handleChange}
-                            error={formik.touched.description && Boolean(formik.errors.description)}
-                            helperText={formik.touched.description && formik.errors.description}
-                            InputProps={{ style: { borderRadius: 8, borderColor: '#81c784' } }}
-                        />
-                    </Grid>
                 </Grid>
 
-                {error && (
-                    <Alert severity="error" style={{ marginBottom: 10 }}>
-                        {error}
-                    </Alert>
-                )}
-                {success && (
-                    <Alert severity="success" style={{ marginBottom: 10 }}>
-                        {t('campaign.campaign_form.success')}
-                    </Alert>
-                )}
+
+                <Grid size={12}>
+                    <TextField
+                        fullWidth
+                        id="name"
+                        name="name"
+                        label={t('campaign.campaign_form.name_label')}
+                        value={formik.values.name}
+                        onChange={formik.handleChange}
+                        error={formik.touched.name && Boolean(formik.errors.name)}
+                        helperText={formik.touched.name && formik.errors.name}
+                        sx={{ backgroundColor: '#fff' }}
+                    />
+
+                </Grid>
+                <Grid size={12}>
+                    <FormControl
+                        fullWidth
+                        error={formik.touched.type && Boolean(formik.errors.type)}
+                        sx={{ marginBottom: 15, backgroundColor: '#fff', borderRadius: 8 }}
+                    >
+
+                        <InputLabel id="type-label" style={{ color: formik.touched.type && formik.errors.type ? '#d32f2f' : '#000' }}>
+                            {t('campaign.campaign_form.type_label')}
+                        </InputLabel>
+
+                        <Select
+                            labelId="type-label"
+                            id="type"
+                            name="type"
+                            value={formik.values.type}
+                            onChange={formik.handleChange}
+                            onBlur={formik.handleBlur}
+                            sx={{ minWidth: '12vw', borderRadius: 8, borderColor: formik.touched.type && formik.errors.type ? '#d32f2f' : '#81c784' }}
+                        >
+                            {campaignTypes.map((option) => (
+                                <MenuItem key={option.id} value={option.id}>
+                                    {option.name}
+                                </MenuItem>
+                            ))}
+                        </Select>
+                        {formik.touched.type && formik.errors.type && (
+                            <FormHelperText error style={{ color: '#d32f2f' }}>
+                                {formik.errors.type}
+                            </FormHelperText>
+                        )}
+
+                        {isDonation && (
+                            <TextField
+                                id="goal_amount"
+                                name="goal_amount"
+                                label={t('campaign.campaign_form.goal_amount_label')}
+                                type="number"
+                                value={formik.values.goal_amount || ''}
+                                onChange={formik.handleChange}
+                                error={formik.touched.goal_amount && Boolean(formik.errors.goal_amount)}
+                                helperText={formik.touched.goal_amount && formik.errors.goal_amount}
+                            />
+                        )}
+                    </FormControl>
+                </Grid>
+
+                <Grid size={12}>
+                    <TextField
+                        id="description"
+                        name="description"
+                        label={t('campaign.campaign_form.description')}
+                        multiline
+                        fullWidth
+                        rows={4}
+                        value={formik.values.description}
+                        onChange={formik.handleChange}
+                        error={formik.touched.description && Boolean(formik.errors.description)}
+                        helperText={formik.touched.description && formik.errors.description}
+                        InputProps={{ style: { borderRadius: 8, borderColor: '#81c784' } }}
+                    />
+                </Grid>
+            </Grid>
+
+            {error && (
+                <Alert severity="error" style={{ marginBottom: 10 }}>
+                    {error}
+                </Alert>
+            )}
+            {success && (
+                <Alert severity="success" style={{ marginBottom: 10 }}>
+                    {t('campaign.campaign_form.success')}
+                </Alert>
+            )}
 
 
-                <Button
-                    type="submit"
-                    fullWidth
-                    variant="contained"
-                    color="primary"
-                    disabled={loading}
-                    style={{ marginTop: '15px' }}
-                >
-                    {loading ? t('campaign.campaign_form.button.creating') : t('campaign.campaign_form.button.create_campaign')}
-                </Button>
+            <Button
+                type="submit"
+                fullWidth
+                variant="contained"
+                color="primary"
+                disabled={loading}
+                style={{ marginTop: '15px' }}
+            >
+                {loading ? t('campaign.campaign_form.button.creating') : t('campaign.campaign_form.button.create_campaign')}
+            </Button>
 
-            </form>
-        </>
+        </form>
+    )
+
+    return (
+        isMobile ? elem : (
+            <Paper style={{ padding: '15px', marginTop: '10px', backgroundColor: '#f9f9f9' }}>
+                {elem}
+            </Paper>
+        )
     );
 };
 

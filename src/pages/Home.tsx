@@ -265,12 +265,11 @@ const Home: React.FC = () => {
 
                   {isInsertingCampaign && (
                     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5 }}>
-                      <Paper style={{ padding: '15px', marginTop: '10px', backgroundColor: '#f9f9f9' }}>
+                      
                         <Typography variant="h6" style={{ marginBottom: '10px' }}>{t('home.sections.insert_campaign')}</Typography>
 
                         <Campaign />
 
-                      </Paper>
                     </motion.div>
                   )}
 
