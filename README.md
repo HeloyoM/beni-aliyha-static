@@ -31,9 +31,3 @@ A full-stack web application designed to support U.S. citizens in their journey 
 
 ## 📦 Installation & Usage
 
-### 🔧 Backend
-
-```bash
-cd backend
-npm install
-npm run dev
