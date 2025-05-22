@@ -29,5 +29,3 @@ A full-stack web application designed to support U.S. citizens in their journey 
 
 ---
 
-## 📦 Installation & Usage
-
