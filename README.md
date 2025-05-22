@@ -1,4 +1,4 @@
-# 🕊️ Aliyah Support Platform
+# 🕊️ Bnei-Aliyah - Platform
 
 A full-stack web application designed to support U.S. citizens in their journey of making **Aliyah** to Israel 🇮🇱 — offering education, job guidance, community support, and more.
 
@@ -28,4 +28,10 @@ A full-stack web application designed to support U.S. citizens in their journey 
 | **Deployments** | Vercel (Frontend), Railway (Backend) |
 
 ---
+
+## 📜 License
+
+This project is open-source under the MIT License.
+
+© 2025 Bnei-Aliyah Support Platform. All rights reserved.
 
