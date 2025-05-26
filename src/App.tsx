@@ -60,45 +60,23 @@ const AppContent = () => {
     if (location.pathname === Paths.GUEST) return;
 
     (async () => {
-      if (token && !isTokenExpired(token)) {
-        try {
-          const response = await profile();
-          const data = response.data as any;
+      if (token) {
+        if (!isTokenExpired(token)) {
+          try {
+            const response = await profile();
+            const data = response.data as any;
 
-          updateUserContext(data.user);
-          updateAllowedResources(data.allowedResources);
-        } catch (error) {
-          console.error("Error decoding token or fetching profile:", error);
+            updateUserContext(data.user);
+            updateAllowedResources(data.allowedResources);
+          } catch (error) {
+            console.error("Error decoding token or fetching profile:", error);
+            handleLogout();
+          }
+        } else {
           handleLogout();
         }
-      } else {
-        // handleLogout();
       }
     })();
-
-    // if (token && !isTokenExpired(token)) {
-
-    //   try {
-    //     const fetchUserProfile = async () => {
-    //       const response = await profile();
-
-    //       const data = response.data as any;
-
-    //       updateUserContext(data.user);
-    //       updateAllowedResources(data.allowedResources);
-    //     }
-
-    //     fetchUserProfile();
-
-    //   } catch (error) {
-    //     console.error("Error decoding token on initial load:", error);
-    //     handleLogout();
-    //     return;
-    //   }
-    // } else {
-    //   handleLogout();
-    // }
-
   }, [handleLogout, token, location.pathname]);
 
   return (
