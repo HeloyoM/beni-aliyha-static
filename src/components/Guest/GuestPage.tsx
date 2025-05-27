@@ -2,7 +2,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { Fade, Box, Typography, Grid, Card, CardMedia, CardContent, Button, TextField, Dialog, DialogContent, DialogTitle, IconButton, ImageList, ImageListItem, ImageListItemBar, Paper, Snackbar, Accordion, AccordionSummary, AccordionDetails, Container, useMediaQuery } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import '../App.css';
+import '../../App.css';
 import { useLocation } from 'react-router-dom';
 import StarBorderIcon from '@mui/icons-material/StarBorder';
 import { PlayCircle, XCircle, Send, Expand } from 'lucide-react';
@@ -11,10 +11,8 @@ import { motion } from 'framer-motion';
 // import bgVideoUp from '../assets/videos/2.mp4';
 // import bgVideoDown from '../assets/videos/3.mp4';
 import { FinalCTASection } from './FinalCTASection';
-import LocationMap from './LocationMap';
-// import WhatsappButton from './WhatsappButton';
-import { postGuestMessage } from '../api/message';
-import DonationCard from './DonationCard';
+import LocationMap from '../LocationMap';
+import { postGuestMessage } from '../../api/message';
 import { useTranslation } from 'react-i18next';
 
 const GuestSection = styled(Box)(({ theme }) => ({
@@ -807,7 +805,6 @@ const GuestPage: React.FC = () => {
 
                 </GuestSection>
 
-
                 <Dialog open={openDialog.open} onClose={handleCloseDialog} fullWidth maxWidth="lg">
                     <DialogTitle>
                         <Box display="flex" justifyContent="space-between" alignItems="center">
@@ -841,6 +838,9 @@ const GuestPage: React.FC = () => {
                     />
 
                 </Dialog>
+
+
+
             </Box>
         </>
     );

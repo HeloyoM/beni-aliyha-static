@@ -9,7 +9,7 @@ import WelcomeScreen from './components/WelcomScreen';
 import CampaignList from './components/CampaignList';
 import Messages from './components/Message/Messages';
 import { profile } from './api/auth';
-import GuestPage from './components/GuestPage';
+import GuestPage from './components/Guest/GuestPage';
 import FloatingActions from './components/FloatingActions';
 import { isTokenExpired } from './utils/isTokenExpired';
 import Paths from './enum/Paths.enum';
