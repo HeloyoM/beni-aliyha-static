@@ -13,6 +13,7 @@ import { getAllUsers } from '../api/user';
 import { useAppUser } from '../context/AppUser.context';
 import IUser from '../interfaces/User.interface';
 import { toggleActivationUser } from '../api/admin';
+import { exportUsersToExcel } from '../utils/exportExcel';
 
 const StyledPaper = styled(Paper)(({ theme }) => ({
     padding: theme.spacing(2),
@@ -245,6 +246,16 @@ const UserManagementTable = () => {
                         </Button>
                     </Box></>
             )}
+
+            <Box mt={2} textAlign={isMobile ? 'center' : 'right'}>
+                <Button
+                    variant="outlined"
+                    color="secondary"
+                    onClick={() => exportUsersToExcel(users)}
+                >
+                    Download Excel
+                </Button>
+            </Box>
         </TableContainer>
     );
 };
