@@ -1,9 +1,11 @@
-// FinalCTASection.tsx
-import React from "react";
+
 import { Box, Button, Typography, Stack } from "@mui/material";
 import { motion } from "framer-motion";
+import { useTranslation } from "react-i18next";
 
 export const FinalCTASection = () => {
+    const { t } = useTranslation();
+
     return (
         <Box
             component={motion.section}
@@ -21,11 +23,10 @@ export const FinalCTASection = () => {
         >
             <Box maxWidth="md" mx="auto">
                 <Typography variant="h4" fontWeight="bold" gutterBottom>
-                    Ready to Make a Life-Changing Move?
+                    {t('guest.cta.title')}
                 </Typography>
                 <Typography variant="body1" sx={{ mb: 4 }}>
-                    Whether you're just curious or already packing your bags, we're here to welcome you.
-                    Discover a life of purpose, community, and belonging in Israel.
+                    {t('guest.cta.sub_title')}
                 </Typography>
 
                 <Stack
@@ -39,7 +40,7 @@ export const FinalCTASection = () => {
                         size="large"
                         href="#contact"
                     >
-                        Contact Us Today
+                        {t('guest.cta.actions.contact')}
                     </Button>
                     <Button
                         variant="outlined"
@@ -48,10 +49,10 @@ export const FinalCTASection = () => {
                         disabled
                         href="/path-to-pdf"
                     >
-                        Download Info PDF
+                        {t('guest.cta.actions.download_pdf')}
                     </Button>
                 </Stack>
             </Box>
         </Box>
-    );
+    )
 };
