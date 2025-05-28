@@ -187,7 +187,6 @@ const GuestPage: React.FC = () => {
 
 
                 <GuestSection id="community" style={{ position: 'relative', overflow: 'hidden' }}>
-
                     <Community />
                 </GuestSection>
 
@@ -249,16 +248,9 @@ const GuestPage: React.FC = () => {
                 </GuestSection>
 
 
-
-
-
-
-
-
-
             </Box>
         </>
-    );
+    )
 };
 
 export default GuestPage;
