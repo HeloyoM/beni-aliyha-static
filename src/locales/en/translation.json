@@ -156,7 +156,7 @@
     "faq": {
       "faq_title": "Frequently Asked Questions",
       "faq_1_question": "Is this community religious?",
-      "faq_1_Answer": "Yes, it’s a warm, inclusive Modern Orthodox community. There’s room for families across the religious spectrum who value tradition and connection.",
+      "faq_1_answer": "Yes, it’s a warm, inclusive Orthodox community. There’s room for families across the religious spectrum who value tradition and connection.",
       "faq_2_question": "Do people speak English?",
       "faq_2_answer": "Absolutely! Most of the community is English-speaking — from shul to schools to neighbors. You won’t feel like a stranger.",
       "faq_3_question": "What kind of support is available for new olim?",
@@ -194,10 +194,10 @@
       "message_label": "Message",
       "send_message_button": "Send Message"
     },
-    "cta":{
+    "cta": {
       "title": "Ready to Make a Life-Changing Move?",
       "sub_title": "Whether you're just curious or already packing your bags, we're here to welcome you. Discover a life of purpose, community, and belonging in Israel.",
-      "actions":{
+      "actions": {
         "contact": "Contact Us Today",
         "download_pdf": "Download Info PDF"
       }
@@ -297,7 +297,10 @@
   },
   "special_event": {
     "section_title": "Special Lesson / Event",
-    "button": "Download This Week’s PDF"
+    "download_zip": "Download Week’s PDF",
+    "upload": "Upload PDFs",
+    "choose_file_s": "Choose File/s",
+    "upload_title": "Uploading this week's materials"
   },
   "scheduler": {
     "no_times_set": "Times haven't been set yet. Please check back later or edit if you have permission.",

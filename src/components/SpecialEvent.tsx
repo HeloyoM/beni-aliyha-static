@@ -13,6 +13,9 @@ import { Event, AccessTime, Place, School } from '@mui/icons-material';
 import Scp from '../svg/scp.svg';
 import { DownloadIcon, Repeat } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import AdminUpload from './AdminUpload';
+import { getWeeksScpFiles } from '../api/file';
+import { useAppUser } from '../context/AppUser.context';
 
 const SpecialEvent = () => {
     const event = {
@@ -28,9 +31,33 @@ const SpecialEvent = () => {
 
     const { t } = useTranslation();
 
+    const { canEditLessons } = useAppUser();
+
 
     const isMobile = useMediaQuery('(max-width:600px)');
 
+    const handleDownload = async () => {
+        const response = await getWeeksScpFiles();
+
+        if (response.status !== 200) {
+            throw new Error('Failed to fetch file');
+        }
+
+        const data = response.data as any;
+        const contentDisposition = response.headers['content-disposition'];
+        const filenameMatch = contentDisposition?.match(/filename="(.+)"/);
+        const filename = filenameMatch?.[1] || 'event_files.zip';
+
+        const blob = new Blob([data], { type: 'application/zip' });
+
+        const link = document.createElement('a');
+        link.href = window.URL.createObjectURL(blob);
+        link.download = filename;
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        window.URL.revokeObjectURL(link.href);
+    }
     return (
         <Box
             sx={{
@@ -69,7 +96,7 @@ const SpecialEvent = () => {
             </Typography>
 
             <Grid container justifyContent="center" mt={4}>
-                <Grid size={{ xs: 11, sm: 10, md: 8 }}>
+                <Grid size={{ xs: 11, sm: 10, md: 8, xl: 11 }}>
                     <Card
                         sx={{
                             display: 'flex',
@@ -137,13 +164,12 @@ const SpecialEvent = () => {
                                 {event.description}
                             </Typography>
 
+                            {canEditLessons && <AdminUpload />}
+
                             <Button
                                 variant="contained"
                                 startIcon={<DownloadIcon />}
-                                href={event.pdfUrl}
-                                disabled
-                                target="_blank"
-                                rel="noopener noreferrer"
+                                onClick={handleDownload}
                                 sx={{
                                     mt: 3,
                                     px: 4,
@@ -154,18 +180,12 @@ const SpecialEvent = () => {
                                     textTransform: 'none',
                                     background: 'linear-gradient(135deg, #FFA726, #FB8C00)',
                                     color: 'white',
-                                    boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
-                                    transition: '0.3s ease',
                                     '&:hover': {
                                         background: 'linear-gradient(135deg, #EF6C00, #F57C00)',
-                                        boxShadow: '0 6px 16px rgba(0,0,0,0.2)'
                                     },
-                                    '&:active': {
-                                        boxShadow: '0 2px 6px rgba(0,0,0,0.3)'
-                                    }
                                 }}
                             >
-                                {t('special_event.button')}
+                                {t('special_event.download_zip')}
                             </Button>
                         </CardContent>
                     </Card>

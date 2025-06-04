@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import '../App.css';
 import { Button, CardContent, Typography, Grid, Paper, styled, Box, Tabs, Tab, useMediaQuery } from '@mui/material';
 import Campaign from '../components/Campaign';
-import { Clock, Award, PlusCircle, List } from 'lucide-react';
+import { PlusCircle, List } from 'lucide-react';
 import Lesson from '../components/Lessons/Lesson';
 import Scheduler from '../components/Scheduler';
 import CandlelightingTimes from '../components/CandleLightingTimes';
@@ -197,7 +197,7 @@ const Home: React.FC = () => {
                   <DonationCard />
                 </Grid>
 
-                <Grid size={{ xs: 12, sm: 6, md: 4 }}>
+                <Grid size={{ lg: 12, xs: 10, sm: 6, md: 4 }}>
                   <SpecialEvent />
                 </Grid>
               </>

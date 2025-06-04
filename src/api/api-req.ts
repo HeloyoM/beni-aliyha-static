@@ -1,4 +1,4 @@
-import axios from 'axios'
+import axios, { AxiosRequestConfig } from 'axios'
 import baseUrl from './base-url'
 import { handleAxiosError } from '../utils/handleAxiosError';
 
@@ -25,8 +25,8 @@ export const PUT = async <T>(url: string, body?: unknown) => {
 	}
 }
 
-export const GET = async <T>(url: string) => {
-	const config = getRequestConfiguration();
+export const GET = async <T>(url: string, ops?: AxiosRequestConfig<any>) => {
+	const config = getRequestConfiguration(ops);
 
 	try {
 		return await axios.get<T>(`${baseUrl}/${url}`, config)
@@ -58,7 +58,7 @@ export const DELETE = async <T>(url: string) => {
 	}
 }
 
-const getRequestConfiguration = () => {
+const getRequestConfiguration = (ops?: AxiosRequestConfig<any>) => {
 	// const timeout = 60_000; // equal to 1 minute
 	const token = localStorage.getItem('token');
 	// const token = tokenAccess ? 'Bearer tokenAccess' : null
@@ -67,6 +67,7 @@ const getRequestConfiguration = () => {
 
 	return {
 		headers,
+		...ops
 		// timeout,
 		// cancelToken
 	}
