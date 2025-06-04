@@ -1,1 +1,2 @@
-export default `https://bnei-aliyah-rbsd-production.up.railway.app/api`;
+const baseUrl = process.env.REACT_APP_API_BASE!;
+export default baseUrl;
