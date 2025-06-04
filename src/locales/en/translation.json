@@ -300,7 +300,10 @@
     "download_zip": "Download Week’s PDF",
     "upload": "Upload PDFs",
     "choose_file_s": "Choose File/s",
-    "upload_title": "Uploading this week's materials"
+    "upload_title": "Uploading this week's materials",
+    "success": "Shiur uploaded successfully!",
+    "upload_failed": "File upload failed.",
+    "no_files": "No files found. please contact a member or wait for uploading"
   },
   "scheduler": {
     "no_times_set": "Times haven't been set yet. Please check back later or edit if you have permission.",

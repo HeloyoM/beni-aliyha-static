@@ -1,12 +1,14 @@
 import { useEffect, useState } from 'react';
-import { Button, Typography, Box, Paper, Stack } from '@mui/material';
+import { Button, Typography, Box, Paper, Stack, Alert, CircularProgress } from '@mui/material';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import { useForm } from 'react-hook-form'
 import { uploadFile } from '../api/file';
 import { useTranslation } from 'react-i18next';
 import { InsertDriveFile } from '@mui/icons-material';
 const AdminUpload = () => {
-    const [message, setMessage] = useState('');
+    const [error, setError] = useState<string | null>(null);
+    const [loading, setLoading] = useState(false);
+    const [success, setSuccess] = useState(false);
     const [files, setFiles] = useState<File[]>([]);
 
     const { watch, register } = useForm()
@@ -22,8 +24,12 @@ const AdminUpload = () => {
         }
     }, [watch('file')]);
 
-    const handleUpload = async () => {
+    const handleUpload = async (e?: React.MouseEvent<HTMLButtonElement>) => {
+        e?.preventDefault();
         if (!files || files.length === 0) return;
+
+        setLoading(true);
+        setError(null);
 
         const formData = new FormData();
 
@@ -35,12 +41,21 @@ const AdminUpload = () => {
         formData.append('eventTitle', 'Scp');
         try {
             await uploadFile(formData);
-            setMessage('Upload successful!');
-        } catch (err) {
-            console.error(err);
-            setMessage('Upload failed.');
+            setSuccess(true);
+        } catch (err: any) {
+            setError(err.message || t('special_event.upload_failed'));
+        } finally {
+            setLoading(false);
         }
     };
+
+    if (loading) {
+        return (
+            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '200px' }}>
+                <CircularProgress size={60} />
+            </div>
+        );
+    }
 
     return (
         <Box
@@ -119,9 +134,21 @@ const AdminUpload = () => {
                             </Stack>
                         ))}
                 </Stack>
+
+                {error && (
+                    <Alert severity="error" style={{ marginBottom: 10 }}>
+                        {error}
+                    </Alert>
+                )}
+                {success && (
+                    <Alert severity="success" style={{ marginBottom: 10 }}>
+                        {t('special_event.success')}
+                    </Alert>
+                )}
+
                 <Button
                     variant="contained"
-                    onClick={handleUpload}
+                    onClick={(e) =>handleUpload(e)}
                     disabled={files.length === 0}
                     sx={{
                         mt: 2,
@@ -143,9 +170,6 @@ const AdminUpload = () => {
                     {t('special_event.upload')}
                 </Button>
 
-                <Typography mt={2} color="primary">
-                    {message}
-                </Typography>
             </Paper>
         </Box>
     );

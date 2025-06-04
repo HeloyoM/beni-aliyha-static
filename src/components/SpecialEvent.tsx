@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
     Card,
     CardContent,
@@ -7,7 +7,9 @@ import {
     Box,
     Avatar,
     Button,
-    useMediaQuery
+    useMediaQuery,
+    Alert,
+    CircularProgress
 } from '@mui/material';
 import { Event, AccessTime, Place, School } from '@mui/icons-material';
 import Scp from '../svg/scp.svg';
@@ -18,6 +20,10 @@ import { getWeeksScpFiles } from '../api/file';
 import { useAppUser } from '../context/AppUser.context';
 
 const SpecialEvent = () => {
+    const [error, setError] = useState<string | null>(null);
+    const [loading, setLoading] = useState(false);
+    const [success, setSuccess] = useState(false);
+
     const event = {
         image: Scp,
         title: 'Scp',
@@ -37,27 +43,38 @@ const SpecialEvent = () => {
     const isMobile = useMediaQuery('(max-width:600px)');
 
     const handleDownload = async () => {
-        const response = await getWeeksScpFiles();
+        setLoading(true);
+        setError(null);
 
-        if (response.status !== 200) {
-            throw new Error('Failed to fetch file');
+        try {
+            const response = await getWeeksScpFiles();
+
+            if (response.status !== 200) {
+                throw new Error('Failed to fetch file');
+            }
+
+            const data = response.data as any;
+            const contentDisposition = response.headers['content-disposition'];
+            const filenameMatch = contentDisposition?.match(/filename="(.+)"/);
+            const filename = filenameMatch?.[1] || 'scp_files.zip';
+
+            const blob = new Blob([data], { type: 'application/zip' });
+
+            const link = document.createElement('a');
+            link.href = window.URL.createObjectURL(blob);
+            link.download = filename;
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+            window.URL.revokeObjectURL(link.href);
+        } catch (error: any) {
+            setError(error.response?.data?.message || t('special_event.no_files'));
+        } finally {
+            setLoading(false);
         }
 
-        const data = response.data as any;
-        const contentDisposition = response.headers['content-disposition'];
-        const filenameMatch = contentDisposition?.match(/filename="(.+)"/);
-        const filename = filenameMatch?.[1] || 'event_files.zip';
-
-        const blob = new Blob([data], { type: 'application/zip' });
-
-        const link = document.createElement('a');
-        link.href = window.URL.createObjectURL(blob);
-        link.download = filename;
-        document.body.appendChild(link);
-        link.click();
-        link.remove();
-        window.URL.revokeObjectURL(link.href);
     }
+
     return (
         <Box
             sx={{
@@ -166,27 +183,39 @@ const SpecialEvent = () => {
 
                             {canEditLessons && <AdminUpload />}
 
-                            <Button
-                                variant="contained"
-                                startIcon={<DownloadIcon />}
-                                onClick={handleDownload}
-                                sx={{
-                                    mt: 3,
-                                    px: 4,
-                                    py: 1.5,
-                                    fontSize: '1rem',
-                                    fontWeight: 600,
-                                    borderRadius: 3,
-                                    textTransform: 'none',
-                                    background: 'linear-gradient(135deg, #FFA726, #FB8C00)',
-                                    color: 'white',
-                                    '&:hover': {
-                                        background: 'linear-gradient(135deg, #EF6C00, #F57C00)',
-                                    },
-                                }}
-                            >
-                                {t('special_event.download_zip')}
-                            </Button>
+                            {error && (
+                                <Alert severity="error" style={{ marginBottom: 10 }}>
+                                    {error}
+                                </Alert>
+                            )}
+
+                            {loading ?
+                                (
+                                    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '200px' }}>
+                                        <CircularProgress size={60} />
+                                    </div>
+                                ) : (
+                                    <Button
+                                        variant="contained"
+                                        startIcon={<DownloadIcon />}
+                                        onClick={handleDownload}
+                                        sx={{
+                                            mt: 3,
+                                            px: 4,
+                                            py: 1.5,
+                                            fontSize: '1rem',
+                                            fontWeight: 600,
+                                            borderRadius: 3,
+                                            textTransform: 'none',
+                                            background: 'linear-gradient(135deg, #FFA726, #FB8C00)',
+                                            color: 'white',
+                                            '&:hover': {
+                                                background: 'linear-gradient(135deg, #EF6C00, #F57C00)',
+                                            },
+                                        }}
+                                    >
+                                        {t('special_event.download_zip')}
+                                    </Button>)}
                         </CardContent>
                     </Card>
                 </Grid>

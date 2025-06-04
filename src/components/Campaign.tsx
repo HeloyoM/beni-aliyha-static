@@ -59,6 +59,7 @@ const Campaign = () => {
                     setCampaignTypes(data.types)
 
                 } catch (error: any) {
+                    console.log({ error })
                     setError(error.response?.data?.message || t('campaign.campaign_form.failed_fetch_types'));
                 } finally {
                     setLoading(false);
